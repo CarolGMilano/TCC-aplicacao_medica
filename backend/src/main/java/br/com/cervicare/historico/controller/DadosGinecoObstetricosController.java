@@ -19,17 +19,24 @@ public class DadosGinecoObstetricosController {
     private final DadosGinecoObstetricosService service;
 
     @PostMapping
-    public ResponseEntity<DadosGinecoObstetricosResponseDTO> registrar(
-            @RequestBody @Valid DadosGinecoObstetricosRequestDTO dto
-    ) {
+    public ResponseEntity<DadosGinecoObstetricosResponseDTO> registrar(@RequestBody @Valid DadosGinecoObstetricosRequestDTO dto) {
         DadosGinecoObstetricosResponseDTO novosDados = service.registrar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(novosDados);
     }
 
     @GetMapping("/paciente/{idPaciente}")
-    public ResponseEntity<List<DadosGinecoObstetricosResponseDTO>> listarPorPaciente(
-            @PathVariable Integer idPaciente
-    ) {
+    public ResponseEntity<List<DadosGinecoObstetricosResponseDTO>> listarPorPaciente(@PathVariable Integer idPaciente) {
         return ResponseEntity.ok(service.listarPorPaciente(idPaciente));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DadosGinecoObstetricosResponseDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid DadosGinecoObstetricosRequestDTO dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

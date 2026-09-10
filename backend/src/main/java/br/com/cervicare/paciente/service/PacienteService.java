@@ -23,147 +23,89 @@ public class PacienteService {
 
     private final PacienteRepository repository;
 
-    public Page<PacienteResponseDTO> listar(
-            String busca,
-            StatusPaciente status,
-            Pageable pageable
-    ) {
+    public Page<PacienteResponseDTO> listar(String busca, StatusPaciente status, Pageable pageable) {
         boolean possuiBusca = busca != null && !busca.trim().isEmpty();
-
         Page<Paciente> pacientes;
 
         if (possuiBusca && status != null) {
-
-            pacientes = repository.findByStatusAndNomeContainingIgnoreCase(
-                    status,
-                    busca.trim(),
-                    pageable
-            );
-
+            pacientes = repository.findByStatusAndNomeContainingIgnoreCaseAndAtivoTrue(status, busca.trim(), pageable);
         } else if (possuiBusca) {
-
-            pacientes = repository.buscarPorNomeOuProntuario(
-                    busca.trim(),
-                    pageable
-            );
-
+            pacientes = repository.buscarPorNomeOuProntuarioAtivos(busca.trim(), pageable);
         } else if (status != null) {
-
-            pacientes = repository.findByStatus(
-                    status,
-                    pageable
-            );
-
+            pacientes = repository.findByStatusAndAtivoTrue(status, pageable);
         } else {
-
-            pacientes = repository.findAll(pageable);
+            pacientes = repository.findByAtivoTrue(pageable);
         }
 
         return pacientes.map(this::converterParaResponse);
     }
 
     public PacienteResponseDTO buscarPorId(Integer id) {
-        Paciente paciente = buscarEntidadePorId(id);
-
-        return converterParaResponse(paciente);
+        return converterParaResponse(buscarEntidadePorId(id));
     }
 
     @Transactional
     public PacienteResponseDTO cadastrar(PacienteRequestDTO dto) {
-
         validarProntuarioParaCadastro(dto.prontuario());
 
         Paciente paciente = new Paciente();
+        paciente.setNome(normalizarNome(dto.nome()));
+        paciente.setDataNascimento(dto.dataNascimento());
+        paciente.setProntuario(normalizarProntuario(dto.prontuario()));
+        paciente.setStatus(dto.status());
+        paciente.setAtivo(true);
+
+        return converterParaResponse(repository.save(paciente));
+    }
+
+    @Transactional
+    public PacienteResponseDTO atualizar(Integer id, PacienteRequestDTO dto) {
+        Paciente paciente = buscarEntidadePorId(id);
+        validarProntuarioParaAtualizacao(dto.prontuario(), id);
 
         paciente.setNome(normalizarNome(dto.nome()));
         paciente.setDataNascimento(dto.dataNascimento());
         paciente.setProntuario(normalizarProntuario(dto.prontuario()));
         paciente.setStatus(dto.status());
 
-        Paciente salvo = repository.save(paciente);
-
-        return converterParaResponse(salvo);
+        return converterParaResponse(repository.save(paciente));
     }
 
     @Transactional
-    public PacienteResponseDTO atualizar(
-            Integer id,
-            PacienteRequestDTO dto
-    ) {
+    public PacienteResponseDTO atualizarStatus(Integer id, StatusPaciente novoStatus) {
         Paciente paciente = buscarEntidadePorId(id);
-
-        validarProntuarioParaAtualizacao(
-                dto.prontuario(),
-                id
-        );
-
-        paciente.setNome(normalizarNome(dto.nome()));
-        paciente.setDataNascimento(dto.dataNascimento());
-        paciente.setProntuario(normalizarProntuario(dto.prontuario()));
-        paciente.setStatus(dto.status());
-
-        Paciente atualizado = repository.save(paciente);
-
-        return converterParaResponse(atualizado);
-    }
-
-    @Transactional
-    public PacienteResponseDTO atualizarStatus(
-            Integer id,
-            StatusPaciente novoStatus
-    ) {
-        Paciente paciente = buscarEntidadePorId(id);
-
         paciente.setStatus(novoStatus);
+        return converterParaResponse(repository.save(paciente));
+    }
 
-        Paciente atualizado = repository.save(paciente);
-
-        return converterParaResponse(atualizado);
+    @Transactional
+    public void deletar(Integer id) {
+        Paciente paciente = buscarEntidadePorId(id);
+        paciente.setAtivo(false);
+        repository.save(paciente);
     }
 
     private Paciente buscarEntidadePorId(Integer id) {
-        return repository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Paciente não encontrada para o ID: " + id
-                        )
-                );
+        return repository.findByIdPacienteAndAtivoTrue(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada ou inativa para o ID: " + id));
     }
 
     private void validarProntuarioParaCadastro(String prontuario) {
-
         String prontuarioNormalizado = normalizarProntuario(prontuario);
-
         if (repository.existsByProntuarioIgnoreCase(prontuarioNormalizado)) {
-            throw new DuplicateResourceException(
-                    "Já existe uma paciente cadastrada com o prontuário: "
-                            + prontuarioNormalizado
-            );
+            throw new DuplicateResourceException("Já existe uma paciente cadastrada com o prontuário: " + prontuarioNormalizado);
         }
     }
 
-    private void validarProntuarioParaAtualizacao(
-            String prontuario,
-            Integer idPaciente
-    ) {
+    private void validarProntuarioParaAtualizacao(String prontuario, Integer idPaciente) {
         String prontuarioNormalizado = normalizarProntuario(prontuario);
-
-        if (repository.existsByProntuarioIgnoreCaseAndIdPacienteNot(
-                prontuarioNormalizado,
-                idPaciente
-        )) {
-            throw new DuplicateResourceException(
-                    "Já existe outra paciente cadastrada com o prontuário: "
-                            + prontuarioNormalizado
-            );
+        if (repository.existsByProntuarioIgnoreCaseAndIdPacienteNot(prontuarioNormalizado, idPaciente)) {
+            throw new DuplicateResourceException("Já existe outra paciente cadastrada com o prontuário: " + prontuarioNormalizado);
         }
     }
 
-    private PacienteResponseDTO converterParaResponse(
-            Paciente paciente
-    ) {
-        int idade = calcularIdade(paciente.getDataNascimento());
-
+    private PacienteResponseDTO converterParaResponse(Paciente paciente) {
+        int idade = Period.between(paciente.getDataNascimento(), LocalDate.now()).getYears();
         boolean grupoPrioritario = idade >= 25 && idade <= 64;
 
         return PacienteResponseDTO.builder()
@@ -177,21 +119,11 @@ public class PacienteService {
                 .build();
     }
 
-    private int calcularIdade(LocalDate dataNascimento) {
-        return Period
-                .between(dataNascimento, LocalDate.now())
-                .getYears();
-    }
-
     private String normalizarNome(String nome) {
-        return nome == null
-                ? null
-                : nome.trim().replaceAll("\\s+", " ");
+        return nome == null ? null : nome.trim().replaceAll("\\s+", " ");
     }
 
     private String normalizarProntuario(String prontuario) {
-        return prontuario == null
-                ? null
-                : prontuario.trim();
+        return prontuario == null ? null : prontuario.trim();
     }
 }

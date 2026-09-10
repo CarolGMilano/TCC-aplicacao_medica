@@ -4,7 +4,6 @@ import br.com.cervicare.atendimento.domain.Consulta;
 import br.com.cervicare.atendimento.dto.ConsultaRequestDTO;
 import br.com.cervicare.atendimento.dto.ConsultaResponseDTO;
 import br.com.cervicare.atendimento.repository.ConsultaRepository;
-import br.com.cervicare.core.util.SecurityUtils;
 import br.com.cervicare.medico.domain.Medico;
 import br.com.cervicare.medico.service.MedicoService;
 import br.com.cervicare.paciente.domain.Paciente;
@@ -52,8 +51,9 @@ class ConsultaServiceTest {
                 "Paciente apresenta dores na região pélvica."
         );
 
+        // Atualizado para incluir o parâmetro 'ativo' (true) exigido pelo novo construtor do lombok
         Paciente pacienteMock = new Paciente(
-                1, "Ana Souza", LocalDate.of(1985, 4, 12), "PRT-001", StatusPaciente.EM_INVESTIGACAO
+                1, "Ana Souza", LocalDate.of(1985, 4, 12), "PRT-001", StatusPaciente.EM_INVESTIGACAO, true
         );
 
         Medico medicoMock = new Medico(

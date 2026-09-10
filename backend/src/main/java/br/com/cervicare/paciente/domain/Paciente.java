@@ -38,4 +38,7 @@ public class Paciente {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusPaciente status;
+
+    @Column(nullable = false)
+    private Boolean ativo = true;
 }

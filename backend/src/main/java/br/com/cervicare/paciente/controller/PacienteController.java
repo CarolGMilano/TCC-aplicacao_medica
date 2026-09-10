@@ -23,48 +23,22 @@ public class PacienteController {
 
     @GetMapping
     public ResponseEntity<Page<PacienteResponseDTO>> listarPacientes(
-
-            @RequestParam(required = false)
-            String busca,
-
-            @RequestParam(required = false)
-            StatusPaciente status,
-
-            @PageableDefault(
-                    size = 20,
-                    sort = "nome",
-                    direction = Sort.Direction.ASC
-            )
-            Pageable pageable
+            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) StatusPaciente status,
+            @PageableDefault(size = 20, sort = "nome", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        return ResponseEntity.ok(
-                service.listar(
-                        busca,
-                        status,
-                        pageable
-                )
-        );
+        return ResponseEntity.ok(service.listar(busca, status, pageable));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PacienteResponseDTO> buscarPaciente(
-            @PathVariable Integer id
-    ) {
-        return ResponseEntity.ok(
-                service.buscarPorId(id)
-        );
+    public ResponseEntity<PacienteResponseDTO> buscarPaciente(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<PacienteResponseDTO> cadastrarPaciente(
-            @RequestBody @Valid PacienteRequestDTO dto
-    ) {
-        PacienteResponseDTO paciente =
-                service.cadastrar(dto);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(paciente);
+    public ResponseEntity<PacienteResponseDTO> cadastrarPaciente(@RequestBody @Valid PacienteRequestDTO dto) {
+        PacienteResponseDTO paciente = service.cadastrar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(paciente);
     }
 
     @PutMapping("/{id}")
@@ -72,9 +46,7 @@ public class PacienteController {
             @PathVariable Integer id,
             @RequestBody @Valid PacienteRequestDTO dto
     ) {
-        return ResponseEntity.ok(
-                service.atualizar(id, dto)
-        );
+        return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
     @PutMapping("/{id}/status")
@@ -82,8 +54,12 @@ public class PacienteController {
             @PathVariable Integer id,
             @RequestParam StatusPaciente status
     ) {
-        return ResponseEntity.ok(
-                service.atualizarStatus(id, status)
-        );
+        return ResponseEntity.ok(service.atualizarStatus(id, status));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarPaciente(@PathVariable Integer id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

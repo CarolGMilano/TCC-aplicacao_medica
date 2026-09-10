@@ -49,6 +49,28 @@ public class SaudeSexualService {
                 .toList();
     }
 
+    @Transactional
+    public SaudeSexualResponseDTO atualizar(Integer idDados, SaudeSexualRequestDTO dto) {
+        SaudeSexual saude = saudeSexualRepository.findById(idDados)
+                .orElseThrow(() -> new ResourceNotFoundException("Dados de saúde sexual não encontrados."));
+
+        saude.setSexarca(dto.sexarca());
+        saude.setMac(dto.mac());
+        saude.setNumParceiros(dto.numParceiros());
+        saude.setVvs(dto.vvs());
+
+        SaudeSexual atualizado = saudeSexualRepository.save(saude);
+        return converterParaDTO(atualizado);
+    }
+
+    @Transactional
+    public void deletar(Integer idDados) {
+        if (!saudeSexualRepository.existsById(idDados)) {
+            throw new ResourceNotFoundException("Dados de saúde sexual não encontrados.");
+        }
+        saudeSexualRepository.deleteById(idDados);
+    }
+
     private SaudeSexualResponseDTO converterParaDTO(SaudeSexual saude) {
         return SaudeSexualResponseDTO.builder()
                 .idDados(saude.getIdDados())

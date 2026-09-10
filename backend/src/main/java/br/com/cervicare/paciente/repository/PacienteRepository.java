@@ -15,26 +15,29 @@ public interface PacienteRepository extends JpaRepository<Paciente, Integer> {
     @Query("""
             SELECT p
             FROM Paciente p
-            WHERE LOWER(p.nome) LIKE LOWER(CONCAT('%', :busca, '%'))
-               OR LOWER(p.prontuario) = LOWER(:busca)
+            WHERE p.ativo = true
+              AND (LOWER(p.nome) LIKE LOWER(CONCAT('%', :busca, '%'))
+               OR LOWER(p.prontuario) = LOWER(:busca))
             """)
-    Page<Paciente> buscarPorNomeOuProntuario(
+    Page<Paciente> buscarPorNomeOuProntuarioAtivos(
             @Param("busca") String busca,
             Pageable pageable
     );
 
-    Page<Paciente> findByStatus(
+    Page<Paciente> findByStatusAndAtivoTrue(
             StatusPaciente status,
             Pageable pageable
     );
 
-    Page<Paciente> findByStatusAndNomeContainingIgnoreCase(
+    Page<Paciente> findByStatusAndNomeContainingIgnoreCaseAndAtivoTrue(
             StatusPaciente status,
             String nome,
             Pageable pageable
     );
 
-    Optional<Paciente> findByProntuarioIgnoreCase(String prontuario);
+    Page<Paciente> findByAtivoTrue(Pageable pageable);
+
+    Optional<Paciente> findByIdPacienteAndAtivoTrue(Integer idPaciente);
 
     boolean existsByProntuarioIgnoreCase(String prontuario);
 

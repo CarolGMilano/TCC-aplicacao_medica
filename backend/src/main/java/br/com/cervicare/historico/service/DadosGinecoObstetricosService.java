@@ -51,6 +51,30 @@ public class DadosGinecoObstetricosService {
                 .toList();
     }
 
+    @Transactional
+    public DadosGinecoObstetricosResponseDTO atualizar(Integer idDados, DadosGinecoObstetricosRequestDTO dto) {
+        DadosGinecoObstetricos dados = dadosRepository.findById(idDados)
+                .orElseThrow(() -> new ResourceNotFoundException("Dados gineco-obstétricos não encontrados."));
+
+        dados.setNumGestacao(dto.numGestacao());
+        dados.setNumPartoNormal(dto.numPartoNormal());
+        dados.setNumCesariana(dto.numCesariana());
+        dados.setNumAborto(dto.numAborto());
+        dados.setMenarca(dto.menarca());
+        dados.setMenopausa(dto.menopausa());
+
+        DadosGinecoObstetricos atualizado = dadosRepository.save(dados);
+        return converterParaDTO(atualizado);
+    }
+
+    @Transactional
+    public void deletar(Integer idDados) {
+        if (!dadosRepository.existsById(idDados)) {
+            throw new ResourceNotFoundException("Dados gineco-obstétricos não encontrados.");
+        }
+        dadosRepository.deleteById(idDados);
+    }
+
     private DadosGinecoObstetricosResponseDTO converterParaDTO(DadosGinecoObstetricos dados) {
         return DadosGinecoObstetricosResponseDTO.builder()
                 .idDados(dados.getIdDados())

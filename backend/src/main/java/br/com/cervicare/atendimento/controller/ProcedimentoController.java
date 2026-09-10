@@ -19,17 +19,24 @@ public class ProcedimentoController {
     private final ProcedimentoService service;
 
     @PostMapping
-    public ResponseEntity<ProcedimentoResponseDTO> registrar(
-            @RequestBody @Valid ProcedimentoRequestDTO dto
-    ) {
+    public ResponseEntity<ProcedimentoResponseDTO> registrar(@RequestBody @Valid ProcedimentoRequestDTO dto) {
         ProcedimentoResponseDTO novoProcedimento = service.registrar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoProcedimento);
     }
 
     @GetMapping("/paciente/{idPaciente}")
-    public ResponseEntity<List<ProcedimentoResponseDTO>> listarPorPaciente(
-            @PathVariable Integer idPaciente
-    ) {
+    public ResponseEntity<List<ProcedimentoResponseDTO>> listarPorPaciente(@PathVariable Integer idPaciente) {
         return ResponseEntity.ok(service.listarPorPaciente(idPaciente));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProcedimentoResponseDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid ProcedimentoRequestDTO dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

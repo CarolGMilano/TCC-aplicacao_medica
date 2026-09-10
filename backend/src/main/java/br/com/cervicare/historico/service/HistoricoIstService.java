@@ -47,6 +47,26 @@ public class HistoricoIstService {
                 .toList();
     }
 
+    @Transactional
+    public HistoricoIstResponseDTO atualizar(Integer idHistorico, HistoricoIstRequestDTO dto) {
+        HistoricoIst historico = istRepository.findById(idHistorico)
+                .orElseThrow(() -> new ResourceNotFoundException("Histórico de IST não encontrado."));
+
+        historico.setIst(dto.ist());
+        historico.setCondilomaHpv(dto.condilomaHpv());
+
+        HistoricoIst atualizado = istRepository.save(historico);
+        return converterParaDTO(atualizado);
+    }
+
+    @Transactional
+    public void deletar(Integer idHistorico) {
+        if (!istRepository.existsById(idHistorico)) {
+            throw new ResourceNotFoundException("Histórico de IST não encontrado.");
+        }
+        istRepository.deleteById(idHistorico);
+    }
+
     private HistoricoIstResponseDTO converterParaDTO(HistoricoIst historico) {
         return HistoricoIstResponseDTO.builder()
                 .idHistorico(historico.getIdHistorico())

@@ -51,9 +51,10 @@ public class DataSeeder {
 
             // 3. Criar Pacientes de Teste para o Dashboard
             if (pacienteRepository.count() == 0) {
-                Paciente p1 = new Paciente(null, "Ana Souza", LocalDate.of(1985, 4, 12), "PRT-001", StatusPaciente.EM_INVESTIGACAO);
-                Paciente p2 = new Paciente(null, "Beatriz Lima", LocalDate.of(1992, 8, 25), "PRT-002", StatusPaciente.AGUARDANDO_PROCEDIMENTO);
-                Paciente p3 = new Paciente(null, "Clara Mendes", LocalDate.of(1975, 11, 5), "PRT-003", StatusPaciente.POS_PROCEDIMENTO);
+                // Atualizado para incluir o parâmetro 'ativo' (true) exigido pelo novo construtor do lombok
+                Paciente p1 = new Paciente(null, "Ana Souza", LocalDate.of(1985, 4, 12), "PRT-001", StatusPaciente.EM_INVESTIGACAO, true);
+                Paciente p2 = new Paciente(null, "Beatriz Lima", LocalDate.of(1992, 8, 25), "PRT-002", StatusPaciente.AGUARDANDO_PROCEDIMENTO, true);
+                Paciente p3 = new Paciente(null, "Clara Mendes", LocalDate.of(1975, 11, 5), "PRT-003", StatusPaciente.POS_PROCEDIMENTO, true);
                 
                 pacienteRepository.saveAll(List.of(p1, p2, p3));
             }
