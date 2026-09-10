@@ -64,6 +64,36 @@ public class ColposcopiaService {
                 .toList();
     }
 
+    @Transactional
+    public ColposcopiaResponseDTO atualizar(Integer idColposcopia, ColposcopiaRequestDTO dto) {
+        Colposcopia colposcopia = colposcopiaRepository.findById(idColposcopia)
+                .orElseThrow(() -> new ResourceNotFoundException("Exame de colposcopia não encontrado."));
+
+        colposcopia.setDataRegistro(dto.dataRegistro());
+        colposcopia.setEstrogenizacao(dto.estrogenizacao());
+        colposcopia.setJec(dto.jec());
+        colposcopia.setZt(dto.zt());
+        colposcopia.setLesao(dto.lesao());
+        colposcopia.setRecidiva(dto.recidiva());
+        colposcopia.setGrauLesao(dto.grauLesao());
+        colposcopia.setClassificacao(dto.classificacao());
+        colposcopia.setObservacao(dto.observacao());
+        colposcopia.setVerETratar(dto.verETratar());
+        colposcopia.setVerETratarMotivo(dto.verETratarMotivo());
+        colposcopia.setDataEdicao(LocalDateTime.now());
+
+        Colposcopia atualizada = colposcopiaRepository.save(colposcopia);
+        return converterParaDTO(atualizada);
+    }
+
+    @Transactional
+    public void deletar(Integer idColposcopia) {
+        if (!colposcopiaRepository.existsById(idColposcopia)) {
+            throw new ResourceNotFoundException("Exame de colposcopia não encontrado.");
+        }
+        colposcopiaRepository.deleteById(idColposcopia);
+    }
+
     private ColposcopiaResponseDTO converterParaDTO(Colposcopia colposcopia) {
         return ColposcopiaResponseDTO.builder()
                 .idColposcopia(colposcopia.getIdColposcopia())

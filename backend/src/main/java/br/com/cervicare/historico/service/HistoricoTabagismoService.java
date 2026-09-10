@@ -49,6 +49,28 @@ public class HistoricoTabagismoService {
                 .toList();
     }
 
+    @Transactional
+    public HistoricoTabagismoResponseDTO atualizar(Integer idHistorico, HistoricoTabagismoRequestDTO dto) {
+        HistoricoTabagismo historico = tabagismoRepository.findById(idHistorico)
+                .orElseThrow(() -> new ResourceNotFoundException("Histórico de tabagismo não encontrado."));
+
+        historico.setCigarrosDia(dto.cigarrosDia());
+        historico.setIdadeInicio(dto.idadeInicio());
+        historico.setIdadeFim(dto.idadeFim());
+        historico.setFumante(dto.fumante());
+
+        HistoricoTabagismo atualizado = tabagismoRepository.save(historico);
+        return converterParaDTO(atualizado);
+    }
+
+    @Transactional
+    public void deletar(Integer idHistorico) {
+        if (!tabagismoRepository.existsById(idHistorico)) {
+            throw new ResourceNotFoundException("Histórico de tabagismo não encontrado.");
+        }
+        tabagismoRepository.deleteById(idHistorico);
+    }
+
     private HistoricoTabagismoResponseDTO converterParaDTO(HistoricoTabagismo historico) {
         return HistoricoTabagismoResponseDTO.builder()
                 .idHistorico(historico.getIdHistorico())

@@ -60,6 +60,32 @@ public class ProcedimentoService {
                 .toList();
     }
 
+    @Transactional
+    public ProcedimentoResponseDTO atualizar(Integer idProcedimento, ProcedimentoRequestDTO dto) {
+        Procedimento procedimento = procedimentoRepository.findById(idProcedimento)
+                .orElseThrow(() -> new ResourceNotFoundException("Procedimento não encontrado."));
+
+        procedimento.setDataRegistro(dto.dataRegistro());
+        procedimento.setTipo(dto.tipo());
+        procedimento.setQtFragmento(dto.qtFragmento());
+        procedimento.setMargemEndocervical(dto.margemEndocervical());
+        procedimento.setMargemEctocervical(dto.margemEctocervical());
+        procedimento.setResultado(dto.resultado());
+        procedimento.setObservacao(dto.observacao());
+        procedimento.setDataEdicao(LocalDateTime.now());
+
+        Procedimento atualizado = procedimentoRepository.save(procedimento);
+        return converterParaDTO(atualizado);
+    }
+
+    @Transactional
+    public void deletar(Integer idProcedimento) {
+        if (!procedimentoRepository.existsById(idProcedimento)) {
+            throw new ResourceNotFoundException("Procedimento não encontrado.");
+        }
+        procedimentoRepository.deleteById(idProcedimento);
+    }
+
     private ProcedimentoResponseDTO converterParaDTO(Procedimento procedimento) {
         return ProcedimentoResponseDTO.builder()
                 .idProcedimento(procedimento.getIdProcedimento())

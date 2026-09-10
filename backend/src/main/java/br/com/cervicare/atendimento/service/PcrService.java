@@ -57,6 +57,29 @@ public class PcrService {
                 .toList();
     }
 
+    @Transactional
+    public PcrResponseDTO atualizar(Integer idExame, PcrRequestDTO dto) {
+        PcrDnaHpv pcr = pcrRepository.findById(idExame)
+                .orElseThrow(() -> new ResourceNotFoundException("Exame PCR não encontrado."));
+
+        pcr.setDataRegistro(dto.dataRegistro());
+        pcr.setResultado(dto.resultado());
+        pcr.setTipoHpv(dto.tipoHpv());
+        pcr.setObservacao(dto.observacao());
+        pcr.setDataEdicao(LocalDateTime.now());
+
+        PcrDnaHpv atualizado = pcrRepository.save(pcr);
+        return converterParaDTO(atualizado);
+    }
+
+    @Transactional
+    public void deletar(Integer idExame) {
+        if (!pcrRepository.existsById(idExame)) {
+            throw new ResourceNotFoundException("Exame PCR não encontrado.");
+        }
+        pcrRepository.deleteById(idExame);
+    }
+
     private PcrResponseDTO converterParaDTO(PcrDnaHpv pcr) {
         return PcrResponseDTO.builder()
                 .idExame(pcr.getIdExame())

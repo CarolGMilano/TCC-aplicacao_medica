@@ -19,17 +19,24 @@ public class HistoricoIstController {
     private final HistoricoIstService service;
 
     @PostMapping
-    public ResponseEntity<HistoricoIstResponseDTO> registrar(
-            @RequestBody @Valid HistoricoIstRequestDTO dto
-    ) {
+    public ResponseEntity<HistoricoIstResponseDTO> registrar(@RequestBody @Valid HistoricoIstRequestDTO dto) {
         HistoricoIstResponseDTO novoIst = service.registrar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoIst);
     }
 
     @GetMapping("/paciente/{idPaciente}")
-    public ResponseEntity<List<HistoricoIstResponseDTO>> listarPorPaciente(
-            @PathVariable Integer idPaciente
-    ) {
+    public ResponseEntity<List<HistoricoIstResponseDTO>> listarPorPaciente(@PathVariable Integer idPaciente) {
         return ResponseEntity.ok(service.listarPorPaciente(idPaciente));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<HistoricoIstResponseDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid HistoricoIstRequestDTO dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

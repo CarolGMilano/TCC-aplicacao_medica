@@ -58,8 +58,8 @@ class DatabaseSchemaIT extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("Deve possuir exatamente as três migrations aplicadas")
-    void devePossuirAsTresMigrationsAplicadas() throws SQLException {
+    @DisplayName("Deve possuir exatamente as quatro migrations aplicadas")
+    void devePossuirAsQuatroMigrationsAplicadas() throws SQLException {
 
         String sql = """
                 SELECT COUNT(*)
@@ -78,16 +78,16 @@ class DatabaseSchemaIT extends AbstractIntegrationTest {
             int quantidadeMigrations = resultSet.getInt(1);
 
             assertEquals(
-                    3,
+                    4,
                     quantidadeMigrations,
-                    "O banco de teste deveria possuir exatamente 3 migrations aplicadas"
+                    "O banco de teste deveria possuir exatamente 4 migrations aplicadas"
             );
         }
     }
 
     @Test
-    @DisplayName("Deve estar na versão 3 do Flyway")
-    void deveEstarNaVersaoTresDoFlyway() throws SQLException {
+    @DisplayName("Deve estar na versão 4 do Flyway")
+    void deveEstarNaVersaoQuatroDoFlyway() throws SQLException {
 
         String sql = """
                 SELECT version
@@ -109,9 +109,9 @@ class DatabaseSchemaIT extends AbstractIntegrationTest {
             );
 
             assertEquals(
-                    "3",
+                    "4",
                     resultSet.getString("version"),
-                    "A última migration aplicada deveria ser a V3"
+                    "A última migration aplicada deveria ser a V4"
             );
         }
     }

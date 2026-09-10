@@ -56,6 +56,28 @@ public class CitologiaService {
                 .toList();
     }
 
+    @Transactional
+    public CitologiaResponseDTO atualizar(Integer idExame, CitologiaRequestDTO dto) {
+        Citologia citologia = citologiaRepository.findById(idExame)
+                .orElseThrow(() -> new ResourceNotFoundException("Exame de citologia não encontrado."));
+
+        citologia.setDataRegistro(dto.dataRegistro());
+        citologia.setResultado(dto.resultado());
+        citologia.setObservacao(dto.observacao());
+        citologia.setDataEdicao(LocalDateTime.now());
+
+        Citologia atualizada = citologiaRepository.save(citologia);
+        return converterParaDTO(atualizada);
+    }
+
+    @Transactional
+    public void deletar(Integer idExame) {
+        if (!citologiaRepository.existsById(idExame)) {
+            throw new ResourceNotFoundException("Exame de citologia não encontrado.");
+        }
+        citologiaRepository.deleteById(idExame);
+    }
+
     private CitologiaResponseDTO converterParaDTO(Citologia citologia) {
         return CitologiaResponseDTO.builder()
                 .idExame(citologia.getIdExame())

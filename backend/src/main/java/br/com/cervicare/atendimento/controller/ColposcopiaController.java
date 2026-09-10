@@ -19,17 +19,24 @@ public class ColposcopiaController {
     private final ColposcopiaService service;
 
     @PostMapping
-    public ResponseEntity<ColposcopiaResponseDTO> registrar(
-            @RequestBody @Valid ColposcopiaRequestDTO dto
-    ) {
+    public ResponseEntity<ColposcopiaResponseDTO> registrar(@RequestBody @Valid ColposcopiaRequestDTO dto) {
         ColposcopiaResponseDTO novaColposcopia = service.registrar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(novaColposcopia);
     }
 
     @GetMapping("/paciente/{idPaciente}")
-    public ResponseEntity<List<ColposcopiaResponseDTO>> listarPorPaciente(
-            @PathVariable Integer idPaciente
-    ) {
+    public ResponseEntity<List<ColposcopiaResponseDTO>> listarPorPaciente(@PathVariable Integer idPaciente) {
         return ResponseEntity.ok(service.listarPorPaciente(idPaciente));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ColposcopiaResponseDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid ColposcopiaRequestDTO dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -19,17 +19,24 @@ public class PcrController {
     private final PcrService service;
 
     @PostMapping
-    public ResponseEntity<PcrResponseDTO> registrar(
-            @RequestBody @Valid PcrRequestDTO dto
-    ) {
+    public ResponseEntity<PcrResponseDTO> registrar(@RequestBody @Valid PcrRequestDTO dto) {
         PcrResponseDTO novoPcr = service.registrar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoPcr);
     }
 
     @GetMapping("/paciente/{idPaciente}")
-    public ResponseEntity<List<PcrResponseDTO>> listarPorPaciente(
-            @PathVariable Integer idPaciente
-    ) {
+    public ResponseEntity<List<PcrResponseDTO>> listarPorPaciente(@PathVariable Integer idPaciente) {
         return ResponseEntity.ok(service.listarPorPaciente(idPaciente));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PcrResponseDTO> atualizar(@PathVariable Integer id, @RequestBody @Valid PcrRequestDTO dto) {
+        return ResponseEntity.ok(service.atualizar(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Integer id) {
+        service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }
