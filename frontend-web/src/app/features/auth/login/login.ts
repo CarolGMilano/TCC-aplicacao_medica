@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { finalize } from 'rxjs';
 
@@ -25,6 +26,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   readonly carregando = signal(false);
   readonly mensagem = signal('');
@@ -47,8 +49,8 @@ export class Login {
       .login(this.loginForm.getRawValue())
       .pipe(finalize(() => this.carregando.set(false)))
       .subscribe({
-        next: (resposta) => {
-          this.mensagem.set(`Login realizado. Token recebido: ${resposta.tipo}`);
+        next: () => {
+          void this.router.navigate(['/pacientes']);
         },
         error: () => {
           this.mensagem.set('Não foi possível realizar o login.');

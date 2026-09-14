@@ -1,0 +1,38 @@
+<mat-sidenav-container class="app-shell">
+  <mat-sidenav class="menu-lateral" mode="side" opened>
+    <div class="marca">
+      <strong>Cervicare</strong>
+      <span>Acompanhamento clínico</span>
+    </div>
+
+    <mat-nav-list>
+      <a
+        mat-list-item
+        routerLink="/pacientes"
+        routerLinkActive="item-ativo"
+      >
+        Pacientes
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="barra-superior">
+      <span>Área médica</span>
+
+      <span class="espacador"></span>
+
+      <button
+        mat-button
+        type="button"
+        (click)="sair()"
+      >
+        Sair
+      </button>
+    </mat-toolbar>
+
+    <main class="conteudo-principal">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

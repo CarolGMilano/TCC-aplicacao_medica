@@ -1,6 +1,9 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
 import { Observable, tap } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
 
 interface LoginRequest {
   email: string;
@@ -12,13 +15,17 @@ interface TokenResponse {
   tipo: string;
 }
 
+interface JwtPayload {
+  exp?: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:8081/api/auth';
+  private readonly apiUrl = `${environment.apiUrl}/auth`;
   private readonly tokenKey = 'cervicare_token';
 
   login(dados: LoginRequest): Observable<TokenResponse> {
@@ -34,7 +41,25 @@ export class AuthService {
   }
 
   estaAutenticado(): boolean {
-    return this.getToken() !== null;
+    const token = this.getToken();
+
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const payload = jwtDecode<JwtPayload>(token);
+
+      if (payload.exp && payload.exp * 1000 <= Date.now()) {
+        this.logout();
+        return false;
+      }
+
+      return true;
+    } catch {
+      this.logout();
+      return false;
+    }
   }
 
   logout(): void {

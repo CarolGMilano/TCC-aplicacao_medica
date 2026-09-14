@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { environment } from '../../../../environments/environment';
 import { Paciente, Pagina } from '../models/paciente.model';
 
 @Injectable({
@@ -10,7 +11,7 @@ import { Paciente, Pagina } from '../models/paciente.model';
 export class PacienteService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:8081/api/pacientes';
+  private readonly apiUrl = `${environment.apiUrl}/pacientes`;
 
   listar(): Observable<Pagina<Paciente>> {
     return this.http.get<Pagina<Paciente>>(this.apiUrl);
