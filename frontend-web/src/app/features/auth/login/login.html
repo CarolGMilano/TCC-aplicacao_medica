@@ -1,0 +1,48 @@
+<div class="login-page">
+    <mat-card class="login-card">
+        <mat-card-header>
+            <mat-card-title>Cervicare</mat-card-title>
+            <mat-card-subtitle>Acesso ao sistema</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+            <form [formGroup]="loginForm" (ngSubmit)="entrar()">
+
+                <mat-form-field appearance="outline">
+                    <mat-label>E-mail</mat-label>
+
+                    <input matInput type="email" formControlName="email" />
+
+                    @if (
+                    loginForm.controls.email.touched &&
+                    loginForm.controls.email.invalid
+                    ) {
+                    <mat-error>Informe um e-mail válido.</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Senha</mat-label>
+
+                    <input matInput type="password" formControlName="senha" />
+
+                    @if (
+                    loginForm.controls.senha.touched &&
+                    loginForm.controls.senha.invalid
+                    ) {
+                    <mat-error>A senha é obrigatória.</mat-error>
+                    }
+                </mat-form-field>
+
+                <button mat-flat-button type="submit" [disabled]="carregando()">
+                    {{ carregando() ? 'Entrando...' : 'Entrar' }}
+                </button>
+
+            </form>
+
+            @if (mensagem()) {
+            <p class="mensagem">{{ mensagem() }}</p>
+            }
+        </mat-card-content>
+    </mat-card>
+</div>

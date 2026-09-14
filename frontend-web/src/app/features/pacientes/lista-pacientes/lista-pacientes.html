@@ -1,0 +1,58 @@
+<div class="pagina">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Pacientes</mat-card-title>
+            <mat-card-subtitle>
+                Pacientes cadastradas no sistema
+            </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+            @if (carregando()) {
+            <p>Carregando pacientes...</p>
+            }
+
+            @if (erro()) {
+            <p class="erro">{{ erro() }}</p>
+            }
+
+            @if (!carregando() && !erro()) {
+            <table mat-table [dataSource]="pacientes()" class="tabela">
+
+                <ng-container matColumnDef="nome">
+                    <th mat-header-cell *matHeaderCellDef>Nome</th>
+                    <td mat-cell *matCellDef="let paciente">
+                        {{ paciente.nome }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="prontuario">
+                    <th mat-header-cell *matHeaderCellDef>Prontuário</th>
+                    <td mat-cell *matCellDef="let paciente">
+                        {{ paciente.prontuario }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="idade">
+                    <th mat-header-cell *matHeaderCellDef>Idade</th>
+                    <td mat-cell *matCellDef="let paciente">
+                        {{ paciente.idade }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let paciente">
+                        {{ paciente.status }}
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+
+                <tr mat-row *matRowDef="let row; columns: colunas"></tr>
+
+            </table>
+            }
+        </mat-card-content>
+    </mat-card>
+</div>
