@@ -1,0 +1,44 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.menu-lateral {
+  width: 240px;
+  padding: 16px;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+}
+
+.marca {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  padding: 8px 8px 24px;
+
+  strong {
+    font: var(--mat-sys-title-large);
+  }
+
+  span {
+    color: var(--mat-sys-on-surface-variant);
+    font: var(--mat-sys-body-small);
+  }
+}
+
+.item-ativo {
+  background: var(--mat-sys-secondary-container);
+}
+
+.barra-superior {
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.espacador {
+  flex: 1;
+}
+
+.conteudo-principal {
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  background: var(--mat-sys-surface-container-lowest);
+}
