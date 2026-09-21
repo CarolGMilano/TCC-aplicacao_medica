@@ -5,6 +5,8 @@ import { Login } from './features/auth/login/login';
 import { ListaPacientes } from './features/pacientes/lista-pacientes/lista-pacientes';
 import { AppLayout } from './layout/app-layout/app-layout';
 
+import { Profissionais } from './pages';
+
 export const routes: Routes = [
   {
     path: 'login',
@@ -16,16 +18,58 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'dashboard',
+        component: Profissionais,
+        /*
+        data: {
+          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+        }
+        */
+      },
+
+      {
+        path: 'profissionais',
+        component: Profissionais,
+        /*
+        data: {
+          role: ['ADMINISTRADOR']
+        }
+        */
+      },
+      
+      {
         path: 'pacientes',
         component: ListaPacientes,
       },
+
+      {
+        path: 'novo-paciente',
+        component: Profissionais,
+        /*
+        data: {
+          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+        }
+        */
+      },
+
+      {
+        path: 'perfil',
+        component: Profissionais,
+        /*
+        data: {
+          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+        }
+        */
+      },
+
       {
         path: '',
-        redirectTo: 'pacientes',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
       },
     ],
   },
+
   {
     path: '**',
     redirectTo: '',
