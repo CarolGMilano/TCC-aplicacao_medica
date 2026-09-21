@@ -5,6 +5,10 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 html {
   height: 100%;
   @include mat.theme(
@@ -19,21 +23,58 @@ html {
   );
 }
 
+/* Paleta do CerviCare */
+:root {
+  /* Identidade visual */
+  --cor-primaria: #768E78;
+  --cor-primaria-hover-escura: #657B67;
+  --cor-primaria-hover-clara: #7D9580;
+  --cor-secundaria: #E79897;
+  --cor-terciaria: #FCC88A;
+
+   /* Textos */
+  --cor-texto-primario-escuro: #26301F;
+  --cor-texto-secundario-escuro: #3F4D42;
+  --cor-texto-primario-claro: #FFFFFF;
+  --cor-texto-secundario-claro: #F3EAD6;
+
+  /* Fundos e bordas */
+  --cor-fundo-primario: #F2F0EF;
+  --cor-fundo-secundario: #FFFFFF;
+  --cor-borda: #C6C09C;
+  --cor-borda-detalhe: #F7F6F1;
+
+  /* Sombra */
+  --sombra: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* Fontes */
+  --fonte-primaria: 'Poppins', sans-serif;
+  --fonte-secundaria: "JetBrains Mono", monospace;
+  --fonte-detalhe: "PT Serif", serif;
+
+  /* Tipos de usuário */
+  --cor-medico-escuro: #2F5D63;
+  --cor-medico-claro: #D9E5E6;
+  --cor-residente-escuro: #8A5F1C;
+  --cor-residente-claro:  #FCE8C6;
+  --cor-administrador-escuro: #8F3F44;
+  --cor-administrador-claro:  #F6D7D6;
+
+  /* Ações */
+  --cor-atencao: #c28a00;
+  --cor-botao-hover-exclusao: #8a3b3c;
+  --cor-botao-exclusao: #A8494A;
+  --cor-icone-exclusao: #A8494BA2;
+  --cor-borda-exclusao: #DFAFAF;
+  --cor-icone-edicao: #3F4F4291;
+  --cor-borda-edicao: #C6C09C;
+}
+
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto-principal);
+  font-family: var(--fonte-principal);
   margin: 0;
   height: 100%;
 }
-/* You can add global styles to this file, and also import other style files */

@@ -1,0 +1,41 @@
+<section class="popup">
+  <div class="cabecalho">
+    <div class="cabecalho-subtitulo">
+      <span>CRM {{ data.informacao }}</span>
+      <div class="subtitulo-detalhe"></div>
+      <span>Ação irreversível</span>
+    </div>
+
+    <h2 class="cabecalho-titulo" mat-dialog-title>
+      Deletar <span class="titulo-detalhe">{{ data.nome }}</span>?
+    </h2>
+  </div>
+
+  <div class="corpo-mensagem">
+    <mat-icon>error_outline</mat-icon>
+
+    <div class="mensagem-container">
+      <span class="container-titulo">Atenção</span>
+      
+      <p class="container-texto">
+        {{ data.mensagem }}
+      </p>
+    </div>
+  </div>
+
+  <div class="acoes">
+    <button
+      class="botao-acao acao-cancelar"
+      type="button"
+      (click)="cancelar()">
+      Cancelar
+    </button>
+
+    <button
+      class="botao-acao acao-deletar"
+      type="button"
+      (click)="confirmar()">
+      Deletar {{ data.textoConfirmar }}
+    </button>
+  </div>
+</section>

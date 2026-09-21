@@ -1,0 +1,266 @@
+<form #formularioForm="ngForm" class="formulario">
+  <div class="cabecalho">
+    <span class="cabecalho-subtitulo">
+      {{ data.modo === 'adicionar' ? 'Cadastro de profissional' : 'Edição de profissional' }}
+    </span>
+
+    <h2 class="cabecalho-titulo">
+      {{ data.modo === 'adicionar'
+        ? 'Novo registro'
+        : `Editando ${profissional.nome}` }}
+    </h2>
+  </div>
+
+  <div class="campos">
+    <div class="campo">
+      <label class="campo-label" for="nome">
+        Nome
+      </label>
+
+      <div class="campo-conteudo">
+        <input
+          class="campo-input"
+          id="nome"
+          type="text"
+          name="nome"
+          [(ngModel)]="profissional.nome"
+          required>
+
+        @if (formularioForm.controls['nome']?.touched &&
+             formularioForm.controls['nome']?.hasError('required')) {
+
+          <span class="campo-erro">
+            Nome é obrigatório.
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label class="campo-label">
+        CRM
+      </label>
+
+      <div class="campo-conteudo">
+        <div class="campo-crm">
+          <select
+            class="campo-select campo-crm-uf"
+            name="ufCrm"
+            [(ngModel)]="ufCrm"
+            required>
+
+            @for (uf of ufs; track uf) {
+              <option [value]="uf">
+                {{ uf }}
+              </option>
+            }
+          </select>
+
+          <input
+            class="campo-input campo-crm-numero"
+            [class.crm-aviso]="
+              formularioForm.controls['numeroCrm']?.touched &&
+              formularioForm.controls['numeroCrm']?.value &&
+              formularioForm.controls['numeroCrm']?.hasError('minlength')
+            "
+            type="text"
+            name="numeroCrm"
+            [(ngModel)]="numeroCrm"
+            placeholder="Número do CRM"
+            numeros
+            minlength="5"
+            maxlength="6"
+            required>
+        </div>
+
+        @if (
+          (formularioForm.controls['ufCrm']?.touched &&
+          formularioForm.controls['ufCrm']?.hasError('required')) ||
+          (formularioForm.controls['numeroCrm']?.touched &&
+          formularioForm.controls['numeroCrm']?.hasError('required'))
+        ) {
+          <span class="campo-erro">
+            CRM é obrigatório.
+          </span>
+        } @else if (formularioForm.controls['numeroCrm']?.hasError('minlength')) {
+          <span class="campo-aviso">
+            CRM deve ter entre 5 e 6 números.
+          </span>
+        } @else if (formularioForm.controls['numeroCrm']?.hasError('crmConflito')) {
+          <span class="campo-erro">
+            CRM já cadastrado no sistema.
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label class="campo-label" for="especialidade">
+        Especialidade
+      </label>
+
+      <div class="campo-conteudo">
+        <select
+          class="campo-select"
+          id="especialidade"
+          name="especialidade"
+          [(ngModel)]="profissional.especialidade"
+          required>
+
+          <option value="" disabled>
+            Selecione uma especialidade
+          </option>
+
+          @for (especialidade of especialidades; track especialidade) {
+            <option [value]="especialidade">
+              {{ especialidade }}
+            </option>
+          }
+        </select>
+
+        @if (
+          formularioForm.controls['especialidade']?.touched &&
+          formularioForm.controls['especialidade']?.hasError('required')
+        ) {
+          <span class="campo-erro">
+            Especialidade é obrigatória.
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label class="campo-label">
+        Tipo de usuário
+      </label>
+
+      <div class="campo-tipo">
+        @for (tipo of tiposUsuario; track tipo) {
+          <label
+            class="opcao-tipo"
+            [class.selecionado]="profissional.tipo === tipo">
+
+            <input
+              type="radio"
+              name="tipoUsuario"
+              [value]="tipo"
+              [(ngModel)]="profissional.tipo"
+              required>
+
+            <span>
+              {{ TipoUsuarioLabel[tipo] }}
+            </span>
+          </label>
+        }
+      </div>
+
+      @if (formularioForm.controls['tipoUsuario']?.touched &&
+           formularioForm.controls['tipoUsuario']?.hasError('required')) {
+
+        <span class="campo-erro">
+          Tipo de usuário é obrigatório.
+        </span>
+
+      }
+    </div>
+
+    <div class="campo">
+      <label class="campo-label" for="email">
+        E-mail
+      </label>
+
+      <div class="campo-conteudo">
+        <input
+          class="campo-input"
+          id="email"
+          type="email"
+          name="email"
+          [(ngModel)]="profissional.email"
+          required>
+
+          @if (formularioForm.controls['email']?.touched) {
+            @if (formularioForm.controls['email']?.hasError('required')) {
+              <span class="campo-erro">E-mail é obrigatório.</span>
+            } @else if (formularioForm.controls['email']?.hasError('email')) {
+              <span class="campo-erro">Informe um e-mail válido.</span>
+            } @else if (formularioForm.controls['email']?.hasError('emailConflito')) {
+              <span class="campo-erro">E-mail já cadastrado no sistema.</span>
+            } @else if (formularioForm.controls['email']?.hasError('emailInvalido')) {
+              <span class="campo-erro">Formato de e-mail inválido.</span>
+            }
+          }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label class="campo-label" for="senha">
+        Senha
+      </label>
+
+      <div class="campo-conteudo">
+        <div class="campo-senha">
+          <input
+            class="campo-input"
+            [class.senha-aviso]="
+              formularioForm.controls['senha']?.touched &&
+              formularioForm.controls['senha']?.value &&
+              formularioForm.controls['senha']?.hasError('minlength')
+            "
+            id="senha"
+            [type]="esconder() ? 'password' : 'text'"
+            name="senha"
+            [(ngModel)]="profissional.senha"
+            [required]="data.modo === 'adicionar'"
+            minlength="4">
+
+          <button
+            type="button"
+            class="botao-senha"
+            (click)="esconderSenha($event)"
+            [attr.aria-label]="esconder() ? 'Mostrar senha' : 'Ocultar senha'">
+            <mat-icon>
+              {{ esconder() ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+          </button>
+        </div>
+
+        @if (
+          data.modo === 'adicionar' &&
+          formularioForm.controls['senha']?.touched &&
+          formularioForm.controls['senha']?.hasError('required')
+        ) {
+          <span class="campo-erro">
+            Senha é obrigatória.
+          </span>
+        } @else if (
+          data.modo === 'adicionar' &&
+          formularioForm.controls['senha']?.touched &&
+          formularioForm.controls['senha']?.hasError('minlength')
+        ) {
+          <span class="campo-aviso">
+            A senha deve ter pelo menos 4 caracteres.
+          </span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="acoes">
+    <button
+      class="botao-acao acao-cancelar"
+      type="button"
+      (click)="cancelar()">
+      Cancelar
+    </button>
+
+    <button
+      class="botao-acao acao-salvar"
+      type="button"
+      [disabled]="formularioForm.invalid"
+      (click)="salvar(formularioForm)">
+      {{ data.modo === 'adicionar'
+        ? 'Salvar'
+        : 'Salvar alterações' }}
+    </button>
+  </div>
+</form>
