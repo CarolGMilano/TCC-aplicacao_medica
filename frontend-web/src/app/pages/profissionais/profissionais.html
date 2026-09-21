@@ -1,0 +1,196 @@
+@if (loading) {
+  <app-loading></app-loading>
+}
+
+<section class="pagina">
+  <div class="cabecalho">
+    <div class="cabecalho-container">
+      <h1 class="container-titulo">Profissionais</h1>
+      <h2 class="container-subtitulo">{{ totalProfissionais() }} profissionais cadastrados</h2>
+    </div>
+    
+    <button class="botao-adicionar" type="button" (click)="abrirFormulario()">
+      <mat-icon>add</mat-icon>
+      Adicionar profissional
+    </button>
+  </div>
+
+  <div class="corpo">
+    <div class="campo-busca">
+      <mat-icon class="busca-icone">search</mat-icon>
+
+      <input
+        id="busca"
+        class="busca-input"
+        type="text"
+        placeholder="Buscar por nome, CRM ou e-mail"
+        [ngModel]="busca()"
+        (ngModelChange)="buscar($event)"
+      >
+    </div>
+
+    <div class="divisoria-busca"></div>
+
+    <div class="filtros">
+      <div class="filtro-usuario">
+        <span class="filtro-titulo">Tipo de usuário</span>
+
+        <div class="filtro-opcoes">
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroTipo() === null"
+            (click)="filtrarPorTipo(null)">
+            Todos
+          </button>
+      
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroTipo() === TipoUsuario.MEDICO"
+            (click)="filtrarPorTipo(TipoUsuario.MEDICO)">
+            {{ TipoUsuarioLabel[TipoUsuario.MEDICO] }}
+          </button>
+      
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroTipo() === TipoUsuario.RESIDENTE"
+            (click)="filtrarPorTipo(TipoUsuario.RESIDENTE)">
+            {{ TipoUsuarioLabel[TipoUsuario.RESIDENTE] }}
+          </button>
+      
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroTipo() === TipoUsuario.ADMINISTRADOR"
+            (click)="filtrarPorTipo(TipoUsuario.ADMINISTRADOR)">
+            {{ TipoUsuarioLabel[TipoUsuario.ADMINISTRADOR] }}
+          </button>
+        </div>
+      </div>
+
+      <div class="divisoria-filtro"></div>
+    </div>
+
+    <div class="container-tabela">
+      <table class="tabela">
+        <thead class="tabela-cabecalho">
+          <tr>
+            <th>Profissional</th>
+            <th>CRM</th>
+            <th>Especialidade</th>
+            <th>E-mail</th>
+            <th>Tipo de usuário</th>
+            <th></th>
+          </tr>
+        </thead>
+        
+        <tbody class="tabela-corpo">
+          @for (profissional of profissionais(); track profissional.idMedico) {
+            <tr class="corpo-item">
+              <td class="item-nome">
+                <div class="nome-container">
+                  <div
+                    class="nome-detalhe"
+                    [class.medico]="profissional.tipo === TipoUsuario.MEDICO"
+                    [class.residente]="profissional.tipo === TipoUsuario.RESIDENTE"
+                    [class.administrador]="profissional.tipo === TipoUsuario.ADMINISTRADOR">
+                  </div>
+
+                  {{ profissional.nome }}
+                </div>
+              </td>
+              <td>{{ profissional.crm }}</td>
+              <td>{{ profissional.especialidade }}</td>
+              <td>{{ profissional.email }}</td>
+              <td>
+                <div
+                  class="item-tipo"
+                  [class.medico]="profissional.tipo === TipoUsuario.MEDICO"
+                  [class.residente]="profissional.tipo === TipoUsuario.RESIDENTE"
+                  [class.administrador]="profissional.tipo === TipoUsuario.ADMINISTRADOR">
+                  {{ TipoUsuarioLabel[profissional.tipo] }}
+                </div>
+              </td>
+              <td class="item-acoes">
+                <div class="acoes-container">
+                  <button
+                    class="acao-botao botao-editar"
+                    type="button"
+                    (click)="editar(profissional)"
+                    aria-label="Editar profissional">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+
+                  @if (
+                    profissionais().length > 1 &&
+                    profissional.idUsuario !== idUsuarioLogado
+                  ) {
+                    <button
+                      class="acao-botao botao-deletar"
+                      type="button"
+                      (click)="confirmarExclusao(profissional)"
+                      aria-label="Deletar profissional">
+
+                      <mat-icon>delete</mat-icon>
+
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="sem-profissional" colspan="6">
+                Nenhum profissional encontrado.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rodape">
+      <div class="rodape-paginacao">
+        <button
+          class="paginacao-botao"
+          type="button"
+          (click)="paginaAnterior()"
+          [disabled]="paginaAtual() === 0"
+          aria-label="Página anterior">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <button
+          class="paginacao-botao"
+          type="button"
+          (click)="proximaPagina()"
+          [disabled]="paginaAtual() + 1 >= totalPaginas()"
+          aria-label="Próxima página">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+
+      <div class="rodape-detalhe">
+        <span>
+          {{ totalProfissionais() === 0
+            ? '0–0'
+            : (paginaAtual() * 10 + 1) + '–' +
+              (((paginaAtual() + 1) * 10) > totalProfissionais()
+                ? totalProfissionais()
+                : (paginaAtual() + 1) * 10)
+          }}
+          de {{ totalProfissionais() }} profissionais
+        </span>
+
+        <div class="detalhe-divisor"></div>
+
+        <span>
+          Tipo de usuário:
+          {{ filtroTipo() === null ? 'Todos' : TipoUsuarioLabel[filtroTipo()!] }}
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
