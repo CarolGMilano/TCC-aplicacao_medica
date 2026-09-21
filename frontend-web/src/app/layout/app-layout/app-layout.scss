@@ -1,44 +1,249 @@
-.app-shell {
-  min-height: 100vh;
+.main-layout {
+  height: 100vh;
 }
 
 .menu-lateral {
-  width: 240px;
-  padding: 16px;
-  border-right: 1px solid var(--mat-sys-outline-variant);
+  width: 260px;
+  padding: 20px 15px;
+  border-radius: 0;
+  background-color: var(--cor-primaria);
 }
 
-.marca {
+::ng-deep .menu-lateral .mat-drawer-inner-container {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  justify-content: space-between;
+  overflow: hidden;
+}
 
-  padding: 8px 8px 24px;
+.navegacao {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
 
-  strong {
-    font: var(--mat-sys-title-large);
+  .elemento-visual {
+    width: 80px;
+    height: 5px;
+    border-radius: 50px;
+
+    background: linear-gradient(
+      to right,
+      var(--cor-secundaria) 70%,
+      var(--cor-terciaria) 30%
+    );
   }
 
-  span {
-    color: var(--mat-sys-on-surface-variant);
-    font: var(--mat-sys-body-small);
+  .titulo-sistema {
+    font-family: var(--fonte-detalhe);
+    font-weight: lighter;
+    font-size: 25px;
+    color: var(--cor-texto-primario-claro);
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+
+  .subtitulo-sistema {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--fonte-secundaria);
+    font-weight: lighter;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--cor-texto-primario-claro);
+    margin: 0;
+
+    .subtitulo-detalhe {
+      width: 4px;
+      height: 4px;
+      border-radius: 50px;
+      background-color: var(--cor-texto-primario-claro);
+    }
   }
 }
 
-.item-ativo {
-  background: var(--mat-sys-secondary-container);
+mat-sidenav-content {
+  height: 100vh;
+}
+
+.paginas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 30px;
+
+  a {
+    display: flex;
+    align-items: center;
+
+    padding: 12px 12px;
+
+    border-radius: 8px;
+
+    color: var(--cor-texto-primario-claro);
+    font-family: var(--fonte-primaria);
+    font-size: 12px;
+    font-weight: 300;
+
+    text-decoration: none;
+
+    .pagina-detalhe {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--cor-fundo-primario);
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+  }
+
+  a:hover {
+    background-color: var(--cor-primaria-hover-escura);
+  }
+
+  a.item-ativo {
+    background-color: var(--cor-fundo-secundario);
+    color: var(--cor-texto-primario-escuro);
+    font-weight: 400;
+
+    .pagina-detalhe {
+      background-color: var(--cor-primaria);
+    }
+  }
+}
+
+.botao-novo-paciente {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin-top: 20px;
+  padding: 10px 12px !important;
+
+  border-radius: 50px !important;
+
+  background-color: var(--cor-fundo-secundario);
+  color: var(--cor-primaria) !important;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  text-decoration: none;
+
+  transition: background-color 0.2s ease;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background-color: #F5F5F5 !important;
+  }
+}
+
+.usuario {
+  border-top: 1px solid var(--cor-primaria-hover-escura);
+  padding-top: 10px;
+  color: var(--cor-texto-primario-claro);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  
+  .perfil {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px;
+    border-radius: 8px;
+
+    &:hover {
+      background-color: var(--cor-primaria-hover-clara);
+    }
+  
+    .avatar {
+      width: 35px;
+      height: 35px;
+      background-color: var(--cor-primaria-hover-escura);
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+  
+    .dados-usuario {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      
+      .nome-usuario {
+        font-family: var(--fonte-primaria);
+        font-weight: 400;
+        font-size: 12px;
+      }
+  
+      .detalhe-usuario {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        font-family: var(--fonte-secundaria);
+        font-weight: 100;
+        font-size: 8px;
+        text-transform: uppercase;
+  
+        .detalhe-divisor {
+          width: 4px;
+          height: 4px;
+          border-radius: 50px;
+          background-color: var(--cor-texto-primario-claro);
+        }
+      }
+    }
+  }
+
+  .botao-sair {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 12px;
+    align-self: flex-start;
+
+    border: none;
+    background-color: transparent;
+    border-radius: 8px;
+
+    color: var(--cor-texto-primario-claro);
+
+    font-family: var(--fonte-secundaria);
+    font-weight: 100;
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    mat-icon {
+      font-size: 12px;
+      width: 10px;
+      height: 10px;
+    }
+
+    &:hover {
+      background-color: var(--cor-primaria-hover-clara) !important;
+    }
+  }
 }
 
 .barra-superior {
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
-}
-
-.espacador {
-  flex: 1;
+  height: 60px;
 }
 
 .conteudo-principal {
-  min-height: calc(100vh - 64px);
-  padding: 24px;
-  background: var(--mat-sys-surface-container-lowest);
+  min-height: calc(100vh - 60px);
+  background-color: var(--cor-fundo-primario);
 }

@@ -1,35 +1,79 @@
-<mat-sidenav-container class="app-shell">
+<mat-sidenav-container class="main-layout">
   <mat-sidenav class="menu-lateral" mode="side" opened>
-    <div class="marca">
-      <strong>Cervicare</strong>
-      <span>Acompanhamento clínico</span>
+    <div class="navegacao">
+      <div class="logo">
+        <div class="elemento-visual"></div>
+
+        <h1 class="titulo-sistema">
+          CerviCare
+        </h1>
+
+        <h2 class="subtitulo-sistema">
+          <span>Painel clínico</span>
+          <div class="subtitulo-detalhe"></div>
+          <span>desktop</span>
+        </h2>
+      </div>
+
+      <nav class="paginas">
+        <a routerLink="/dashboard" routerLinkActive="item-ativo">
+          <div class="pagina-detalhe"></div>
+          Dashboard
+        </a>
+
+        <a routerLink="/pacientes" routerLinkActive="item-ativo">
+          <div class="pagina-detalhe"></div>
+          Pacientes
+        </a>
+
+        <a routerLink="/profissionais" routerLinkActive="item-ativo">
+          <div class="pagina-detalhe"></div>
+          Profissionais
+        </a>
+
+        <a routerLink="/novo-paciente" class="botao-novo-paciente">
+          <mat-icon>add</mat-icon>
+          Novo paciente
+        </a>
+      </nav>
     </div>
 
-    <mat-nav-list>
-      <a
-        mat-list-item
-        routerLink="/pacientes"
-        routerLinkActive="item-ativo"
-      >
-        Pacientes
-      </a>
-    </mat-nav-list>
+    <a routerLink="/perfil" class="usuario">
+      <div class="perfil">
+        <div class="avatar">
+          {{ iniciaisNome(perfil()?.nome) }}
+        </div>
+  
+        <div class="dados-usuario">
+          <span class="nome-usuario">
+            {{ perfil()?.nome | slice:0:30 }}{{ (perfil()?.nome?.length ?? 0) > 30 ? '...' : '' }}
+          </span>
+  
+          <div class="detalhe-usuario">
+            <span class="tipo-usuario">
+              {{ perfil()?.tipo }}
+            </span>
+
+            <div class="detalhe-divisor"></div>
+    
+            <span class="crm-usuario">
+              CRM {{ perfil()?.crm }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="botao-sair" (click)="sair()">
+        <mat-icon>logout</mat-icon>
+        Sair
+      </button>
+    </a>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar class="barra-superior">
-      <span>Área médica</span>
-
-      <span class="espacador"></span>
-
-      <button
-        mat-button
-        type="button"
-        (click)="sair()"
-      >
-        Sair
-      </button>
-    </mat-toolbar>
+    <div class="barra-superior">
+      <!-- breadcrumb -->
+    </div>
 
     <main class="conteudo-principal">
       <router-outlet></router-outlet>
