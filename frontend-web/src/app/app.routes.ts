@@ -5,7 +5,7 @@ import { Login } from './features/auth/login/login';
 import { ListaPacientes } from './features/pacientes/lista-pacientes/lista-pacientes';
 import { AppLayout } from './layout/app-layout/app-layout';
 
-import { Profissionais } from './pages';
+import { Profissionais, Perfil } from './pages';
 
 export const routes: Routes = [
   {
@@ -54,7 +54,7 @@ export const routes: Routes = [
 
       {
         path: 'perfil',
-        component: Profissionais,
+        component: Perfil,
         /*
         data: {
           role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
