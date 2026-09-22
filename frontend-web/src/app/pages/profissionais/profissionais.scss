@@ -10,26 +10,6 @@
     align-items: flex-end;
     justify-content: space-between;
 
-    .cabecalho-container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-  
-      .container-titulo {
-        margin: 0;
-        font-family: var(--fonte-detalhe);
-        font-weight: 100;
-        font-size: 20px;
-      }
-  
-      .container-subtitulo {
-        margin: 0;
-        font-family: var(--fonte-primaria);
-        font-size: 12px;
-        font-weight: 200;
-      }
-    }
-
     .botao-adicionar {
       display: flex;
       justify-content: center;

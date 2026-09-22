@@ -46,7 +46,7 @@
   
         <div class="dados-usuario">
           <span class="nome-usuario">
-            {{ perfil()?.nome | slice:0:30 }}{{ (perfil()?.nome?.length ?? 0) > 30 ? '...' : '' }}
+            {{ perfil()?.nome | slice:0:20 }}{{ (perfil()?.nome?.length ?? 0) > 20 ? '...' : '' }}
           </span>
   
           <div class="detalhe-usuario">

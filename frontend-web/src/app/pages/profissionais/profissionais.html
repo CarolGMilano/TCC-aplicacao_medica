@@ -1,13 +1,13 @@
-@if (loading) {
+@if (loading()) {
   <app-loading></app-loading>
 }
 
 <section class="pagina">
   <div class="cabecalho">
-    <div class="cabecalho-container">
-      <h1 class="container-titulo">Profissionais</h1>
-      <h2 class="container-subtitulo">{{ totalProfissionais() }} profissionais cadastrados</h2>
-    </div>
+    <app-cabecalho-pagina
+      titulo="Profissionais"
+      [subtitulo]="totalProfissionais() + ' profissionais cadastrados'">
+    </app-cabecalho-pagina>
     
     <button class="botao-adicionar" type="button" (click)="abrirFormulario()">
       <mat-icon>add</mat-icon>
