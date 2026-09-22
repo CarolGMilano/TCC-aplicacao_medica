@@ -7,8 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatListModule } from '@angular/material/list';
 
-import { ProfissionalService } from '../../services';
-import { IProfissional, TipoUsuario, TipoUsuarioLabel, Exclusao, Formulario, Loading } from '../../shared';
+import { PerfilService, ProfissionalService } from '../../services';
+import { IProfissional, TipoUsuario, TipoUsuarioLabel, Exclusao, Formulario, Loading, CabecalhoPagina } from '../../shared';
 
 @Component({
   selector: 'app-profissionais',
@@ -19,7 +19,8 @@ import { IProfissional, TipoUsuario, TipoUsuarioLabel, Exclusao, Formulario, Loa
     MatIconModule,
     MatListModule,
     MatFormFieldModule,
-    Loading
+    Loading,
+    CabecalhoPagina
   ],
 
   templateUrl: './profissionais.html',
@@ -27,6 +28,8 @@ import { IProfissional, TipoUsuario, TipoUsuarioLabel, Exclusao, Formulario, Loa
 })
 export class Profissionais implements OnInit {
   private service = inject(ProfissionalService);
+  private readonly perfilService = inject(PerfilService);
+
   private dialog = inject(MatDialog);
   private tempoBusca: ReturnType<typeof setTimeout> | null = null;
   
@@ -36,7 +39,7 @@ export class Profissionais implements OnInit {
 
   idUsuarioLogado: number | null = null;
 
-  loading: boolean = false;
+  loading = signal(false);
   TipoUsuario = TipoUsuario;
   TipoUsuarioLabel = TipoUsuarioLabel;
 
@@ -50,7 +53,7 @@ export class Profissionais implements OnInit {
   ngOnInit() {
     this.listar();
 
-    this.service.buscarUsuarioLogado().subscribe({
+    this.perfilService.buscar().subscribe({
       next: (usuario) => {
         this.idUsuarioLogado = usuario.idUsuario;
       },
@@ -92,12 +95,16 @@ export class Profissionais implements OnInit {
         }
       }
     });
-
+    
     dialogRef.componentInstance.salvarFormulario.subscribe(profissional => {
+      this.loading.set(true);
+
       this.service.inserir(profissional).subscribe({
         next: () => {
           dialogRef.close();
           this.listar();
+
+          this.loading.set(false);
         },
         error: (erro) => {
           console.error('Erro ao cadastrar profissional:', erro.error);
@@ -115,6 +122,8 @@ export class Profissionais implements OnInit {
               dialogRef.componentInstance.marcarCrmConflito();
             }
           }
+
+          this.loading.set(false);
         }
       });
     });
@@ -153,7 +162,7 @@ export class Profissionais implements OnInit {
   }
 
   listar(pagina: number = 0) {
-    this.loading = true;
+    this.loading.set(true);
 
     this.service.listar(
       pagina,
@@ -166,16 +175,17 @@ export class Profissionais implements OnInit {
         this.paginaAtual.set(resposta?.page.number ?? 0);
         this.totalPaginas.set(resposta?.page.totalPages ?? 0);
         this.totalProfissionais.set(resposta?.page.totalElements ?? 0);
-        this.loading = false;
+        this.loading.set(false);
       },
       error: (erro) => {
         console.error('Erro ao buscar profissionais:', erro);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
 
   editar(profissional: IProfissional) {
+    
     const dialogRef = this.dialog.open(Formulario, {
       width: '500px',
       data: {
@@ -190,15 +200,22 @@ export class Profissionais implements OnInit {
         }
       }
     });
-
+    
     dialogRef.componentInstance.salvarFormulario.subscribe(dados => {
+      this.loading.set(true);
+      
       this.service.atualizar(
         profissional.idMedico,
         dados
       ).subscribe({
         next: () => {
           dialogRef.close();
-          this.listar();
+
+          dialogRef.afterClosed().subscribe(() => {
+            this.listar();
+          });
+
+          this.loading.set(false);
         },
         error: (erro) => {
           console.error('Erro ao editar profissional:', erro);
@@ -216,6 +233,8 @@ export class Profissionais implements OnInit {
               dialogRef.componentInstance.marcarCrmConflito();
             }
           }
+
+          this.loading.set(false);
         }
       });
     });
@@ -226,18 +245,16 @@ export class Profissionais implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
 
     this.service.deletar(this.profissionalExcluindo.idMedico).subscribe({
       next: () => {
         this.dialog.closeAll();
         this.listar();
 
-        this.loading = false;
+        this.loading.set(false);
       },
       error: (erro) => {
-        this.loading = false;
-
         if (erro.status === 404) {
           alert('Profissional não encontrado.');
         } else if (erro.status === 500) {
@@ -245,6 +262,8 @@ export class Profissionais implements OnInit {
         } else {
           alert('Erro inesperado ao excluir o profissional.');
         }
+
+        this.loading.set(false);
       }
     });
   }
