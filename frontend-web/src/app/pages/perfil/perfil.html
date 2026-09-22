@@ -1,0 +1,252 @@
+@if (loading()) {
+  <app-loading></app-loading>
+}
+
+<section class="pagina">
+  <app-cabecalho-pagina
+    titulo="Meu perfil"
+    subtitulo="Dados da sua conta">
+  </app-cabecalho-pagina>
+
+  <div class="perfil-conteudo">
+    <div class="div-dados">
+      <div class="dados-cabecalho">
+        <h2>Dados da conta</h2>
+        <p>Você pode alterar o nome que aparece nos registros que assinar.</p>
+      </div>
+
+      <div class="dados-conteudo">
+        @if (!editandoNome) {
+          <div class="conteudo-nome">
+            <p>Nome</p>
+
+            <div class="nome-container">
+              <span>
+                @if (profissional(); as dados) {
+                  {{ dados.nome }}
+                }
+              </span>
+  
+              <button
+                class="botao-editar"
+                type="button"
+                (click)="editarNome()"
+                aria-label="Editar nome">
+                <mat-icon>edit</mat-icon>
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="conteudo-nome-edicao">
+            <p>Nome</p>
+
+            <div class="edicao-nome">
+              <input
+                type="text"
+                [(ngModel)]="nomeEditado"
+                name="nome"
+                [class.nome-aviso]="!nomeEditado.trim()"
+              >
+
+              @if (!nomeEditado.trim()) {
+                <span class="campo-aviso">
+                  O nome não pode ficar vazio.
+                </span>
+              }
+
+              <div class="acoes-nome">
+                <button
+                  type="button"
+                  (click)="cancelarEdicaoNome()">
+                  Cancelar
+                </button>
+
+                <button
+                  type="button"
+                  [disabled]="!nomeEditado.trim()"
+                  (click)="salvarNome()">
+                  Salvar
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <div class="conteudo-crm">
+          <p>CRM</p>
+
+          <span>
+            @if (profissional(); as dados) {
+              {{ dados.crm }}
+            }
+          </span>
+        </div>
+
+        <div class="conteudo-especialidade">
+          <p>Especialidade</p>
+
+          <span>
+            @if (profissional(); as dados) {
+              {{ dados.especialidade }}
+            }
+          </span>
+        </div>
+
+        <div class="conteudo-email">
+          <p>E-mail</p>
+
+          <span>
+            @if (profissional(); as dados) {
+              {{ dados.email }}
+            }
+          </span>
+        </div>
+
+        <div class="conteudo-usuario">
+          <p>Tipo de usuário</p>
+
+          <span
+            class="item-tipo"
+            [class.medico]="profissional()?.tipo === TipoUsuario.MEDICO"
+            [class.residente]="profissional()?.tipo === TipoUsuario.RESIDENTE"
+            [class.administrador]="profissional()?.tipo === TipoUsuario.ADMINISTRADOR">
+
+            @if (profissional(); as dados) {
+              {{ TipoUsuarioLabel[dados.tipo] }}
+            }
+          </span>
+        </div>
+      </div>
+
+      <div class="dados-rodape">
+        <p>
+          Para alterar qualquer outro dado, entre em contato com o administrador do sistema.
+        </p>
+      </div>
+    </div>
+
+    <div class="div-senha">
+      <div class="dados-cabecalho">
+        <h2>Senha</h2>
+        <p>Use ao menos 8 caracteres, combinando letras e números.</p>
+      </div>
+
+      <div class="campos-senha">
+        <div class="campo-senha">
+          <label for="senhaAtual">Senha atual</label>
+
+          <div class="input-senha">
+            <input
+              id="senhaAtual"
+              [type]="mostrarSenhaAtual ? 'text' : 'password'"
+              [(ngModel)]="senhaAtual"
+              name="senhaAtual"
+              placeholder="••••••••"
+              [class.senha-aviso]="erroSenhaAtual"
+              (input)="erroSenhaAtual = false"
+            >
+
+            <button
+              type="button"
+              (click)="mostrarSenhaAtual = !mostrarSenhaAtual"
+              aria-label="Mostrar ou ocultar senha atual">
+              <mat-icon>
+                {{ mostrarSenhaAtual ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+          </div>
+          
+          @if (erroSenhaAtual) {
+            <span class="campo-aviso">
+              A senha atual está incorreta.
+            </span>
+          }
+        </div>
+
+        <div class="campo-senha">
+          <label for="senhaNova">Nova senha</label>
+
+          <div class="input-senha">
+            <input
+              id="senhaNova"
+              [type]="mostrarSenhaNova ? 'text' : 'password'"
+              [(ngModel)]="senhaNova"
+              name="senhaNova"
+              minlength="8"
+              placeholder="••••••••"
+              [class.senha-atencao]="senhaNova.length > 0 && senhaNova.length < 8"
+            >
+
+            <button
+              type="button"
+              (click)="mostrarSenhaNova = !mostrarSenhaNova"
+              aria-label="Mostrar ou ocultar nova senha">
+              <mat-icon>
+                {{ mostrarSenhaNova ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+          </div>
+
+          @if (senhaNova.length > 0 && senhaNova.length < 8) {
+            <span class="campo-atencao">
+              A senha deve ter no mínimo 8 caracteres.
+            </span>
+          }
+        </div>
+
+        <div class="campo-senha">
+          <label for="confirmacaoSenha">Confirmar nova senha</label>
+
+          <div class="input-senha">
+            <input
+              id="confirmacaoSenha"
+              [type]="mostrarConfirmacaoSenha ? 'text' : 'password'"
+              [(ngModel)]="confirmacaoSenha"
+              name="confirmacaoSenha"
+              placeholder="••••••••"
+              minlength="8"
+              [class.senha-atencao]="confirmacaoSenha.length > 0 && confirmacaoSenha.length < 8"
+              [class.senha-aviso]="confirmacaoSenha.length >= 8 && confirmacaoSenha !== senhaNova"
+            >
+
+            <button
+              type="button"
+              (click)="mostrarConfirmacaoSenha = !mostrarConfirmacaoSenha"
+              aria-label="Mostrar ou ocultar confirmação da senha">
+              <mat-icon>
+                {{ mostrarConfirmacaoSenha ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+          </div>
+          
+          @if (confirmacaoSenha.length > 0 && confirmacaoSenha.length < 8) {
+            <span class="campo-atencao">
+              A senha deve ter no mínimo 8 caracteres.
+            </span>
+          } @else if (confirmacaoSenha.length >= 8 && confirmacaoSenha !== senhaNova) {
+            <span class="campo-aviso">
+              As senhas não coincidem.
+            </span>
+          }
+        </div>
+      </div>
+
+      <div class="senha-rodape">
+        <button
+          type="button"
+          class="botao-atualizar-senha"
+          [disabled]="
+            !senhaAtual ||
+            !senhaNova ||
+            senhaNova.length < 8 ||
+            !confirmacaoSenha ||
+            confirmacaoSenha.length < 8 ||
+            senhaNova !== confirmacaoSenha
+          "
+          (click)="alterarSenha()">
+          Atualizar senha
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,412 @@
+.pagina {
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;
+  padding: 20px 40px;
+  gap: 20px;
+
+  .perfil-conteudo {
+    display: flex;
+    gap: 20px;
+
+    .div-dados,
+    .div-senha {
+      width: 50%;
+      border: 1px solid var(--cor-borda);
+      border-radius: 20px;
+      background-color: var(--cor-fundo-secundario);
+      box-shadow: var(--sombra);
+      overflow: hidden;
+    }
+
+    .div-dados {
+      display: flex;
+      flex-direction: column;
+
+      .dados-cabecalho {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 20px 25px;
+        background-color: var(--cor-borda-detalhe);
+
+        h2 {
+          margin: 0;
+          font-family: var(--fonte-detalhe);
+          font-size: 20px;
+          font-weight: 100;
+          color: var(--cor-texto-primario-escuro);
+        }
+
+        p {
+          margin: 0;
+          font-family: var(--fonte-primaria);
+          font-size: 11px;
+          font-weight: 300;
+          color: var(--cor-texto-secundario);
+        }
+      }
+
+      .dados-conteudo {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px 25px;
+
+        .conteudo-nome,
+        .conteudo-crm,
+        .conteudo-especialidade,
+        .conteudo-email {
+          display: flex;
+          align-items: center;
+          min-height: 35px;
+
+          p {
+            width: 35%;
+            margin: 0;
+            font-family: var(--fonte-secundaria);
+            font-size: 10px;
+            font-weight: 100;
+            text-transform: uppercase;
+            color: var(--cor-texto-primario-escuro);
+          }
+
+          span {
+            flex: 1;
+            text-align: right;
+            font-family: var(--fonte-primaria);
+            font-size: 12px;
+            font-weight: 300;
+            color: var(--cor-texto-primario-escuro);
+          }
+        }
+
+        .conteudo-nome {
+          .nome-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+          }
+
+          .botao-editar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px 10px;
+            border: 1px solid var(--cor-borda-edicao);
+            border-radius: 50px;
+            box-shadow: var(--sombra);
+            background-color: var(--cor-fundo-secundario);
+            cursor: pointer;
+
+            mat-icon {
+              width: 15px;
+              height: 15px;
+              font-size: 15px;
+              color: var(--cor-icone-edicao);
+            }
+          }
+        }
+
+        .conteudo-nome-edicao {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          p {
+            margin: 0;
+            font-family: var(--fonte-secundaria);
+            font-size: 10px;
+            font-weight: 100;
+            text-transform: uppercase;
+            color: var(--cor-texto-primario-escuro);
+          }
+
+          .edicao-nome {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            input {
+              flex: 1;
+              box-sizing: border-box;
+              padding: 8px 10px;
+              border: 1px solid var(--cor-borda);
+              border-radius: 8px;
+              outline: none;
+              font-family: var(--fonte-primaria);
+              font-size: 12px;
+              font-weight: 300;
+              background-color: var(--cor-fundo-secundario);
+              color: var(--cor-texto-primario-escuro);
+
+              &:focus {
+                border-color: var(--cor-primaria);
+              }
+
+              &.nome-aviso {
+                border-color: var(--cor-botao-exclusao);
+              }
+            }
+
+            .campo-aviso {
+              margin: 0;
+              font-family: var(--fonte-primaria);
+              font-size: 10px;
+              font-weight: 300;
+              color: var(--cor-botao-exclusao);
+            }
+
+            .acoes-nome {
+              display: flex;
+              gap: 8px;
+
+              button {
+                padding: 7px 15px;
+                border: 1px solid var(--cor-borda);
+                border-radius: 50px;
+                background-color: var(--cor-fundo-secundario);
+                font-family: var(--fonte-primaria);
+                font-size: 10px;
+                cursor: pointer;
+
+                &:hover {
+                  border-color: var(--cor-primaria);
+                  color: var(--cor-primaria);
+                }
+
+                &:last-child {
+                  border-color: var(--cor-primaria);
+                  background-color: var(--cor-primaria);
+                  color: var(--cor-texto-primario-claro);
+
+                  &:hover {
+                    background-color: var(--cor-primaria-hover-escura);
+                  }
+                }
+
+                &:disabled {
+                  opacity: 0.5;
+                  cursor: not-allowed;
+                }
+              }
+            }
+          }
+        }
+
+        .conteudo-usuario {
+          display: flex;
+          align-items: center;
+          min-height: 35px;
+
+          p {
+            width: 35%;
+            margin: 0;
+            font-family: var(--fonte-secundaria);
+            font-size: 10px;
+            font-weight: 100;
+            text-transform: uppercase;
+            color: var(--cor-texto-primario-escuro);
+          }
+
+          .item-tipo {
+            flex: 0 0 auto;
+            margin-left: auto;
+            padding: 5px 10px;
+            width: fit-content;
+            text-align: center;
+            border-radius: 5px;
+            font-family: var(--fonte-secundaria);
+            font-size: 8px;
+            text-transform: uppercase;
+
+            &.medico {
+              --usuario-fundo: var(--cor-medico-claro);
+              --usuario-texto: var(--cor-medico-escuro);
+            }
+
+            &.residente {
+              --usuario-fundo: var(--cor-residente-claro);
+              --usuario-texto: var(--cor-residente-escuro);
+            }
+
+            &.administrador {
+              --usuario-fundo: var(--cor-administrador-claro);
+              --usuario-texto: var(--cor-administrador-escuro);
+            }
+
+            background-color: var(--usuario-fundo);
+            color: var(--usuario-texto);
+          }
+        }
+      }
+
+      .dados-rodape {
+        margin-top: auto;
+        padding: 25px;
+        background-color: var(--cor-borda-detalhe);
+
+        p {
+          margin: 0;
+          font-family: var(--fonte-secundaria);
+          font-weight: 200;
+          font-size: 10px;
+          color: var(--cor-texto-primario-escuro);
+        }
+      }
+    }
+
+    .div-senha {
+      display: flex;
+      flex-direction: column;
+
+      .dados-cabecalho {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 20px 25px;
+        background-color: var(--cor-borda-detalhe);
+
+        h2 {
+          margin: 0;
+          font-family: var(--fonte-detalhe);
+          font-size: 20px;
+          font-weight: 100;
+          color: var(--cor-texto-primario-escuro);
+        }
+
+        p {
+          margin: 0;
+          font-family: var(--fonte-primaria);
+          font-size: 11px;
+          font-weight: 300;
+          color: var(--cor-texto-secundario);
+        }
+      }
+
+      .campos-senha {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px 25px;
+
+        .campo-senha {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+
+          label {
+            font-family: var(--fonte-secundaria);
+            font-size: 10px;
+            font-weight: 100;
+            text-transform: uppercase;
+            color: var(--cor-texto-primario-escuro);
+          }
+
+          .input-senha {
+            position: relative;
+            display: flex;
+            align-items: center;
+
+            input {
+              width: 100%;
+              box-sizing: border-box;
+              padding: 10px 40px 10px 10px;
+              border: 1px solid var(--cor-borda);
+              border-radius: 10px;
+              outline: none;
+              font-family: var(--fonte-primaria);
+              font-size: 12px;
+              font-weight: 300;
+              background-color: var(--cor-fundo-secundario);
+              color: var(--cor-texto-primario-escuro);
+
+              &::placeholder {
+                color: var(--cor-texto-primario-escuro);
+                opacity: 0.4;
+              }
+
+              &:focus {
+                border-color: var(--cor-primaria);
+              }
+
+              &.senha-aviso {
+                border-color: var(--cor-botao-exclusao);
+              }
+
+              &.senha-atencao {
+                border-color: var(--cor-atencao);
+              }
+            }
+
+            button {
+              position: absolute;
+              right: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+              border: none;
+              background-color: transparent;
+              cursor: pointer;
+
+              mat-icon {
+                width: 18px;
+                height: 18px;
+                font-size: 18px;
+                color: var(--cor-primaria);
+              }
+            }
+          }
+
+          .campo-aviso {
+            margin: 0;
+            font-family: var(--fonte-primaria);
+            font-size: 10px;
+            font-weight: 300;
+            color: var(--cor-botao-exclusao);
+          }
+
+          .campo-atencao {
+            margin: 0;
+            font-family: var(--fonte-primaria);
+            font-size: 10px;
+            font-weight: 300;
+            color: var(--cor-atencao);
+          }
+        }
+      }
+
+      .senha-rodape {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: auto;
+        padding: 15px 25px;
+        background-color: var(--cor-borda-detalhe);
+
+        .botao-atualizar-senha {
+          padding: 9px 20px;
+          border: none;
+          border-radius: 50px;
+          box-shadow: var(--sombra);
+          font-family: var(--fonte-primaria);
+          font-size: 10px;
+          background-color: var(--cor-primaria);
+          color: var(--cor-texto-primario-claro);
+          cursor: pointer;
+
+          &:hover:not(:disabled) {
+            background-color: var(--cor-primaria-hover-escura);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+}
