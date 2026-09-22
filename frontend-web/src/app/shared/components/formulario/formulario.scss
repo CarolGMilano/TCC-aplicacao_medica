@@ -171,7 +171,7 @@
 
               font-size: 18px;
 
-              color: var(--cor-texto-primario-escuro);
+              color: var(--cor-primaria);
             }
           }
         }
@@ -219,6 +219,11 @@
         }
       }
     }
+  }
+
+  .campo-input::placeholder {
+    color: var(--cor-texto-primario-escuro);
+    opacity: .4;
   }
 
   .acoes {

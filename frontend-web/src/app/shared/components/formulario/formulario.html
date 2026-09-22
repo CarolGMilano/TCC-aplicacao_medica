@@ -23,6 +23,7 @@
           id="nome"
           type="text"
           name="nome"
+          placeholder="Maria da Silva"
           [(ngModel)]="profissional.nome"
           required>
 
@@ -68,6 +69,7 @@
             [(ngModel)]="numeroCrm"
             placeholder="Número do CRM"
             numeros
+            placeholder="000000"
             minlength="5"
             maxlength="6"
             required>
@@ -175,6 +177,7 @@
           id="email"
           type="email"
           name="email"
+          placeholder="maria.silva@email.com"
           [(ngModel)]="profissional.email"
           required>
 
@@ -209,9 +212,10 @@
             id="senha"
             [type]="esconder() ? 'password' : 'text'"
             name="senha"
+            placeholder="••••••••"
             [(ngModel)]="profissional.senha"
             [required]="data.modo === 'adicionar'"
-            minlength="4">
+            minlength="8">
 
           <button
             type="button"
@@ -238,7 +242,7 @@
           formularioForm.controls['senha']?.hasError('minlength')
         ) {
           <span class="campo-aviso">
-            A senha deve ter pelo menos 4 caracteres.
+            A senha deve ter pelo menos 8 caracteres.
           </span>
         }
       </div>
