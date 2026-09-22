@@ -19,12 +19,6 @@ export class ProfissionalService {
     })
   }
 
-  buscarUsuarioLogado(): Observable<IProfissional> {
-    return this._httpClient.get<IProfissional>(`${environment.apiUrl}/perfil`).pipe(
-      catchError((erro) => throwError(() => erro))
-    );
-  }
-
   listar(
     pagina: number = 0,
     tamanho: number = 10,
