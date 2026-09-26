@@ -16,23 +16,15 @@
   </div>
 
   <div class="corpo">
-    <div class="campo-busca">
-      <mat-icon class="busca-icone">search</mat-icon>
-
-      <input
-        id="busca"
-        class="busca-input"
-        type="text"
-        placeholder="Buscar por nome, CRM ou e-mail"
-        [ngModel]="busca()"
-        (ngModelChange)="buscar($event)"
-      >
-    </div>
+    <app-campo-busca
+      placeholder="Buscar por nome, CRM ou e-mail"
+      (buscaChange)="buscar($event)">
+    </app-campo-busca>
 
     <div class="divisoria-busca"></div>
 
     <div class="filtros">
-      <div class="filtro-usuario">
+      <div class="filtro-container">
         <span class="filtro-titulo">Tipo de usuário</span>
 
         <div class="filtro-opcoes">
@@ -151,46 +143,19 @@
       </table>
     </div>
 
-    <div class="rodape">
-      <div class="rodape-paginacao">
-        <button
-          class="paginacao-botao"
-          type="button"
-          (click)="paginaAnterior()"
-          [disabled]="paginaAtual() === 0"
-          aria-label="Página anterior">
-          <mat-icon>chevron_left</mat-icon>
-        </button>
-
-        <button
-          class="paginacao-botao"
-          type="button"
-          (click)="proximaPagina()"
-          [disabled]="paginaAtual() + 1 >= totalPaginas()"
-          aria-label="Próxima página">
-          <mat-icon>chevron_right</mat-icon>
-        </button>
-      </div>
-
-      <div class="rodape-detalhe">
-        <span>
-          {{ totalProfissionais() === 0
-            ? '0–0'
-            : (paginaAtual() * 10 + 1) + '–' +
-              (((paginaAtual() + 1) * 10) > totalProfissionais()
-                ? totalProfissionais()
-                : (paginaAtual() + 1) * 10)
-          }}
-          de {{ totalProfissionais() }} profissionais
-        </span>
-
-        <div class="detalhe-divisor"></div>
-
-        <span>
-          Tipo de usuário:
-          {{ filtroTipo() === null ? 'Todos' : TipoUsuarioLabel[filtroTipo()!] }}
-        </span>
-      </div>
-    </div>
+    <app-rodape-tabela
+      [paginaAtual]="paginaAtual()"
+      [totalPaginas]="totalPaginas()"
+      [totalItens]="totalProfissionais()"
+      descricaoItens="profissionais"
+      detalheFiltro="tipo"
+      [filtroDescricao]="
+        filtroTipo() === null
+          ? 'Todos'
+          : TipoUsuarioLabel[filtroTipo()!]
+      "
+      (paginaAnterior)="paginaAnterior()"
+      (proximaPagina)="proximaPagina()"
+    />
   </div>
 </section>
