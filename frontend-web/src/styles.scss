@@ -25,10 +25,16 @@ html {
 
 /* Paleta do CerviCare */
 :root {
+  /* Fontes */
+  --fonte-primaria: 'Poppins', sans-serif;
+  --fonte-secundaria: "JetBrains Mono", monospace;
+  --fonte-detalhe: "PT Serif", serif;
+  
   /* Identidade visual */
   --cor-primaria: #768E78;
   --cor-primaria-hover-escura: #657B67;
   --cor-primaria-hover-clara: #7D9580;
+
   --cor-secundaria: #E79897;
   --cor-terciaria: #FCC88A;
 
@@ -42,32 +48,53 @@ html {
   --cor-fundo-primario: #F2F0EF;
   --cor-fundo-secundario: #FFFFFF;
   --cor-borda: #C6C09C;
-  --cor-borda-detalhe: #F7F6F1;
+  --cor-card-detalhe: #F7F6F1;
+  --cor-tabela-linha-hover: #f7f6f16e;
 
   /* Sombra */
   --sombra: 0 2px 8px rgba(0, 0, 0, 0.08);
 
-  /* Fontes */
-  --fonte-primaria: 'Poppins', sans-serif;
-  --fonte-secundaria: "JetBrains Mono", monospace;
-  --fonte-detalhe: "PT Serif", serif;
-
   /* Tipos de usuário */
   --cor-medico-escuro: #2F5D63;
   --cor-medico-claro: #D9E5E6;
+
   --cor-residente-escuro: #8A5F1C;
   --cor-residente-claro:  #FCE8C6;
+
   --cor-administrador-escuro: #8F3F44;
   --cor-administrador-claro:  #F6D7D6;
 
+  /* Status do paciente */
+  --cor-alta-escuro: #5E4A72;
+  --cor-alta-claro: #E8E0EE;
+
+  --cor-investigacao-escuro: #8A5F1C;
+  --cor-investigacao-claro: #FCE8C6;
+
+  --cor-tratamento-escuro: #9C4243;
+  --cor-tratamento-claro: #F7DCDB;
+
+  --cor-aguardando-escuro: #8A5A3A;
+  --cor-aguardando-claro: #FBE0CC;
+
+  --cor-pos-procedimento-escuro: #2F5D63;
+  --cor-pos-procedimento-claro: #D9E5E6;
+
+  --cor-acompanhamento-escuro: #56603D;
+  --cor-acompanhamento-claro: #EAEBD6;
+
   /* Ações */
-  --cor-atencao: #c28a00;
   --cor-botao-hover-exclusao: #8a3b3c;
   --cor-botao-exclusao: #A8494A;
   --cor-icone-exclusao: #A8494BA2;
   --cor-borda-exclusao: #DFAFAF;
+
   --cor-icone-edicao: #3F4F4291;
   --cor-borda-edicao: #C6C09C;
+  
+  /* Estados */
+  --cor-erro: #A8494A;
+  --cor-atencao: #c28a00;
 }
 
 body {
