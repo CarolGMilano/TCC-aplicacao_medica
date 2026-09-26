@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { AuthService } from '../../../core/auth/auth.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ import { AuthService } from '../../../core/auth/auth.service';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -30,6 +32,8 @@ export class Login {
 
   readonly carregando = signal(false);
   readonly mensagem = signal('');
+
+  mostrarSenha = signal(false);
 
   readonly loginForm = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -50,7 +54,7 @@ export class Login {
       .pipe(finalize(() => this.carregando.set(false)))
       .subscribe({
         next: () => {
-          void this.router.navigate(['/pacientes']);
+          void this.router.navigate(['/dashboard']);
         },
         error: () => {
           this.mensagem.set('Não foi possível realizar o login.');
