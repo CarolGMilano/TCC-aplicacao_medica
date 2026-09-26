@@ -1,0 +1,57 @@
+.rodape {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--cor-card-detalhe);
+  padding: 10px 25px;
+  font-family: var(--fonte-secundaria);
+  font-size: 8px;
+  font-weight: 100;
+  text-transform: uppercase;
+  text-align: start;
+  color: var(--cor-texto-primario-escuro);
+
+  .rodape-paginacao {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    .paginacao-botao {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 5px;
+      border-radius: 50px;
+      box-shadow: var(--sombra);
+      background-color: var(--cor-fundo-secundario);
+      cursor: pointer;
+      border: 1px solid var(--cor-primaria);
+
+      mat-icon {
+        font-size: 12px;
+        width: 12px;
+        height: 12px;     
+        color: var(--cor-primaria);
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .rodape-detalhe {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .detalhe-divisor {
+      width: 4px;
+      height: 4px;
+      border-radius: 50px;
+      background-color: var(--cor-texto-primario-escuro);
+    }
+  }
+}

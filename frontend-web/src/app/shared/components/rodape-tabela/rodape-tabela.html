@@ -1,0 +1,33 @@
+<div class="rodape">
+  <div class="rodape-paginacao">
+    <button
+      class="paginacao-botao"
+      type="button"
+      (click)="paginaAnterior.emit()"
+      [disabled]="paginaAtual === 0"
+      aria-label="Página anterior">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <button
+      class="paginacao-botao"
+      type="button"
+      (click)="proximaPagina.emit()"
+      [disabled]="paginaAtual + 1 >= totalPaginas"
+      aria-label="Próxima página">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <div class="rodape-detalhe">
+    <span>
+      {{ primeiroItem }}–{{ ultimoItem }} de {{ totalItens }} {{ descricaoItens }}
+    </span>
+
+    <div class="detalhe-divisor"></div>
+
+    <span>
+      {{ detalheFiltro }}: {{ filtroDescricao }}
+    </span>
+  </div>
+</div>
