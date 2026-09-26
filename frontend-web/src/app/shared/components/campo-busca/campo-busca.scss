@@ -1,0 +1,42 @@
+.campo-busca {
+  position: relative;
+  width: calc(100% - 50px);
+  margin: 0 25px;
+  padding-top: 25px;
+
+  .busca-input {
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+
+    padding: 0 15px 0 45px;
+
+    border: 1px solid var(--cor-borda);
+    border-radius: 30px;
+
+    background-color: var(--cor-fundo-secundaria);
+
+    font-family: var(--fonte-primaria);
+    font-weight: 200;
+    font-size: 12px;
+    color: var(--cor-texto-primario-escuro);
+
+    outline: none;
+
+    &:focus {
+      border-color: var(--cor-primaria);
+    }
+  }
+
+  .busca-icone {
+    position: absolute;
+    left: 20px;
+    bottom: 12px;
+
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+
+    color: var(--cor-primaria);
+  }
+}
