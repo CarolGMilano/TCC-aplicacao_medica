@@ -67,7 +67,6 @@
             type="text"
             name="numeroCrm"
             [(ngModel)]="numeroCrm"
-            placeholder="Número do CRM"
             numeros
             placeholder="000000"
             minlength="5"
@@ -210,7 +209,7 @@
               formularioForm.controls['senha']?.hasError('minlength')
             "
             id="senha"
-            [type]="esconder() ? 'password' : 'text'"
+            [type]="mostrarSenha() ? 'text' : 'password'"
             name="senha"
             placeholder="••••••••"
             [(ngModel)]="profissional.senha"
@@ -220,10 +219,10 @@
           <button
             type="button"
             class="botao-senha"
-            (click)="esconderSenha($event)"
-            [attr.aria-label]="esconder() ? 'Mostrar senha' : 'Ocultar senha'">
+            (click)="mostrarSenha.set(!mostrarSenha())"
+            [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'">
             <mat-icon>
-              {{ esconder() ? 'visibility_off' : 'visibility' }}
+                {{ mostrarSenha() ? 'visibility_off' : 'visibility' }}
             </mat-icon>
           </button>
         </div>
