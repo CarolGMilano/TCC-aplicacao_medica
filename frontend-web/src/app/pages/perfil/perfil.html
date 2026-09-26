@@ -138,7 +138,7 @@
           <div class="input-senha">
             <input
               id="senhaAtual"
-              [type]="mostrarSenhaAtual ? 'text' : 'password'"
+              [type]="mostrarSenhaAtual() ? 'text' : 'password'"
               [(ngModel)]="senhaAtual"
               name="senhaAtual"
               placeholder="••••••••"
@@ -148,10 +148,10 @@
 
             <button
               type="button"
-              (click)="mostrarSenhaAtual = !mostrarSenhaAtual"
+              (click)="mostrarSenhaAtual.set( !mostrarSenhaAtual())"
               aria-label="Mostrar ou ocultar senha atual">
               <mat-icon>
-                {{ mostrarSenhaAtual ? 'visibility_off' : 'visibility' }}
+                {{ mostrarSenhaAtual() ? 'visibility_off' : 'visibility' }}
               </mat-icon>
             </button>
           </div>
@@ -169,7 +169,7 @@
           <div class="input-senha">
             <input
               id="senhaNova"
-              [type]="mostrarSenhaNova ? 'text' : 'password'"
+              [type]="mostrarSenhaNova() ? 'text' : 'password'"
               [(ngModel)]="senhaNova"
               name="senhaNova"
               minlength="8"
@@ -179,10 +179,10 @@
 
             <button
               type="button"
-              (click)="mostrarSenhaNova = !mostrarSenhaNova"
+              (click)="mostrarSenhaNova.set(!mostrarSenhaNova())"
               aria-label="Mostrar ou ocultar nova senha">
               <mat-icon>
-                {{ mostrarSenhaNova ? 'visibility_off' : 'visibility' }}
+                {{ mostrarSenhaNova() ? 'visibility_off' : 'visibility' }}
               </mat-icon>
             </button>
           </div>
@@ -200,7 +200,7 @@
           <div class="input-senha">
             <input
               id="confirmacaoSenha"
-              [type]="mostrarConfirmacaoSenha ? 'text' : 'password'"
+              [type]="mostrarConfirmacaoSenha() ? 'text' : 'password'"
               [(ngModel)]="confirmacaoSenha"
               name="confirmacaoSenha"
               placeholder="••••••••"
@@ -211,10 +211,10 @@
 
             <button
               type="button"
-              (click)="mostrarConfirmacaoSenha = !mostrarConfirmacaoSenha"
+              (click)="mostrarConfirmacaoSenha.set(!mostrarConfirmacaoSenha())"
               aria-label="Mostrar ou ocultar confirmação da senha">
               <mat-icon>
-                {{ mostrarConfirmacaoSenha ? 'visibility_off' : 'visibility' }}
+                {{ mostrarConfirmacaoSenha() ? 'visibility_off' : 'visibility' }}
               </mat-icon>
             </button>
           </div>

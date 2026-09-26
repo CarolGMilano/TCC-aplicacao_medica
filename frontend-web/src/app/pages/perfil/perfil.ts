@@ -34,9 +34,10 @@ export class Perfil {
   senhaNova: string = '';
   confirmacaoSenha = '';
   erroSenhaAtual: boolean = false;
-  mostrarSenhaAtual: boolean = false;
-  mostrarSenhaNova: boolean = false;
-  mostrarConfirmacaoSenha: boolean = false;
+
+  mostrarSenhaAtual = signal(false);
+  mostrarSenhaNova = signal(false);
+  mostrarConfirmacaoSenha = signal(false);
 
   TipoUsuario = TipoUsuario;
   TipoUsuarioLabel = TipoUsuarioLabel;
