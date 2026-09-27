@@ -1,0 +1,12 @@
+<div class="campo-busca">
+  <mat-icon class="busca-icone">search</mat-icon>
+
+  <input
+    id="busca"
+    class="busca-input"
+    type="text"
+    [placeholder]="placeholder"
+    [ngModel]="valor"
+    (ngModelChange)="buscar($event)"
+  >
+</div>

@@ -1,13 +1,9 @@
 import { Component, EventEmitter, inject, OnInit, Output, signal, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import {
-  MAT_DIALOG_DATA,
-  MatDialogRef
-} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { IProfissionalRequest, TipoUsuario, TipoUsuarioLabel } from '../../models';
 import { SharedModule } from '../../shared-module';
-
 
 interface DadosFormulario {
   modo: 'adicionar' | 'editar';
@@ -25,7 +21,6 @@ interface DadosFormulario {
   styleUrl: './formulario.scss',
 })
 export class Formulario implements OnInit {
-
   @Output() salvarFormulario = new EventEmitter<IProfissionalRequest>();
   @ViewChild('formularioForm') formularioForm!: NgForm;
 
@@ -39,7 +34,7 @@ export class Formulario implements OnInit {
 
   TipoUsuario = TipoUsuario;
 
-  esconder = signal(true);
+  mostrarSenha = signal(false);
 
   ufs = [
     'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF',
@@ -109,11 +104,6 @@ export class Formulario implements OnInit {
       this.ufCrm = uf;
       this.numeroCrm = numero;
     }
-  }
-
-  esconderSenha(event: MouseEvent) {
-    event.stopPropagation();
-    this.esconder.set(!this.esconder());
   }
 
   cancelar() {

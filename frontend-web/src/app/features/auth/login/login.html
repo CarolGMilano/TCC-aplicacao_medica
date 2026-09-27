@@ -1,48 +1,93 @@
-<div class="login-page">
-    <mat-card class="login-card">
-        <mat-card-header>
-            <mat-card-title>Cervicare</mat-card-title>
-            <mat-card-subtitle>Acesso ao sistema</mat-card-subtitle>
-        </mat-card-header>
+<section class="pagina">
+    <div class="pagina-esquerda">
+        <div class="esquerda-cabecalho">
+            <div class="cabecalho-elemento"></div>
 
-        <mat-card-content>
-            <form [formGroup]="loginForm" (ngSubmit)="entrar()">
+            <h1 class="cabecalho-titulo">CerviCare</h1>
 
-                <mat-form-field appearance="outline">
-                    <mat-label>E-mail</mat-label>
+            <div class="cabecalho-container">
+                <p class="container-texto">Painel clínico</p>
+                <div class="container-elemento"></div>
+                <p class="container-texto">Rastreio e tratamento</p>
+            </div>
+        </div>
 
-                    <input matInput type="email" formControlName="email" />
+        <div class="esquerda-corpo">
+            <p class="corpo-titulo">Informação que acompanha cada etapa do cuidado.</p>
+            <p class="corpo-subtitulo">Centralize dados e acompanhe a jornada das pacientes de forma simples, segura e organizada.</p>
+        </div>
+
+        <p class="esquerda-rodape">Uso restrito à equipe médica</p>
+    </div>
+
+    <div class="pagina-direita">
+        <div class="direita-card">
+            <div class="card-cabecalho">
+                <p class="cabecalho-titulo">Entrar</p>
+                <p class="cabecalho-subtitulo">Use o e-mail institucional cadastrado na unidade.</p>
+            </div>
+    
+            <form [formGroup]="loginForm" (ngSubmit)="entrar()" class="card-formulario">
+                <div class="formulario-campo">
+                    <label for="email">E-mail</label>
+
+                    <input
+                        id="email"
+                        type="email"
+                        formControlName="email"
+                        placeholder="Digite seu e-mail"
+                    />
 
                     @if (
-                    loginForm.controls.email.touched &&
-                    loginForm.controls.email.invalid
+                        loginForm.controls.email.touched &&
+                        loginForm.controls.email.invalid
                     ) {
-                    <mat-error>Informe um e-mail válido.</mat-error>
+                        <span class="campo-erro">Informe um e-mail válido.</span>
                     }
-                </mat-form-field>
+                </div>
 
-                <mat-form-field appearance="outline">
-                    <mat-label>Senha</mat-label>
+                <div class="formulario-campo">
+                    <label for="senha">Senha</label>
 
-                    <input matInput type="password" formControlName="senha" />
+                    <div class="campo-senha">
+                        <input
+                            id="senha"
+                            [type]="mostrarSenha() ? 'text' : 'password'"
+                            formControlName="senha"
+                            placeholder="Digite sua senha"
+                        />
+
+                        <button
+                            type="button"
+                            class="botao-senha"
+                            (click)="mostrarSenha.set(!mostrarSenha())"
+                            [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'">
+                            <mat-icon>
+                                {{ mostrarSenha() ? 'visibility_off' : 'visibility' }}
+                            </mat-icon>
+                        </button>
+                    </div>
 
                     @if (
-                    loginForm.controls.senha.touched &&
-                    loginForm.controls.senha.invalid
+                        loginForm.controls.senha.touched &&
+                        loginForm.controls.senha.invalid
                     ) {
-                    <mat-error>A senha é obrigatória.</mat-error>
+                        <span class="campo-erro">A senha é obrigatória.</span>
                     }
-                </mat-form-field>
+                </div>
 
-                <button mat-flat-button type="submit" [disabled]="carregando()">
+                <button
+                    class="formulario-entrar"
+                    type="submit"
+                    [disabled]="carregando()"
+                >
                     {{ carregando() ? 'Entrando...' : 'Entrar' }}
                 </button>
-
             </form>
 
             @if (mensagem()) {
-            <p class="mensagem">{{ mensagem() }}</p>
+                <p class="formulario-mensagem">{{ mensagem() }}</p>
             }
-        </mat-card-content>
-    </mat-card>
-</div>
+        </div>
+    </div>
+</section>

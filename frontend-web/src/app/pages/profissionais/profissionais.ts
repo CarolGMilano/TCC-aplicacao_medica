@@ -8,7 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatListModule } from '@angular/material/list';
 
 import { PerfilService, ProfissionalService } from '../../services';
-import { IProfissional, TipoUsuario, TipoUsuarioLabel, Exclusao, Formulario, Loading, CabecalhoPagina } from '../../shared';
+import { IProfissional, TipoUsuario, TipoUsuarioLabel, Exclusao, Formulario, Loading, CabecalhoPagina, CampoBusca, RodapeTabela } from '../../shared';
 
 @Component({
   selector: 'app-profissionais',
@@ -20,8 +20,10 @@ import { IProfissional, TipoUsuario, TipoUsuarioLabel, Exclusao, Formulario, Loa
     MatListModule,
     MatFormFieldModule,
     Loading,
-    CabecalhoPagina
-  ],
+    CabecalhoPagina,
+    CampoBusca,
+    RodapeTabela
+],
 
   templateUrl: './profissionais.html',
   styleUrl: './profissionais.scss',
@@ -136,6 +138,7 @@ export class Profissionais implements OnInit {
       width: '500px',
       data: {
         nome: profissional.nome,
+        tipoInformacao: 'CRM',
         informacao: profissional.crm,
         mensagem: 'O acesso do profissional será removido. Os registros já lançados por ele permanecem no histórico das pacientes.',
         textoConfirmar: 'profissional'

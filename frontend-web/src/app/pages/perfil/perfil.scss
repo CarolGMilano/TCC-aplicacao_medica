@@ -28,7 +28,7 @@
         flex-direction: column;
         gap: 5px;
         padding: 20px 25px;
-        background-color: var(--cor-borda-detalhe);
+        background-color: var(--cor-card-detalhe);
 
         h2 {
           margin: 0;
@@ -246,7 +246,7 @@
       .dados-rodape {
         margin-top: auto;
         padding: 25px;
-        background-color: var(--cor-borda-detalhe);
+        background-color: var(--cor-card-detalhe);
 
         p {
           margin: 0;
@@ -267,7 +267,7 @@
         flex-direction: column;
         gap: 5px;
         padding: 20px 25px;
-        background-color: var(--cor-borda-detalhe);
+        background-color: var(--cor-card-detalhe);
 
         h2 {
           margin: 0;
@@ -333,7 +333,7 @@
               }
 
               &.senha-aviso {
-                border-color: var(--cor-botao-exclusao);
+                border-color: var(--cor-erro);
               }
 
               &.senha-atencao {
@@ -366,7 +366,7 @@
             font-family: var(--fonte-primaria);
             font-size: 10px;
             font-weight: 300;
-            color: var(--cor-botao-exclusao);
+            color: var(--cor-erro);
           }
 
           .campo-atencao {
@@ -384,7 +384,7 @@
         justify-content: flex-end;
         margin-top: auto;
         padding: 15px 25px;
-        background-color: var(--cor-borda-detalhe);
+        background-color: var(--cor-card-detalhe);
 
         .botao-atualizar-senha {
           padding: 9px 20px;

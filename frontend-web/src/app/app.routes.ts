@@ -2,10 +2,9 @@ import { Routes } from '@angular/router';
 
 import { authGuard } from './core/auth/auth.guard';
 import { Login } from './features/auth/login/login';
-import { ListaPacientes } from './features/pacientes/lista-pacientes/lista-pacientes';
 import { AppLayout } from './layout/app-layout/app-layout';
 
-import { Profissionais, Perfil } from './pages';
+import { Profissionais, Perfil, Pacientes/*, Paciente*/ } from './pages';
 
 export const routes: Routes = [
   {
@@ -39,8 +38,25 @@ export const routes: Routes = [
       
       {
         path: 'pacientes',
-        component: ListaPacientes,
+        component: Pacientes,        
+        /*
+        data: {
+          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+        }
+        */
       },
+
+      /*
+      { 
+        path: 'pacientes/:id', 
+        component: Paciente,
+        
+        data: {
+          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+        }
+        
+      },
+      */
 
       {
         path: 'novo-paciente',

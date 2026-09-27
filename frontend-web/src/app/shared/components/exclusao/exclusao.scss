@@ -4,7 +4,7 @@
   flex-direction: column;
 
   .cabecalho {
-    background-color: var(--cor-borda-detalhe);
+    background-color: var(--cor-card-detalhe);
     display: flex;
     flex-direction: column;
     padding: 25px 25px 15px 25px;
@@ -100,7 +100,7 @@
     display: flex;
     gap: 15px;
     justify-content: end;
-    background-color: var(--cor-borda-detalhe);
+    background-color: var(--cor-card-detalhe);
 
     .botao-acao {
       font-family: var(--fonte-primaria);

@@ -1,0 +1,183 @@
+@if (loading()) {
+  <app-loading></app-loading>
+}
+
+<section class="pagina">
+  <div class="cabecalho">
+    <app-cabecalho-pagina
+      titulo="Pacientes"
+      [subtitulo]="totalPacientes() + ' pacientes cadastrados'">
+    </app-cabecalho-pagina>
+    
+    <button class="botao-adicionar" type="button">
+      <mat-icon>add</mat-icon>
+      Adicionar paciente
+    </button>
+  </div>
+
+  <div class="corpo">
+    <app-campo-busca
+      placeholder="Buscar por nome ou prontuário"
+      (buscaChange)="buscar($event)">
+    </app-campo-busca>
+
+    <div class="divisoria-busca"></div>
+
+    <div class="filtros">
+      <div class="filtro-container">
+        <span class="filtro-titulo">Status</span>
+  
+        <div class="filtro-opcoes">
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroStatus() === null"
+            (click)="filtrarPorTipo(null)">
+            Todos
+          </button>
+      
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroStatus() === StatusPaciente.EM_INVESTIGACAO"
+            (click)="filtrarPorTipo(StatusPaciente.EM_INVESTIGACAO)">
+            {{ StatusPacienteLabel[StatusPaciente.EM_INVESTIGACAO] }}
+          </button>
+
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroStatus() === StatusPaciente.EM_TRATAMENTO"
+            (click)="filtrarPorTipo(StatusPaciente.EM_TRATAMENTO)">
+            {{ StatusPacienteLabel[StatusPaciente.EM_TRATAMENTO] }}
+          </button>
+      
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroStatus() === StatusPaciente.AGUARDANDO_PROCEDIMENTO"
+            (click)="filtrarPorTipo(StatusPaciente.AGUARDANDO_PROCEDIMENTO)">
+            {{ StatusPacienteLabel[StatusPaciente.AGUARDANDO_PROCEDIMENTO] }}
+          </button>
+      
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroStatus() === StatusPaciente.POS_PROCEDIMENTO"
+            (click)="filtrarPorTipo(StatusPaciente.POS_PROCEDIMENTO)">
+            {{ StatusPacienteLabel[StatusPaciente.POS_PROCEDIMENTO] }}
+          </button>
+      
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroStatus() === StatusPaciente.ALTA"
+            (click)="filtrarPorTipo(StatusPaciente.ALTA)">
+            {{ StatusPacienteLabel[StatusPaciente.ALTA] }}
+          </button>
+      
+          <button
+            class="filtro-opcao"
+            type="button"
+            [class.filtro-ativo]="filtroStatus() === StatusPaciente.ACOMPANHAMENTO_PREVENTIVO"
+            (click)="filtrarPorTipo(StatusPaciente.ACOMPANHAMENTO_PREVENTIVO)">
+            {{ StatusPacienteLabel[StatusPaciente.ACOMPANHAMENTO_PREVENTIVO] }}
+          </button>
+        </div>
+      </div>
+  
+      <div class="divisoria-filtro"></div>
+    </div>
+
+    <div class="container-tabela">
+      <table class="tabela">
+        <thead class="tabela-cabecalho">
+          <tr>
+            <th>Paciente</th>
+            <th>Prontuário</th>
+            <th>Idade</th>
+            <th>Status</th>
+            <th>Data da última consulta</th>
+            <th></th>
+          </tr>
+        </thead>
+        
+        <tbody class="tabela-corpo">
+          @for (paciente of pacientes(); track paciente.idPaciente) {
+            <tr class="corpo-item" [routerLink]="['/pacientes', paciente.idPaciente]">
+              <td class="item-nome">
+                <div class="nome-container">
+                  <div
+                    class="nome-detalhe"
+                    [class.em_investigacao]="paciente.status === StatusPaciente.EM_INVESTIGACAO"
+                    [class.em_tratamento]="paciente.status === StatusPaciente.EM_TRATAMENTO"
+                    [class.aguardando_procedimento]="paciente.status === StatusPaciente.AGUARDANDO_PROCEDIMENTO"
+                    [class.pos_procedimento]="paciente.status === StatusPaciente.POS_PROCEDIMENTO"
+                    [class.alta]="paciente.status === StatusPaciente.ALTA"
+                    [class.acompanhamento_preventivo]="paciente.status === StatusPaciente.ACOMPANHAMENTO_PREVENTIVO"
+                    >
+                  </div>
+
+                  {{ paciente.nome }}
+                </div>
+              </td>
+              <td>{{ paciente.prontuario }}</td>
+              <td>{{ paciente.idade }}</td>
+              <td>
+                <div
+                  class="item-tipo"
+                  [class.em_investigacao]="paciente.status === StatusPaciente.EM_INVESTIGACAO"
+                  [class.em_tratamento]="paciente.status === StatusPaciente.EM_TRATAMENTO"
+                  [class.aguardando_procedimento]="paciente.status === StatusPaciente.AGUARDANDO_PROCEDIMENTO"
+                  [class.pos_procedimento]="paciente.status === StatusPaciente.POS_PROCEDIMENTO"
+                  [class.alta]="paciente.status === StatusPaciente.ALTA"
+                  [class.acompanhamento_preventivo]="paciente.status === StatusPaciente.ACOMPANHAMENTO_PREVENTIVO">
+                  {{ StatusPacienteLabel[paciente.status] }}
+                </div>
+              </td>
+              <td>Última consulta</td>
+              
+              <td class="item-acoes">
+                <div class="acoes-container">
+                  @if (
+                    tipoUsuarioLogado() === TipoUsuario.ADMINISTRADOR
+                  ) {
+                    <button
+                      class="acao-botao botao-deletar"
+                      type="button"
+                      (click)="confirmarExclusao(paciente); $event.stopPropagation()"
+                      aria-label="Deletar Paciente">
+
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="sem-paciente" colspan="6">
+                Nenhum paciente encontrado.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-rodape-tabela
+      [paginaAtual]="paginaAtual()"
+      [totalPaginas]="totalPaginas()"
+      [totalItens]="totalPacientes()"
+      descricaoItens="pacientes"
+      detalheFiltro="Status"
+      [filtroDescricao]="
+        filtroStatus() === null
+          ? 'Todos'
+          : StatusPacienteLabel[filtroStatus()!]
+      "
+      (paginaAnterior)="paginaAnterior()"
+      (proximaPagina)="proximaPagina()"
+    />
+  </div>
+</section>

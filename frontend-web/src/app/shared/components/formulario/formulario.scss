@@ -11,7 +11,7 @@
     padding: 25px 25px 15px 25px;
     margin-bottom: 10px;
 
-    background-color: var(--cor-borda-detalhe);
+    background-color: var(--cor-card-detalhe);
 
     .cabecalho-subtitulo {
       display: flex;
@@ -93,7 +93,7 @@
         }
 
         .campo-erro {
-          color: var(--cor-botao-exclusao);
+          color: var(--cor-erro);
 
           font-family: var(--fonte-primaria);
           font-size: 10px;
@@ -109,7 +109,7 @@
         &:has(.ng-invalid.ng-touched) {
           .campo-input,
           .campo-select {
-            border-color: var(--cor-botao-exclusao);
+            border-color: var(--cor-erro);
           }
         }
 
@@ -168,10 +168,13 @@
             mat-icon {
               width: 18px;
               height: 18px;
-
               font-size: 18px;
 
               color: var(--cor-primaria);
+
+              &:hover {
+                color: var(--cor-primaria-hover-escura);
+              }
             }
           }
         }
@@ -234,7 +237,7 @@
     margin-top: 10px;
     padding: 25px;
 
-    background-color: var(--cor-borda-detalhe);
+    background-color: var(--cor-card-detalhe);
 
     .botao-acao {
       padding: 8px 20px;

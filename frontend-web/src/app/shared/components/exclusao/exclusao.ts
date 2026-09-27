@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 interface DadosConfirmacaoExclusao {
   nome: string,
+  tipoInformacao: string,
   informacao: string,
   mensagem: string,
   textoConfirmar: string
