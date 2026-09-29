@@ -27,7 +27,8 @@ public class PcrService {
     @Transactional
     public PcrResponseDTO registrar(PcrRequestDTO dto) {
         Paciente paciente = pacienteRepository.findById(dto.idPaciente())
-                .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada para o ID: " + dto.idPaciente()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Paciente não encontrada para o ID: " + dto.idPaciente()));
 
         Medico medico = medicoService.getMedicoLogado();
 
@@ -36,7 +37,7 @@ public class PcrService {
         pcr.setMedico(medico);
         pcr.setDataRegistro(dto.dataRegistro());
         pcr.setResultado(dto.resultado());
-        pcr.setTipoHpv(dto.tipoHpv());
+        pcr.setTiposHpv(dto.tiposHpv());
         pcr.setObservacao(dto.observacao());
         pcr.setDataEdicao(LocalDateTime.now());
 
@@ -48,7 +49,8 @@ public class PcrService {
     @Transactional(readOnly = true)
     public List<PcrResponseDTO> listarPorPaciente(Integer idPaciente) {
         if (!pacienteRepository.existsById(idPaciente)) {
-            throw new ResourceNotFoundException("Paciente não encontrada para o ID: " + idPaciente);
+            throw new ResourceNotFoundException(
+                    "Paciente não encontrada para o ID: " + idPaciente);
         }
 
         return pcrRepository.findByPaciente_IdPacienteOrderByDataRegistroDesc(idPaciente)
@@ -60,15 +62,17 @@ public class PcrService {
     @Transactional
     public PcrResponseDTO atualizar(Integer idExame, PcrRequestDTO dto) {
         PcrDnaHpv pcr = pcrRepository.findById(idExame)
-                .orElseThrow(() -> new ResourceNotFoundException("Exame PCR não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Exame PCR não encontrado."));
 
         pcr.setDataRegistro(dto.dataRegistro());
         pcr.setResultado(dto.resultado());
-        pcr.setTipoHpv(dto.tipoHpv());
+        pcr.setTiposHpv(dto.tiposHpv());
         pcr.setObservacao(dto.observacao());
         pcr.setDataEdicao(LocalDateTime.now());
 
         PcrDnaHpv atualizado = pcrRepository.save(pcr);
+
         return converterParaDTO(atualizado);
     }
 
@@ -77,6 +81,7 @@ public class PcrService {
         if (!pcrRepository.existsById(idExame)) {
             throw new ResourceNotFoundException("Exame PCR não encontrado.");
         }
+
         pcrRepository.deleteById(idExame);
     }
 
@@ -88,7 +93,7 @@ public class PcrService {
                 .nomeMedico(pcr.getMedico().getNome())
                 .dataRegistro(pcr.getDataRegistro())
                 .resultado(pcr.getResultado())
-                .tipoHpv(pcr.getTipoHpv())
+                .tiposHpv(pcr.getTiposHpv())
                 .observacao(pcr.getObservacao())
                 .dataEdicao(pcr.getDataEdicao())
                 .build();

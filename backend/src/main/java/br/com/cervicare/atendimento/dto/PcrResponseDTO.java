@@ -6,6 +6,7 @@ import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 public record PcrResponseDTO(
@@ -15,7 +16,7 @@ public record PcrResponseDTO(
         String nomeMedico,
         LocalDate dataRegistro,
         ResultadoPcr resultado,
-        TipoHpv tipoHpv,
+        List<TipoHpv> tiposHpv,
         String observacao,
         LocalDateTime dataEdicao
 ) {}

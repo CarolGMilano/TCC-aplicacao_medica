@@ -1,3 +1,4 @@
+// Importe as anotações do Jakarta Persistence (JPA) e Lombok
 package br.com.cervicare.atendimento.domain;
 
 import br.com.cervicare.atendimento.domain.enums.ResultadoPcr;
@@ -9,6 +10,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "pcr_dna_hpv")
@@ -39,9 +41,12 @@ public class PcrDnaHpv {
     @Column(nullable = false)
     private ResultadoPcr resultado;
 
+    // NOVO MAPEAMENTO 1:N
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "pcr_dna_hpv_tipo", joinColumns = @JoinColumn(name = "id_pcr"))
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_hpv")
-    private TipoHpv tipoHpv;
+    @Column(name = "hpv_tipo")
+    private List<TipoHpv> tiposHpv;
 
     @Column(columnDefinition = "TEXT")
     private String observacao;

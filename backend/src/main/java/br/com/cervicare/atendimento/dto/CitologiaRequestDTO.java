@@ -1,6 +1,6 @@
 package br.com.cervicare.atendimento.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import br.com.cervicare.atendimento.domain.enums.ResultadoCitologia;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -12,8 +12,8 @@ public record CitologiaRequestDTO(
         @NotNull(message = "A data do registro é obrigatória")
         LocalDate dataRegistro,
 
-        @NotBlank(message = "O resultado é obrigatório")
-        String resultado,
+        @NotNull(message = "O resultado é obrigatório")
+        ResultadoCitologia resultado,
 
         String observacao
 ) {}

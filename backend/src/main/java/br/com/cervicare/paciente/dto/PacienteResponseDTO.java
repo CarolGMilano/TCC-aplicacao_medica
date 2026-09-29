@@ -4,6 +4,7 @@ import br.com.cervicare.paciente.domain.enums.StatusPaciente;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 public record PacienteResponseDTO(
@@ -20,7 +21,9 @@ public record PacienteResponseDTO(
 
         StatusPaciente status,
 
-        Boolean grupoPrioritario
+        Boolean grupoPrioritario,
+
+        LocalDateTime ultimaConsulta 
 
 ) {
 }

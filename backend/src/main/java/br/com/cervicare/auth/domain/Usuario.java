@@ -49,19 +49,21 @@ public class Usuario implements UserDetails {
     private TipoUsuario tipo;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-
-        if (this.tipo == TipoUsuario.ADMINISTRADOR) {
-            return List.of(
-                    new SimpleGrantedAuthority("ROLE_ADMIN"),
-                    new SimpleGrantedAuthority("ROLE_MEDICO")
-            );
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            if (this.tipo == TipoUsuario.ADMINISTRADOR) {
+                return List.of(
+                        new SimpleGrantedAuthority("ROLE_ADMIN"),
+                        new SimpleGrantedAuthority("ROLE_MEDICO"),
+                        new SimpleGrantedAuthority("ROLE_RESIDENTE")
+                );
+            } else if (this.tipo == TipoUsuario.MEDICO) {
+                return List.of(
+                        new SimpleGrantedAuthority("ROLE_MEDICO"),
+                        new SimpleGrantedAuthority("ROLE_RESIDENTE")
+                );
+            }
+            return List.of(new SimpleGrantedAuthority("ROLE_RESIDENTE"));
         }
-
-        return List.of(
-                new SimpleGrantedAuthority("ROLE_MEDICO")
-        );
-    }
 
     @Override
     public String getPassword() {

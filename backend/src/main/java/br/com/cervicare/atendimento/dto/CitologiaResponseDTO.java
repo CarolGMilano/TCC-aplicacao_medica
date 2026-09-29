@@ -1,5 +1,6 @@
 package br.com.cervicare.atendimento.dto;
 
+import br.com.cervicare.atendimento.domain.enums.ResultadoCitologia;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -12,7 +13,7 @@ public record CitologiaResponseDTO(
         String nomePaciente,
         String nomeMedico,
         LocalDate dataRegistro,
-        String resultado,
+        ResultadoCitologia resultado,
         String observacao,
         LocalDateTime dataEdicao
 ) {}

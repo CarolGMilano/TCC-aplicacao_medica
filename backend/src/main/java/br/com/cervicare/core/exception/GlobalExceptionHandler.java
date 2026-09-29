@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     ) {
         return buildResponse(
                 HttpStatus.UNAUTHORIZED,
-                "Não autorizado",
+                "auth_invalida",
                 "E-mail ou senha inválidos."
         );
     }
@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     ) {
         return buildResponse(
                 HttpStatus.NOT_FOUND,
-                "Recurso não encontrado",
+                "recurso_nao_encontrado",
                 ex.getMessage()
         );
     }
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     ) {
         return buildResponse(
                 HttpStatus.NOT_FOUND,
-                "Recurso não encontrado",
+                "entidade_nao_encontrada",
                 ex.getMessage()
         );
     }
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     ) {
         return buildResponse(
                 HttpStatus.CONFLICT,
-                "Recurso duplicado",
+                "recurso_duplicado",
                 ex.getMessage()
         );
     }
@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
         Map<String, Object> resposta = new LinkedHashMap<>();
         resposta.put("timestamp", LocalDateTime.now());
         resposta.put("status", HttpStatus.BAD_REQUEST.value());
-        resposta.put("error", "Erro de validação");
+        resposta.put("errorCode", "erro_validacao_campos");
         resposta.put("messages", erros);
 
         return ResponseEntity
@@ -88,21 +88,21 @@ public class GlobalExceptionHandler {
     ) {
         return buildResponse(
                 HttpStatus.CONFLICT,
-                "Violação de integridade dos dados",
+                "violacao_integridade",
                 "Não foi possível concluir a operação porque os dados violam uma restrição do banco."
         );
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(
             HttpStatus status,
-            String error,
+            String errorCode,
             String message
     ) {
         Map<String, Object> resposta = new LinkedHashMap<>();
 
         resposta.put("timestamp", LocalDateTime.now());
         resposta.put("status", status.value());
-        resposta.put("error", error);
+        resposta.put("errorCode", errorCode);
         resposta.put("message", message);
 
         return ResponseEntity
