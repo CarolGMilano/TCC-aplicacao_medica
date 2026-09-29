@@ -5,6 +5,7 @@ import br.com.cervicare.atendimento.domain.enums.TipoHpv;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record PcrRequestDTO(
         @NotNull(message = "O ID da paciente é obrigatório")
@@ -16,7 +17,7 @@ public record PcrRequestDTO(
         @NotNull(message = "O resultado do PCR é obrigatório")
         ResultadoPcr resultado,
 
-        TipoHpv tipoHpv,
+        List<TipoHpv> tiposHpv,
 
         String observacao
 ) {}

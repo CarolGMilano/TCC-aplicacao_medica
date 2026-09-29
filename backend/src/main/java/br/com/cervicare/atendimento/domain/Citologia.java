@@ -1,5 +1,6 @@
 package br.com.cervicare.atendimento.domain;
 
+import br.com.cervicare.atendimento.domain.enums.ResultadoCitologia;
 import br.com.cervicare.medico.domain.Medico;
 import br.com.cervicare.paciente.domain.Paciente;
 import jakarta.persistence.*;
@@ -33,8 +34,9 @@ public class Citologia {
     @Column(name = "data_registro", nullable = false)
     private LocalDate dataRegistro;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String resultado; // Usando String para suportar a migration inicial 'A definir' e facilitar futura expansão
+    private ResultadoCitologia resultado;
 
     @Column(columnDefinition = "TEXT")
     private String observacao;

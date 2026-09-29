@@ -1,6 +1,7 @@
 package br.com.cervicare.paciente.controller;
 
 import br.com.cervicare.paciente.domain.enums.StatusPaciente;
+import br.com.cervicare.paciente.dto.PacienteCompletoRequestDTO;
 import br.com.cervicare.paciente.dto.PacienteRequestDTO;
 import br.com.cervicare.paciente.dto.PacienteResponseDTO;
 import br.com.cervicare.paciente.service.PacienteService;
@@ -36,8 +37,18 @@ public class PacienteController {
     }
 
     @PostMapping
-    public ResponseEntity<PacienteResponseDTO> cadastrarPaciente(@RequestBody @Valid PacienteRequestDTO dto) {
+    public ResponseEntity<PacienteResponseDTO> cadastrarPaciente(
+            @RequestBody @Valid PacienteRequestDTO dto
+    ) {
         PacienteResponseDTO paciente = service.cadastrar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(paciente);
+    }
+
+    @PostMapping("/completo")
+    public ResponseEntity<PacienteResponseDTO> cadastrarPacienteCompleto(
+            @RequestBody @Valid PacienteCompletoRequestDTO dto
+    ) {
+        PacienteResponseDTO paciente = service.cadastrarCompleto(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(paciente);
     }
 

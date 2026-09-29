@@ -12,12 +12,12 @@ import java.util.Optional;
 
 public interface PacienteRepository extends JpaRepository<Paciente, Integer> {
 
-    @Query("""
+        @Query("""
             SELECT p
             FROM Paciente p
             WHERE p.ativo = true
               AND (LOWER(p.nome) LIKE LOWER(CONCAT('%', :busca, '%'))
-               OR LOWER(p.prontuario) = LOWER(:busca))
+               OR LOWER(p.prontuario) LIKE LOWER(CONCAT('%', :busca, '%')))
             """)
     Page<Paciente> buscarPorNomeOuProntuarioAtivos(
             @Param("busca") String busca,

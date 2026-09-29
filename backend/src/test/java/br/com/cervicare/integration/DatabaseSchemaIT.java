@@ -78,9 +78,9 @@ class DatabaseSchemaIT extends AbstractIntegrationTest {
             int quantidadeMigrations = resultSet.getInt(1);
 
             assertEquals(
-                    4,
+                    5,
                     quantidadeMigrations,
-                    "O banco de teste deveria possuir exatamente 4 migrations aplicadas"
+                    "O banco de teste deveria possuir exatamente 5 migrations aplicadas"
             );
         }
     }
@@ -109,9 +109,9 @@ class DatabaseSchemaIT extends AbstractIntegrationTest {
             );
 
             assertEquals(
-                    "4",
+                    "5",
                     resultSet.getString("version"),
-                    "A última migration aplicada deveria ser a V4"
+                    "A última migration aplicada deveria ser a V5"
             );
         }
     }
