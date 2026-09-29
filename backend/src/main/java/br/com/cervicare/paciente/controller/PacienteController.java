@@ -2,6 +2,7 @@ package br.com.cervicare.paciente.controller;
 
 import br.com.cervicare.paciente.domain.enums.StatusPaciente;
 import br.com.cervicare.paciente.dto.PacienteCompletoRequestDTO;
+import br.com.cervicare.paciente.dto.PacienteDetalhadoResponseDTO;
 import br.com.cervicare.paciente.dto.PacienteRequestDTO;
 import br.com.cervicare.paciente.dto.PacienteResponseDTO;
 import br.com.cervicare.paciente.service.PacienteService;
@@ -32,7 +33,7 @@ public class PacienteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PacienteResponseDTO> buscarPaciente(@PathVariable Integer id) {
+    public ResponseEntity<PacienteDetalhadoResponseDTO> buscarPaciente(@PathVariable Integer id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 

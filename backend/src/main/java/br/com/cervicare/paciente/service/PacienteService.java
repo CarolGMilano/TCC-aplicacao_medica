@@ -8,6 +8,10 @@ import br.com.cervicare.historico.domain.DadosGinecoObstetricos;
 import br.com.cervicare.historico.domain.HistoricoIst;
 import br.com.cervicare.historico.domain.HistoricoTabagismo;
 import br.com.cervicare.historico.domain.SaudeSexual;
+import br.com.cervicare.historico.dto.DadosGinecoObstetricosResponseDTO;
+import br.com.cervicare.historico.dto.HistoricoIstResponseDTO;
+import br.com.cervicare.historico.dto.HistoricoTabagismoResponseDTO;
+import br.com.cervicare.historico.dto.SaudeSexualResponseDTO;
 import br.com.cervicare.historico.repository.DadosGinecoObstetricosRepository;
 import br.com.cervicare.historico.repository.HistoricoIstRepository;
 import br.com.cervicare.historico.repository.HistoricoTabagismoRepository;
@@ -15,6 +19,7 @@ import br.com.cervicare.historico.repository.SaudeSexualRepository;
 import br.com.cervicare.paciente.domain.Paciente;
 import br.com.cervicare.paciente.domain.enums.StatusPaciente;
 import br.com.cervicare.paciente.dto.PacienteCompletoRequestDTO;
+import br.com.cervicare.paciente.dto.PacienteDetalhadoResponseDTO;
 import br.com.cervicare.paciente.dto.PacienteRequestDTO;
 import br.com.cervicare.paciente.dto.PacienteResponseDTO;
 import br.com.cervicare.paciente.repository.PacienteRepository;
@@ -72,8 +77,69 @@ public class PacienteService {
         return pacientes.map(this::converterParaResponse);
     }
 
-    public PacienteResponseDTO buscarPorId(Integer id) {
-        return converterParaResponse(buscarEntidadePorId(id));
+    public PacienteDetalhadoResponseDTO buscarPorId(Integer id) {
+        Paciente paciente = buscarEntidadePorId(id);
+
+        int idade = Period.between(paciente.getDataNascimento(), LocalDate.now()).getYears();
+        boolean grupoPrioritario = idade >= 25 && idade <= 64;
+
+        List<DadosGinecoObstetricosResponseDTO> dgo = dadosGinecoObstetricosRepository
+                .findByPaciente_IdPacienteOrderByIdDadosDesc(id).stream()
+                .map(d -> DadosGinecoObstetricosResponseDTO.builder()
+                        .idDados(d.getIdDados())
+                        .idPaciente(id)
+                        .numGestacao(d.getNumGestacao())
+                        .numPartoNormal(d.getNumPartoNormal())
+                        .numCesariana(d.getNumCesariana())
+                        .numAborto(d.getNumAborto())
+                        .menarca(d.getMenarca())
+                        .menopausa(d.getMenopausa())
+                        .build()).toList();
+
+        List<SaudeSexualResponseDTO> ss = saudeSexualRepository
+                .findByPaciente_IdPacienteOrderByIdDadosDesc(id).stream()
+                .map(s -> SaudeSexualResponseDTO.builder()
+                        .idDados(s.getIdDados())
+                        .idPaciente(id)
+                        .sexarca(s.getSexarca())
+                        .mac(s.getMac())
+                        .numParceiros(s.getNumParceiros())
+                        .vvs(s.getVvs())
+                        .build()).toList();
+
+        List<HistoricoTabagismoResponseDTO> ht = tabagismoRepository
+                .findByPaciente_IdPacienteOrderByIdHistoricoDesc(id).stream()
+                .map(t -> HistoricoTabagismoResponseDTO.builder()
+                        .idHistorico(t.getIdHistorico())
+                        .idPaciente(id)
+                        .cigarrosDia(t.getCigarrosDia())
+                        .idadeInicio(t.getIdadeInicio())
+                        .idadeFim(t.getIdadeFim())
+                        .fumante(t.getFumante())
+                        .build()).toList();
+
+        List<HistoricoIstResponseDTO> ist = istRepository
+                .findByPaciente_IdPacienteOrderByIdHistoricoDesc(id).stream()
+                .map(i -> HistoricoIstResponseDTO.builder()
+                        .idHistorico(i.getIdHistorico())
+                        .idPaciente(id)
+                        .ist(i.getIst())
+                        .condilomaHpv(i.getCondilomaHpv())
+                        .build()).toList();
+
+        return PacienteDetalhadoResponseDTO.builder()
+                .idPaciente(paciente.getIdPaciente())
+                .nome(paciente.getNome())
+                .dataNascimento(paciente.getDataNascimento())
+                .idade(idade)
+                .prontuario(paciente.getProntuario())
+                .status(paciente.getStatus())
+                .grupoPrioritario(grupoPrioritario)
+                .dadosGinecoObstetricos(dgo)
+                .saudeSexual(ss)
+                .historicoTabagismo(ht)
+                .historicoIst(ist)
+                .build();
     }
 
     @Transactional
