@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNav } from "@/components/bottom-nav";
+import { Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -25,7 +26,9 @@ export default function PatientsScreen() {
           onPress={() => router.push("/new-patient")}
           style={[styles.button, { backgroundColor: theme.accent }]}
         >
-          <ThemedText style={styles.buttonText}>Cadastrar paciente</ThemedText>
+          <ThemedText themeColor="textPrimaryLight" style={styles.buttonText}>
+            Cadastrar paciente
+          </ThemedText>
         </Pressable>
       </View>
       <BottomNav />
@@ -36,7 +39,10 @@ export default function PatientsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 24, gap: 12 },
-  title: { fontSize: 32, fontWeight: "600" },
+  title: {
+    fontSize: Typography.sizes.subtitle,
+    fontWeight: Typography.weights.semibold,
+  },
   button: {
     minHeight: 48,
     borderRadius: 24,
@@ -44,5 +50,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 16,
   },
-  buttonText: { color: "#ffffff", fontWeight: "700" },
+  buttonText: {
+    fontWeight: Typography.weights.bold,
+  },
 });

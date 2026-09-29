@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Field } from "@/components/field";
 import { login } from "@/constants/api";
-import { Fonts } from "@/constants/theme";
+import { FontFamilies, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -43,20 +43,14 @@ export default function HomeScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
     >
       <View style={styles.content}>
-        <View style={[styles.progress, { backgroundColor: theme.alert }]} />
+        <View style={[styles.progress, { backgroundColor: theme.secondary }]} />
         <View
-          style={[styles.progressAccent, { backgroundColor: theme.warning }]}
+          style={[styles.progressAccent, { backgroundColor: theme.tertiary }]}
         />
 
         <View style={styles.heading}>
-          <ThemedText style={[styles.logo, { color: theme.text }]}>
-            CerviCare
-          </ThemedText>
-          <ThemedText
-            type="code"
-            themeColor="textSecondary"
-            style={styles.tagline}
-          >
+          <ThemedText style={styles.logo}>CerviCare</ThemedText>
+          <ThemedText style={styles.tagline}>
             SAÚDE DA MULHER · RASTREIO E TRATAMENTO
           </ThemedText>
         </View>
@@ -82,19 +76,6 @@ export default function HomeScreen() {
           />
           <Pressable
             accessibilityRole="button"
-            onPress={() => router.push("/forgot-password")}
-            style={styles.forgot}
-          >
-            <ThemedText
-              type="code"
-              themeColor="primary"
-              style={styles.forgotText}
-            >
-              ESQUECI A SENHA
-            </ThemedText>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
             disabled={isSubmitting}
             onPress={handleLogin}
             style={({ pressed }) => [
@@ -104,10 +85,24 @@ export default function HomeScreen() {
             ]}
           >
             {isSubmitting ? (
-              <ActivityIndicator color="#ffffff" />
+              <ActivityIndicator color={theme.textPrimaryLight} />
             ) : (
-              <ThemedText style={styles.submitText}>Entrar</ThemedText>
+              <ThemedText
+                themeColor="textPrimaryLight"
+                style={styles.submitText}
+              >
+                Entrar
+              </ThemedText>
             )}
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push("/forgot-password")}
+            style={styles.forgot}
+          >
+            <ThemedText themeColor="accent" style={styles.forgotText}>
+              ESQUECI A SENHA
+            </ThemedText>
           </Pressable>
         </View>
       </View>
@@ -116,30 +111,77 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  content: { flex: 1, paddingHorizontal: 25, paddingTop: 72 },
-  progress: { height: 5, width: "66%", borderRadius: 8 },
+  container: {
+    flex: 1,
+  },
+
+  content: {
+    flex: 1,
+    paddingHorizontal: 25,
+    paddingTop: 160,
+  },
+
+  progress: {
+    height: 5,
+    width: "66%",
+    borderRadius: 8,
+  },
+
   progressAccent: {
     position: "absolute",
-    top: 72,
+    top: 160,
     left: "66%",
     right: 25,
     height: 5,
     borderRadius: 8,
   },
-  heading: { marginTop: 32, gap: 14 },
-  logo: { fontFamily: Fonts.serif, fontSize: 38, lineHeight: 44 },
-  tagline: { fontSize: 9, letterSpacing: 1.7 },
-  form: { marginTop: 56, gap: 24 },
-  forgot: { alignSelf: "center", marginTop: -4 },
-  forgotText: { fontSize: 9, letterSpacing: 0.7 },
+
+  heading: {
+    marginTop: 32,
+    gap: 14,
+  },
+
+  logo: {
+    fontFamily: FontFamilies.detail,
+    fontSize: Typography.sizes.logo,
+    lineHeight: Typography.lineHeights.logo,
+  },
+
+  tagline: {
+    fontSize: Typography.sizes.micro,
+    letterSpacing: Typography.letterSpacing.hero,
+    fontFamily: FontFamilies.secondary,
+  },
+
+  form: {
+    marginTop: 56,
+    gap: 28,
+  },
+
+  forgot: {
+    alignSelf: "center",
+    marginTop: -4,
+  },
+
+  forgotText: {
+    fontFamily: FontFamilies.secondary,
+    fontSize: Typography.sizes.label,
+    letterSpacing: Typography.letterSpacing.normal,
+  },
+
   submit: {
-    minHeight: 51,
+    minHeight: 58,
     borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 2,
   },
-  submitText: { color: "#ffffff", fontWeight: "700" },
-  pressed: { opacity: 0.8 },
+
+  submitText: {
+    fontWeight: Typography.weights.bold,
+  },
+
+  pressed: {
+    opacity: 0.8,
+  },
 });

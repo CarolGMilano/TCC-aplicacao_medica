@@ -2,6 +2,8 @@ import { Image } from "expo-image";
 import { StyleSheet, View } from "react-native";
 import Animated, { Keyframe, Easing } from "react-native-reanimated";
 
+import { Theme } from "@/constants/theme";
+
 import classes from "./animated-icon.module.css";
 const DURATION = 300;
 
@@ -71,7 +73,15 @@ export function AnimatedIcon() {
         style={styles.background}
         entering={keyframe.duration(DURATION)}
       >
-        <div className={classes.expoLogoBackground} />
+        <div
+          className={classes.expoLogoBackground}
+          style={
+            {
+              "--theme-primary": Theme.primary,
+              "--theme-border": Theme.border,
+            } as React.CSSProperties
+          }
+        />
       </Animated.View>
 
       <Animated.View

@@ -3,7 +3,7 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Fonts } from "@/constants/theme";
+import { FontFamilies, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -49,7 +49,11 @@ export function BottomNav() {
           pressed && styles.pressed,
         ]}
       >
-        <SymbolView name="person.badge.plus" tintColor="#ffffff" size={22} />
+        <SymbolView
+          name="person.badge.plus"
+          tintColor={Theme.textPrimaryLight}
+          size={22}
+        />
       </Pressable>
     </View>
   );
@@ -80,10 +84,8 @@ function NavItem({
         size={19}
       />
       <ThemedText
-        style={[
-          styles.itemLabel,
-          { color: active ? theme.primary : theme.textSecondary },
-        ]}
+        style={[styles.itemLabel]}
+        themeColor={active ? "primary" : "textSecondary"}
       >
         {label}
       </ThemedText>
@@ -118,7 +120,10 @@ const styles = StyleSheet.create({
     gap: 3,
     minWidth: 92,
   },
-  itemLabel: { fontFamily: Fonts.sans, fontSize: 11 },
+  itemLabel: {
+    fontFamily: FontFamilies.primary,
+    fontSize: Typography.sizes.caption,
+  },
   add: {
     width: 56,
     height: 56,

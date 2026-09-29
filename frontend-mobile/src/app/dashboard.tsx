@@ -2,101 +2,75 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNav } from "@/components/bottom-nav";
+import { ThemedView } from "@/components/themed-view";
 import { logout } from "@/constants/auth-session";
 import { router } from "expo-router";
-import { Fonts } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
-import { useTheme } from "@/hooks/use-theme";
+import { FontFamilies, Theme, Typography } from "@/constants/theme";
 
 export default function DashboardScreen() {
-  const theme = useTheme();
   return (
-    <SafeAreaView
-      style={[styles.safeArea, { backgroundColor: theme.background }]}
-      edges={["top"]}
-    >
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <View>
-            <ThemedText
-              type="code"
-              themeColor="textSecondary"
-              style={styles.date}
-            >
-              QUI, 04 SET
-            </ThemedText>
-            <ThemedText style={styles.greeting}>Ana Ribeiro</ThemedText>
-            <ThemedText type="code" themeColor="muted" style={styles.crm}>
-              CRM 118 402
-            </ThemedText>
-          </View>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => {
-              logout();
-              router.replace("/");
-            }}
-            style={[styles.exit, { borderColor: theme.border }]}
-          >
-            <ThemedText
-              type="code"
-              themeColor="textSecondary"
-              style={styles.exitText}
-            >
-              SAIR
-            </ThemedText>
-          </Pressable>
-        </View>
-
-        <View
-          style={[
-            styles.totalCard,
-            {
-              backgroundColor: theme.backgroundElement,
-              borderColor: theme.border,
-            },
-          ]}
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
+      <ThemedView style={styles.screen}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.cardLabel}>
-            <View style={[styles.line, { backgroundColor: theme.warning }]} />
-            <ThemedText
-              type="code"
-              themeColor="textSecondary"
-              style={styles.cardLabelText}
+          <View style={styles.header}>
+            <View>
+              <ThemedText style={styles.date}>QUI, 04 SET</ThemedText>
+              <ThemedText style={styles.greeting}>Ana Ribeiro</ThemedText>
+              <ThemedText style={styles.crm}>CRM 118 402</ThemedText>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => {
+                logout();
+                router.replace("/");
+              }}
+              style={styles.exit}
             >
-              PACIENTES CADASTRADAS
-            </ThemedText>
+              <ThemedText style={styles.exitText}>SAIR</ThemedText>
+            </Pressable>
           </View>
-          <ThemedText style={styles.total}>248</ThemedText>
-          <View style={styles.cardFooter}>
-            <ThemedText type="small" themeColor="textSecondary">
-              Total na unidade
-            </ThemedText>
-            <ThemedText type="code" themeColor="primary">
-              VER LISTA →
-            </ThemedText>
-          </View>
-        </View>
 
-        <ReturnCard
-          title="Ver e tratar sem retorno"
-          description="Indicação de ver e tratar há mais de 2 meses sem nova consulta registrada."
-          count="12 PACIENTES  ·  4,8% DAS CADASTRADAS"
-          names={["Cláudia Nunes", "Marina Souza"]}
-          days={["146 d", "134 d"]}
-        />
-        <ReturnCard
-          title="Pós-procedimento sem retorno"
-          description="EZT ou biópsia realizada há mais de 3 meses sem consulta de acompanhamento."
-          count="7 PACIENTES  ·  2,8% DAS CADASTRADAS"
-          names={["Rita Almeida", "Joana Vilela"]}
-          days={["129 d", "112 d"]}
-        />
-      </ScrollView>
-      <BottomNav />
+          <ThemedView
+            style={styles.totalCard}
+            type="backgroundElement"
+            borderColor="border"
+          >
+            <View style={styles.cardLabel}>
+              <ThemedView type="tertiary" style={styles.line} />
+              <ThemedText style={styles.cardLabelText}>
+                PACIENTES CADASTRADAS
+              </ThemedText>
+            </View>
+            <ThemedText style={styles.total}>248</ThemedText>
+            <View style={styles.cardFooter}>
+              <ThemedText themeColor="textSecondary">
+                Total na unidade
+              </ThemedText>
+              <ThemedText themeColor="primary">VER LISTA →</ThemedText>
+            </View>
+          </ThemedView>
+
+          <ReturnCard
+            title="Ver e tratar sem retorno"
+            description="Indicação de ver e tratar há mais de 2 meses sem nova consulta registrada."
+            count="12 PACIENTES  ·  4,8% DAS CADASTRADAS"
+            names={["Cláudia Nunes", "Marina Souza"]}
+            days={["146 d", "134 d"]}
+          />
+          <ReturnCard
+            title="Pós-procedimento sem retorno"
+            description="EZT ou biópsia realizada há mais de 3 meses sem consulta de acompanhamento."
+            count="7 PACIENTES  ·  2,8% DAS CADASTRADAS"
+            names={["Rita Almeida", "Joana Vilela"]}
+            days={["129 d", "112 d"]}
+          />
+        </ScrollView>
+        <BottomNav />
+      </ThemedView>
     </SafeAreaView>
   );
 }
@@ -114,25 +88,10 @@ function ReturnCard({
   names: string[];
   days: string[];
 }) {
-  const theme = useTheme();
   return (
-    <View
-      style={[
-        styles.returnCard,
-        {
-          borderColor: theme.border,
-        },
-      ]}
-    >
+    <ThemedView style={styles.returnCard} borderColor="border">
       <View style={styles.returnHeader}>
-        <View
-          style={[
-            styles.line,
-            {
-              backgroundColor: theme.warning,
-            },
-          ]}
-        />
+        <ThemedView type="secondary" style={styles.line} />
         <ThemedText style={styles.returnTitle}>{title}</ThemedText>
       </View>
       <ThemedText style={styles.description} themeColor="textSecondary">
@@ -142,9 +101,10 @@ function ReturnCard({
         {count}
       </ThemedText>
       {names.map((name, index) => (
-        <View
+        <ThemedView
           key={name}
-          style={[styles.patientRow, { borderTopColor: theme.border }]}
+          style={styles.patientRow}
+          borderTopColor="border"
         >
           <View>
             <ThemedText>{name}</ThemedText>
@@ -152,25 +112,26 @@ function ReturnCard({
               PRT 10482
             </ThemedText>
           </View>
-          <ThemedText style={[styles.days, { color: theme.alert }]}>
+          <ThemedText themeColor="secondary" style={styles.days}>
             {days[index]} ›
           </ThemedText>
-        </View>
+        </ThemedView>
       ))}
       {names.length > 0 && (
-        <Pressable style={[styles.more, { borderColor: theme.primary }]}>
-          <ThemedText type="code" style={{ color: theme.primary }}>
+        <Pressable style={[styles.more]}>
+          <ThemedText themeColor="primary">
             VER TODAS ·{" "}
             {names.length === 2 ? (count.startsWith("12") ? "12" : "7") : ""}
           </ThemedText>
         </Pressable>
       )}
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
+  screen: { flex: 1 },
 
   content: {
     paddingHorizontal: 21,
@@ -187,20 +148,20 @@ const styles = StyleSheet.create({
   },
 
   date: {
-    letterSpacing: 1.5,
-    fontSize: 9,
+    letterSpacing: Typography.letterSpacing.expanded,
+    fontSize: Typography.sizes.micro,
   },
 
   greeting: {
-    fontFamily: Fonts.serif,
-    fontSize: 25,
-    lineHeight: 30,
+    fontFamily: FontFamilies.primary,
+    fontSize: Typography.sizes.greeting,
+    lineHeight: Typography.lineHeights.greeting,
     marginTop: 6,
   },
 
   crm: {
-    fontSize: 9,
-    letterSpacing: 1,
+    fontSize: Typography.sizes.micro,
+    letterSpacing: Typography.letterSpacing.normal,
     marginTop: 3,
   },
 
@@ -209,9 +170,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 18,
     paddingVertical: 10,
+    borderColor: Theme.border,
   },
 
-  exitText: { fontSize: 9 },
+  exitText: { fontSize: Typography.sizes.micro },
 
   totalCard: {
     borderWidth: 1,
@@ -232,14 +194,15 @@ const styles = StyleSheet.create({
   },
 
   cardLabelText: {
-    fontSize: 9,
-    letterSpacing: 1.3,
+    fontSize: Typography.sizes.micro,
+    fontWeight: Typography.weights.semibold,
+    letterSpacing: Typography.letterSpacing.wide,
   },
 
   total: {
-    fontFamily: Fonts.serif,
-    fontSize: 43,
-    lineHeight: 48,
+    fontFamily: FontFamilies.primary,
+    fontSize: Typography.sizes.metric,
+    lineHeight: Typography.lineHeights.metric,
   },
 
   cardFooter: {
@@ -263,18 +226,18 @@ const styles = StyleSheet.create({
     paddingTop: 15,
   },
 
-  returnTitle: { fontWeight: "600" },
+  returnTitle: { fontWeight: Typography.weights.semibold },
 
   description: {
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: Typography.sizes.small,
+    lineHeight: Typography.lineHeights.compact,
     paddingHorizontal: 16,
     paddingTop: 7,
   },
 
   count: {
-    fontSize: 8,
-    letterSpacing: 1,
+    fontSize: Typography.sizes.tiny,
+    letterSpacing: Typography.letterSpacing.normal,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 12,
@@ -290,8 +253,8 @@ const styles = StyleSheet.create({
   },
 
   days: {
-    fontFamily: Fonts.serif,
-    fontSize: 14,
+    fontFamily: FontFamilies.primary,
+    fontSize: Typography.sizes.bodySmall,
   },
 
   more: {
@@ -301,5 +264,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minHeight: 35,
     margin: 12,
+    borderColor: Theme.primary,
   },
 });

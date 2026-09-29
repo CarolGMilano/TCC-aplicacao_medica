@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 
-import { Fonts } from "@/constants/theme";
+import { FontFamilies, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -23,19 +23,19 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
 
   return (
     <View style={styles.wrapper}>
-      <ThemedText type="code" themeColor="textSecondary" style={styles.label}>
+      <ThemedText themeColor="textSecondary" style={styles.label}>
         {label}
       </ThemedText>
       <View
         style={[
           styles.inputRow,
-          { borderBottomColor: error ? theme.accent : theme.border },
+          { borderBottomColor: error ? Theme.error : theme.primary },
         ]}
       >
         <TextInput
           {...props}
           style={[styles.input, { color: theme.text }, style]}
-          placeholderTextColor={theme.muted}
+          placeholderTextColor={theme.text}
           secureTextEntry={password && !visible}
           autoCapitalize={password ? "none" : props.autoCapitalize}
         />
@@ -44,18 +44,14 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
             accessibilityRole="button"
             onPress={() => setVisible((current) => !current)}
           >
-            <ThemedText
-              type="code"
-              themeColor="primary"
-              style={styles.showButton}
-            >
+            <ThemedText style={styles.showButton}>
               {visible ? "OCULTAR" : "MOSTRAR"}
             </ThemedText>
           </Pressable>
         ) : null}
       </View>
       {error ? (
-        <ThemedText style={[styles.error, { color: theme.accent }]}>
+        <ThemedText themeColor="error" style={styles.error}>
           {error}
         </ThemedText>
       ) : null}
@@ -64,15 +60,41 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
 }
 
 const styles = StyleSheet.create({
-  wrapper: { gap: 8 },
-  label: { letterSpacing: 1.2, fontSize: 10 },
+  wrapper: {
+    gap: 2,
+  },
+
+  label: {
+    letterSpacing: Typography.letterSpacing.wide,
+    alignSelf: "flex-start",
+    fontSize: Typography.sizes.label,
+  },
+
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     borderBottomWidth: 1,
-    minHeight: 42,
+    minHeight: 48,
   },
-  input: { flex: 1, fontFamily: Fonts.sans, fontSize: 15, paddingVertical: 8 },
-  showButton: { fontSize: 9, letterSpacing: 0.5 },
-  error: { fontSize: 12, marginTop: 2 },
+
+  input: {
+    flex: 1,
+    fontFamily: FontFamilies.primary,
+    fontSize: Typography.sizes.input,
+    lineHeight: Typography.lineHeights.input,
+    paddingVertical: 8,
+  },
+
+  showButton: {
+    fontSize: Typography.sizes.micro,
+    fontFamily: FontFamilies.secondary,
+    letterSpacing: Typography.letterSpacing.normal,
+  },
+
+  error: {
+    fontSize: Typography.sizes.small,
+    lineHeight: Typography.lineHeights.caption,
+    marginTop: 2,
+  },
 });

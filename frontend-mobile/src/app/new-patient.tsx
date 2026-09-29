@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -34,7 +35,10 @@ export default function NewPatientScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 24, gap: 12 },
-  title: { fontSize: 30, fontWeight: "600" },
+  title: {
+    fontSize: Typography.sizes.heading,
+    fontWeight: Typography.weights.semibold,
+  },
   button: {
     minHeight: 48,
     borderWidth: 1,
