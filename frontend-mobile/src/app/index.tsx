@@ -1,98 +1,187 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from "expo-router";
+import { useState } from "react";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import { Field } from "@/components/field";
+import { login } from "@/constants/api";
+import { FontFamilies, Typography } from "@/constants/theme";
+import { ThemedText } from "@/components/themed-text";
+import { useTheme } from "@/hooks/use-theme";
 
 export default function HomeScreen() {
+  const theme = useTheme();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleLogin() {
+    if (!email.trim() || !password) {
+      setError("Informe seu e-mail e sua senha.");
+      return;
+    }
+
+    setError("");
+    setIsSubmitting(true);
+    try {
+      await login(email.trim(), password);
+      router.replace("/dashboard");
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Não foi possível entrar agora.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
+      <View style={styles.content}>
+        <View style={[styles.progress, { backgroundColor: theme.secondary }]} />
+        <View
+          style={[styles.progressAccent, { backgroundColor: theme.tertiary }]}
+        />
+
+        <View style={styles.heading}>
+          <ThemedText style={styles.logo}>CerviCare</ThemedText>
+          <ThemedText style={styles.tagline}>
+            SAÚDE DA MULHER · RASTREIO E TRATAMENTO
           </ThemedText>
-        </ThemedView>
+        </View>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
+        <View style={styles.form}>
+          <Field
+            label="E-MAIL"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            placeholder="seu.email@exemplo.com"
           />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
+          <Field
+            label="SENHA"
+            value={password}
+            onChangeText={setPassword}
+            password
+            autoComplete="password"
+            placeholder="••••••••"
+            error={error}
           />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+          <Pressable
+            accessibilityRole="button"
+            disabled={isSubmitting}
+            onPress={handleLogin}
+            style={({ pressed }) => [
+              styles.submit,
+              { backgroundColor: theme.accent },
+              pressed && styles.pressed,
+            ]}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator color={theme.textPrimaryLight} />
+            ) : (
+              <ThemedText
+                themeColor="textPrimaryLight"
+                style={styles.submitText}
+              >
+                Entrar
+              </ThemedText>
+            )}
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push("/forgot-password")}
+            style={styles.forgot}
+          >
+            <ThemedText themeColor="accent" style={styles.forgotText}>
+              ESQUECI A SENHA
+            </ThemedText>
+          </Pressable>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
   },
-  safeArea: {
+
+  content: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    paddingHorizontal: 25,
+    paddingTop: 160,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+
+  progress: {
+    height: 5,
+    width: "66%",
+    borderRadius: 8,
   },
-  title: {
-    textAlign: 'center',
+
+  progressAccent: {
+    position: "absolute",
+    top: 160,
+    left: "66%",
+    right: 25,
+    height: 5,
+    borderRadius: 8,
   },
-  code: {
-    textTransform: 'uppercase',
+
+  heading: {
+    marginTop: 32,
+    gap: 14,
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+
+  logo: {
+    fontFamily: FontFamilies.detail,
+    fontSize: Typography.sizes.logo,
+    lineHeight: Typography.lineHeights.logo,
+  },
+
+  tagline: {
+    fontSize: Typography.sizes.micro,
+    letterSpacing: Typography.letterSpacing.hero,
+    fontFamily: FontFamilies.secondary,
+  },
+
+  form: {
+    marginTop: 56,
+    gap: 28,
+  },
+
+  forgot: {
+    alignSelf: "center",
+    marginTop: -4,
+  },
+
+  forgotText: {
+    fontFamily: FontFamilies.secondary,
+    fontSize: Typography.sizes.label,
+    letterSpacing: Typography.letterSpacing.normal,
+  },
+
+  submit: {
+    minHeight: 58,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
+
+  submitText: {
+    fontWeight: Typography.weights.bold,
+  },
+
+  pressed: {
+    opacity: 0.8,
   },
 });
