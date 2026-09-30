@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FontFamilies, Theme, Typography } from "@/constants/theme";
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/components/shared/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
 export function BottomNav() {
@@ -71,6 +71,7 @@ function NavItem({
   onPress: () => void;
 }) {
   const theme = useTheme();
+
   return (
     <Pressable
       accessibilityRole="tab"
@@ -84,7 +85,7 @@ function NavItem({
         size={19}
       />
       <ThemedText
-        style={[styles.itemLabel]}
+        style={styles.itemLabel}
         themeColor={active ? "primary" : "textSecondary"}
       >
         {label}

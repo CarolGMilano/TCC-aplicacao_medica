@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-import { saveToken } from '@/constants/auth-session';
+import { getToken, saveToken } from '@/constants/auth-session';
 
 const localHost = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
 
@@ -13,6 +13,39 @@ export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? `http://${localHo
 export type LoginResponse = {
   token: string;
   tipo: string;
+};
+
+export type PatientRegistration = {
+  paciente: {
+    nome: string;
+    dataNascimento: string;
+    prontuario: string;
+    status: string;
+  };
+  dadosGinecoObstetricos: {
+    numGestacao: number;
+    numPartoNormal: number;
+    numCesariana: number;
+    numAborto: number;
+    menarca: number;
+    menopausa: number | null;
+  };
+  saudeSexual: {
+    sexarca: number;
+    mac: string;
+    numParceiros: number;
+    vvs: boolean;
+  };
+  historicoTabagismo: {
+    cigarrosDia: number;
+    idadeInicio: number;
+    idadeFim: number;
+    fumante: string;
+  };
+  historicoIst: {
+    ist: string;
+    condilomaHpv: boolean;
+  }[];
 };
 
 export async function login(email: string, senha: string): Promise<LoginResponse> {
@@ -29,4 +62,22 @@ export async function login(email: string, senha: string): Promise<LoginResponse
   const result = (await response.json()) as LoginResponse;
   saveToken(result.token);
   return result;
+}
+
+export async function registerPatient(
+  data: PatientRegistration,
+): Promise<void> {
+  const token = getToken();
+  const response = await fetch(`${API_BASE_URL}/api/pacientes/completo`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error('Não foi possível cadastrar a paciente.');
+  }
 }

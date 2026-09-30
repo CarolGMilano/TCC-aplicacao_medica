@@ -2,11 +2,11 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNav } from "@/components/shared/bottom-nav";
+import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 import { logout } from "@/constants/auth-session";
-import { router } from "expo-router";
-import { ThemedText } from "@/components/shared/themed-text";
 import { FontFamilies, Theme, Typography } from "@/constants/theme";
+import { router } from "expo-router";
 
 export default function DashboardScreen() {
   return (
@@ -118,7 +118,7 @@ function ReturnCard({
         </ThemedView>
       ))}
       {names.length > 0 && (
-        <Pressable style={[styles.more]}>
+        <Pressable style={styles.more}>
           <ThemedText themeColor="primary">
             VER TODAS ·{" "}
             {names.length === 2 ? (count.startsWith("12") ? "12" : "7") : ""}
@@ -132,13 +132,7 @@ function ReturnCard({
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   screen: { flex: 1 },
-
-  content: {
-    paddingHorizontal: 21,
-    paddingBottom: 130,
-    gap: 16,
-  },
-
+  content: { paddingHorizontal: 21, paddingBottom: 130, gap: 16 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -146,25 +140,21 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 12,
   },
-
   date: {
     letterSpacing: Typography.letterSpacing.expanded,
     fontSize: Typography.sizes.micro,
   },
-
   greeting: {
     fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.greeting,
     lineHeight: Typography.lineHeights.greeting,
     marginTop: 6,
   },
-
   crm: {
     fontSize: Typography.sizes.micro,
     letterSpacing: Typography.letterSpacing.normal,
     marginTop: 3,
   },
-
   exit: {
     borderWidth: 1,
     borderRadius: 20,
@@ -172,52 +162,27 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderColor: Theme.border,
   },
-
   exitText: { fontSize: Typography.sizes.micro },
-
-  totalCard: {
-    borderWidth: 1,
-    borderRadius: 17,
-    padding: 18,
-    gap: 8,
-  },
-
-  cardLabel: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 9,
-  },
-
-  line: {
-    width: 18,
-    height: 3,
-  },
-
+  totalCard: { borderWidth: 1, borderRadius: 17, padding: 18, gap: 8 },
+  cardLabel: { flexDirection: "row", alignItems: "center", gap: 9 },
+  line: { width: 18, height: 3 },
   cardLabelText: {
     fontSize: Typography.sizes.micro,
     fontWeight: Typography.weights.semibold,
     letterSpacing: Typography.letterSpacing.wide,
   },
-
   total: {
     fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.metric,
     lineHeight: Typography.lineHeights.metric,
   },
-
   cardFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 2,
   },
-
-  returnCard: {
-    borderWidth: 1,
-    borderRadius: 16,
-    overflow: "hidden",
-  },
-
+  returnCard: { borderWidth: 1, borderRadius: 16, overflow: "hidden" },
   returnHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -225,16 +190,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 15,
   },
-
   returnTitle: { fontWeight: Typography.weights.semibold },
-
   description: {
     fontSize: Typography.sizes.small,
     lineHeight: Typography.lineHeights.compact,
     paddingHorizontal: 16,
     paddingTop: 7,
   },
-
   count: {
     fontSize: Typography.sizes.tiny,
     letterSpacing: Typography.letterSpacing.normal,
@@ -242,7 +204,6 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 12,
   },
-
   patientRow: {
     borderTopWidth: 1,
     paddingHorizontal: 16,
@@ -251,12 +212,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-
   days: {
     fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.bodySmall,
   },
-
   more: {
     borderWidth: 1,
     borderRadius: 20,

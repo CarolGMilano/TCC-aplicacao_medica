@@ -12,7 +12,6 @@ export type ThemedViewProps = ViewProps & {
 };
 
 export function ThemedView({
-  style,
   lightColor,
   darkColor,
   type,
@@ -28,7 +27,7 @@ export function ThemedView({
         { backgroundColor: theme[type ?? "background"] },
         borderColor && { borderColor: theme[borderColor] },
         borderTopColor && { borderTopColor: theme[borderTopColor] },
-        style,
+        otherProps.style,
       ]}
       {...otherProps}
     />

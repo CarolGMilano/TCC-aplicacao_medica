@@ -2,10 +2,9 @@ import { version } from "expo/package.json";
 import { Image } from "expo-image";
 import { useColorScheme, StyleSheet } from "react-native";
 
-import { ThemedText } from "./themed-text";
-import { ThemedView } from "./themed-view";
-
 import { Spacing } from "@/constants/theme";
+import { ThemedText } from "@/components/shared/themed-text";
+import { ThemedView } from "@/components/shared/themed-view";
 
 export function WebBadge() {
   const scheme = useColorScheme();
@@ -37,11 +36,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: Spacing.two,
   },
-  versionText: {
-    textAlign: "center",
-  },
-  badgeImage: {
-    width: 123,
-    aspectRatio: 123 / 24,
-  },
+  versionText: { textAlign: "center" },
+  badgeImage: { width: 123, aspectRatio: 123 / 24 },
 });
