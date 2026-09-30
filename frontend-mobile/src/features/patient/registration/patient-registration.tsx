@@ -16,6 +16,9 @@ import {
   stepTitles,
   totalSteps,
 } from "./constants";
+
+import type { PatientForm } from "./types";
+import { styles } from "./styles";
 import {
   HabitsStep,
   IstStep,
@@ -24,8 +27,6 @@ import {
   ReviewStep,
   SexualStep,
 } from "./steps";
-import type { PatientForm } from "./types";
-import { styles } from "./styles";
 
 export function PatientRegistration() {
   const [step, setStep] = useState(1);

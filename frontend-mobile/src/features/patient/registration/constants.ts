@@ -1,4 +1,5 @@
-import type { PatientForm } from "./types";
+import { PatientForm } from "./types";
+
 
 export const totalSteps = 6;
 

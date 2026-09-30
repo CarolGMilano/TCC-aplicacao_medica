@@ -1,4 +1,4 @@
-import LoginScreen from "@/components/login/login-screen";
+import LoginScreen from "@/features/auth/login-screen";
 
 export default function HomeScreen() {
   return <LoginScreen />;

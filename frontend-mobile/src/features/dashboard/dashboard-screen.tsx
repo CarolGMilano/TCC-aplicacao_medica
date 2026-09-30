@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BottomNav } from "@/components/shared/bottom-nav";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
-import { logout } from "@/constants/auth-session";
+import { logout } from "@/features/auth/auth-session";
 import { FontFamilies, Theme, Typography } from "@/constants/theme";
 import { router } from "expo-router";
 

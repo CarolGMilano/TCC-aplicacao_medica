@@ -1,1 +1,1 @@
-export { AnimatedIcon, AnimatedSplashOverlay } from "../animated-icon";
+export { AnimatedIcon, AnimatedSplashOverlay } from "../ui/animated-icon";
