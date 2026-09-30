@@ -5,9 +5,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Field } from "@/components/shared/field";
 import { ThemedText } from "@/components/shared/themed-text";
-import { login } from "@/constants/api";
 import { FontFamilies, Typography } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
+import { login } from "./services/auth-api";
 
 export default function LoginScreen() {
   const theme = useTheme();
@@ -111,8 +111,19 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { flex: 1, paddingHorizontal: 25, paddingTop: 160 },
-  progress: { height: 5, width: "66%", borderRadius: 8 },
+
+  content: {
+    flex: 1,
+    paddingHorizontal: 25,
+    paddingTop: 160,
+  },
+
+  progress: {
+    height: 5,
+    width: "66%",
+    borderRadius: 8,
+  },
+
   progressAccent: {
     position: "absolute",
     top: 160,
@@ -121,24 +132,40 @@ const styles = StyleSheet.create({
     height: 5,
     borderRadius: 8,
   },
-  heading: { marginTop: 32, gap: 14 },
+
+  heading: {
+    marginTop: 32,
+    gap: 14,
+  },
+
   logo: {
     fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.logo,
     lineHeight: Typography.lineHeights.logo,
   },
+
   tagline: {
-    fontSize: Typography.sizes.micro,
-    letterSpacing: Typography.letterSpacing.hero,
+    fontSize: Typography.sizes.label,
+    letterSpacing: Typography.letterSpacing.expanded,
     fontFamily: FontFamilies.secondary,
   },
-  form: { marginTop: 56, gap: 28 },
-  forgot: { alignSelf: "center", marginTop: -4 },
+
+  form: {
+    marginTop: 56,
+    gap: 28,
+  },
+
+  forgot: {
+    alignSelf: "center",
+    marginTop: -4,
+  },
+
   forgotText: {
     fontFamily: FontFamilies.secondary,
     fontSize: Typography.sizes.label,
     letterSpacing: Typography.letterSpacing.normal,
   },
+
   submit: {
     minHeight: 58,
     borderRadius: 28,
@@ -146,6 +173,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 2,
   },
+
   submitText: { fontWeight: Typography.weights.bold },
   pressed: { opacity: 0.8 },
 });

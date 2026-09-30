@@ -17,19 +17,20 @@ export function ThemedView({
   type,
   borderColor,
   borderTopColor,
+  style,
   ...otherProps
 }: ThemedViewProps) {
   const theme = useTheme();
 
   return (
     <View
+      {...otherProps}
       style={[
         { backgroundColor: theme[type ?? "background"] },
         borderColor && { borderColor: theme[borderColor] },
         borderTopColor && { borderTopColor: theme[borderTopColor] },
-        otherProps.style,
+        style,
       ]}
-      {...otherProps}
     />
   );
 }

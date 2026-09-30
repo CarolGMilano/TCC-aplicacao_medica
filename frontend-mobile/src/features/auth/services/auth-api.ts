@@ -20,6 +20,17 @@ export async function login(
   email: string,
   senha: string,
 ): Promise<LoginResponse> {
+  const USE_MOCK_LOGIN = true;
+  
+  if (USE_MOCK_LOGIN) {
+    // Mock login response for testing purposes
+    const mockResponse: LoginResponse = {
+      token: 'token-desenvolvimento',
+      tipo: 'MEDICO',
+    };
+    return mockResponse;
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

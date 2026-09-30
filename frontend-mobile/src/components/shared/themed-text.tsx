@@ -74,15 +74,14 @@ const styles = StyleSheet.create({
     lineHeight: Typography.lineHeights.display,
   },
   subtitle: {
-    fontFamily: FontFamilies.detail,
-    fontSize: Typography.sizes.subtitle,
-    lineHeight: Typography.lineHeights.logo,
-    fontWeight: Typography.weights.semibold,
+    fontSize: Typography.sizes.label,
+    letterSpacing: Typography.letterSpacing.tight,
+    fontFamily: FontFamilies.secondary,
   },
   link: {
-    fontFamily: FontFamilies.primary,
-    lineHeight: Typography.lineHeights.greeting,
     fontSize: Typography.sizes.bodySmall,
+    letterSpacing: Typography.letterSpacing.tight,
+    fontFamily: FontFamilies.secondary,
   },
   linkPrimary: {
     fontFamily: FontFamilies.primary,

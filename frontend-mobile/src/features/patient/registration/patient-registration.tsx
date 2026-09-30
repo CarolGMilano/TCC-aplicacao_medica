@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { registerPatient } from "@/constants/api";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 
@@ -27,6 +26,7 @@ import {
   ReviewStep,
   SexualStep,
 } from "./steps";
+import { registerPatient } from "./services/patient-registration-api";
 
 export function PatientRegistration() {
   const [step, setStep] = useState(1);

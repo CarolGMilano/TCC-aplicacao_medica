@@ -89,30 +89,35 @@ function ReturnCard({
   days: string[];
 }) {
   return (
-    <ThemedView style={styles.returnCard} borderColor="border">
+    <ThemedView
+      type="backgroundElement"
+      style={styles.returnCard}
+      borderColor="border"
+    >
       <View style={styles.returnHeader}>
-        <ThemedView type="secondary" style={styles.line} />
+        <ThemedView type="tertiary" style={styles.line} />
         <ThemedText style={styles.returnTitle}>{title}</ThemedText>
       </View>
       <ThemedText style={styles.description} themeColor="textSecondary">
         {description}
       </ThemedText>
-      <ThemedText type="code" themeColor="textSecondary" style={styles.count}>
+      <ThemedText themeColor="textSecondary" style={styles.count}>
         {count}
       </ThemedText>
       {names.map((name, index) => (
         <ThemedView
+          type="backgroundElement"
           key={name}
           style={styles.patientRow}
           borderTopColor="border"
         >
           <View>
             <ThemedText>{name}</ThemedText>
-            <ThemedText type="code" themeColor="muted">
+            <ThemedText type="subtitle" themeColor="muted">
               PRT 10482
             </ThemedText>
           </View>
-          <ThemedText themeColor="secondary" style={styles.days}>
+          <ThemedText themeColor="error" style={styles.days}>
             {days[index]} ›
           </ThemedText>
         </ThemedView>
@@ -194,7 +199,7 @@ const styles = StyleSheet.create({
   },
 
   cardLabelText: {
-    fontSize: Typography.sizes.micro,
+    fontSize: Typography.sizes.label,
     fontWeight: Typography.weights.semibold,
     letterSpacing: Typography.letterSpacing.wide,
   },
@@ -236,8 +241,9 @@ const styles = StyleSheet.create({
   },
 
   count: {
-    fontSize: Typography.sizes.tiny,
-    letterSpacing: Typography.letterSpacing.normal,
+    fontSize: Typography.sizes.label,
+    letterSpacing: Typography.letterSpacing.tight,
+    fontFamily: FontFamilies.secondary,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 12,
