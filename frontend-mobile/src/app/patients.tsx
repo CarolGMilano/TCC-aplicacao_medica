@@ -2,9 +2,9 @@ import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BottomNav } from "@/components/bottom-nav";
+import { BottomNav } from "@/components/shared/bottom-nav";
 import { Typography } from "@/constants/theme";
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/components/shared/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
 export default function PatientsScreen() {

@@ -6,8 +6,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useColorScheme } from "react-native";
-
-import { AnimatedSplashOverlay } from "@/components/animated-icon";
+import { AnimatedSplashOverlay } from "@/components/ui/animated-icon";
 
 SplashScreen.preventAutoHideAsync();
 

@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import { FontFamilies, Theme, Typography } from "@/constants/theme";
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/components/shared/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
 type FieldProps = TextInputProps & {
@@ -60,16 +60,12 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    gap: 2,
-  },
-
+  wrapper: { gap: 2 },
   label: {
     letterSpacing: Typography.letterSpacing.wide,
     alignSelf: "flex-start",
     fontSize: Typography.sizes.label,
   },
-
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -77,7 +73,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     minHeight: 48,
   },
-
   input: {
     flex: 1,
     fontFamily: FontFamilies.primary,
@@ -85,13 +80,11 @@ const styles = StyleSheet.create({
     lineHeight: Typography.lineHeights.input,
     paddingVertical: 8,
   },
-
   showButton: {
     fontSize: Typography.sizes.micro,
     fontFamily: FontFamilies.secondary,
     letterSpacing: Typography.letterSpacing.normal,
   },
-
   error: {
     fontSize: Typography.sizes.small,
     lineHeight: Typography.lineHeights.caption,

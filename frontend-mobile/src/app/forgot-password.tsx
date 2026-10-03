@@ -3,9 +3,9 @@ import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Field } from "@/components/field";
+import { Field } from "@/components/shared/field";
 import { FontFamilies, Typography } from "@/constants/theme";
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/components/shared/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
 export default function ForgotPasswordScreen() {
