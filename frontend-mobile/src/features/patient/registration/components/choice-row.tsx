@@ -8,6 +8,7 @@ type ChoiceRowProps = {
   options: string[];
   selected: string;
   onSelect: (value: string) => void;
+  inline?: boolean;
 };
 
 export function ChoiceRow({
@@ -15,14 +16,15 @@ export function ChoiceRow({
   options,
   selected,
   onSelect,
+  inline = false,
 }: ChoiceRowProps) {
   return (
-    <View style={styles.choiceRow}>
+    <View style={[styles.choiceRow, inline && styles.choiceRowInline]}>
       <ThemedText type="code" themeColor="textSecondary">
         {label}
       </ThemedText>
 
-      <View style={styles.choiceList}>
+      <View style={[styles.choiceList, inline && styles.choiceListInline]}>
         {options.map((option) => {
           const isSelected = option === selected;
 
@@ -54,13 +56,25 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.border,
   },
 
+  choiceRowInline: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
   choiceList: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: Spacing.one,
+    flexShrink: 1,
+  },
+
+  choiceListInline: {
+    justifyContent: "flex-end",
   },
 
   choice: {
+    backgroundColor: Theme.backgroundElement,
     borderWidth: 1,
     borderColor: Theme.border,
     borderRadius: 20,

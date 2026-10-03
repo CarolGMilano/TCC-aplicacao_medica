@@ -39,6 +39,10 @@ export async function registerPatient(
 ): Promise<void> {
   const token = getToken();
 
+  if (!token) {
+    throw new Error('Sua sessão expirou. Faça login novamente.');
+  }
+
   const response = await fetch(`${API_BASE_URL}/api/pacientes/completo`, {
     method: 'POST',
     headers: {
@@ -49,6 +53,10 @@ export async function registerPatient(
   });
 
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('Sua sessão expirou. Faça login novamente.');
+    }
+
     throw new Error('Não foi possível cadastrar a paciente.');
   }
 }

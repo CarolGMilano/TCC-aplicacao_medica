@@ -1,6 +1,19 @@
 import { Counter, OptionRow, StepSection, ToggleRow } from "../components";
 import { StepProps } from "../types";
 
+const contraceptionOptions = [
+  "Anticoncepcional oral combinado",
+  "Anticoncepcional oral progestagênio isolado",
+  "Implante de etonogestrel",
+  "DIU hormonal",
+  "DIU não hormonal",
+  "Laqueadura tubária",
+  "Anel vaginal",
+  "Adesivo transdérmico",
+  "Preservativo",
+  "Nenhum",
+];
+
 export function SexualStep({ form, update }: StepProps) {
   return (
     <StepSection title="INÍCIO DA VIDA SEXUAL">
@@ -19,7 +32,8 @@ export function SexualStep({ form, update }: StepProps) {
         <OptionRow
           label="MAC"
           value={form.contraception}
-          onChange={() => update("contraception", "DIU")}
+          options={contraceptionOptions}
+          onChange={(value) => update("contraception", value)}
         />
         <Counter
           label="Nº DE PARCEIROS"

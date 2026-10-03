@@ -1,4 +1,11 @@
-import { StyleSheet, TextInput, View } from "react-native";
+import {
+  StyleProp,
+  StyleSheet,
+  TextInput,
+  TextStyle,
+  View,
+  ViewStyle,
+} from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
@@ -8,6 +15,10 @@ type InputFieldProps = {
   value: string;
   placeholder?: string;
   onChangeText: (value: string) => void;
+  keyboardType?: "default" | "numeric" | "number-pad";
+  maxLength?: number;
+  containerStyle?: StyleProp<ViewStyle>;
+  inputStyle?: StyleProp<TextStyle>;
 };
 
 export function InputField({
@@ -15,9 +26,13 @@ export function InputField({
   value,
   placeholder,
   onChangeText,
+  keyboardType = "default",
+  maxLength,
+  containerStyle,
+  inputStyle,
 }: InputFieldProps) {
   return (
-    <View style={styles.inputField}>
+    <View style={[styles.inputField, containerStyle]}>
       <ThemedText type="code" themeColor="textSecondary">
         {label}
       </ThemedText>
@@ -26,8 +41,10 @@ export function InputField({
         value={value}
         placeholder={placeholder}
         onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        maxLength={maxLength}
         placeholderTextColor={Theme.muted}
-        style={styles.textInput}
+        style={[styles.textInput, inputStyle]}
       />
     </View>
   );
@@ -43,6 +60,7 @@ const styles = StyleSheet.create({
   },
 
   textInput: {
+    backgroundColor: Theme.backgroundElement,
     borderWidth: 1,
     borderColor: Theme.border,
     borderRadius: 12,

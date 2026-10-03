@@ -13,6 +13,7 @@ export function ToggleRow({ label, value, onChange }: ToggleRowProps) {
       options={["Sim", "Não"]}
       selected={value ? "Sim" : "Não"}
       onSelect={(choice) => onChange(choice === "Sim")}
+      inline
     />
   );
 }

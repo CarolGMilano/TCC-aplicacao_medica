@@ -53,6 +53,18 @@ export const styles = StyleSheet.create({
     gap: Spacing.two,
   },
 
+  dateDay: {
+    flex: 1,
+  },
+
+  dateMonth: {
+    flex: 1,
+  },
+
+  dateYear: {
+    flex: 1.7,
+  },
+
   review: {
     backgroundColor: Theme.background,
     marginTop: Spacing.three,

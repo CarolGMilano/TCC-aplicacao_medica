@@ -9,6 +9,7 @@ export function HabitsStep({ form, update }: StepProps) {
         options={["Fuma", "Parou", "Nunca"]}
         selected={form.smoking}
         onSelect={(value) => update("smoking", value)}
+        inline
       />
       <Counter
         label="COMEÇOU AOS"
