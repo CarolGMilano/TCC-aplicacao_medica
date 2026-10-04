@@ -57,9 +57,9 @@ export const statusMap: Record<string, string> = {
 
 export const contraceptionMap: Record<string, string> = {
   Nenhum: "NENHUM",
-  "Anticoncepcional oral combinado": "ANTICONCEPCIONAL_ORAL_COMBINADO",
-  "Anticoncepcional oral progestagênio isolado":
+  "Anticoncepcional oral de progestagênio isolado":
     "ANTICONCEPCIONAL_ORAL_PROGESTAGENIO_ISOLADO",
+  "Anticoncepcional oral combinado": "ANTICONCEPCIONAL_ORAL_COMBINADO",
   "Implante de etonogestrel": "IMPLANTE_ETONOGESTREL",
   "DIU hormonal": "DIU_HORMONAL",
   "DIU não hormonal": "DIU_NAO_HORMONAL",
