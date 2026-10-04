@@ -149,7 +149,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
             {!edit.editing && tab === "sexual" && <SexualTab record={record} />}
             {!edit.editing && tab === "ist" && <IstTab record={record} />}
             {!edit.editing && tab === "habits" && <HabitsTab record={record} />}
-            {tab === "visits" && <VisitsTab created={created} />}
+            {tab === "visits" && <VisitsTab patientId={record.id} />}
           </View>
         </ScrollView>
 

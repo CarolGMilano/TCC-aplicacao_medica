@@ -75,3 +75,20 @@ export type DataTab = Exclude<RecordTab, "visits">;
 export type TabProps = {
   record: PatientRecord;
 };
+
+// Um atendimento na lista da aba Atend., já pronto para exibir.
+export type Visit = {
+  id: number;
+  title: string;
+  detail: string;
+  tags: string[];
+  // Resultado alterado ou conduta que pede atenção (fundo e barra em coral).
+  highlight: boolean;
+  date: string;
+  doctor: string;
+};
+
+export type VisitType =
+  "consultations" | "cytology" | "pcr" | "colposcopy" | "procedures";
+
+export type VisitLists = Record<VisitType, Visit[]>;
