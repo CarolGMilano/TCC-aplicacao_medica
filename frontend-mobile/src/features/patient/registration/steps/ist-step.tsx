@@ -1,30 +1,24 @@
 import { ChoiceRow, StepSection, ToggleRow } from "../components";
-import { StepProps } from "../types";
+import { istOptions } from "../constants";
+import type { StepProps } from "../types";
+import { toggleIst } from "../utils";
 
 export function IstStep({ form, update }: StepProps) {
   return (
     <StepSection title="HISTÓRICO DE IST">
       <ChoiceRow
         label="ISTS"
-        options={[
-          "HPV",
-          "HIV",
-          "Herpes genital",
-          "Tricomoníase",
-          "Gonorreia",
-          "Clamídia",
-          "Sífilis",
-          "Não sabe",
-          "Nenhuma",
-        ]}
-        selected={form.ist}
-        onSelect={(value) => update("ist", value)}
+        options={istOptions}
+        selected={form.ists}
+        onSelect={(value) => update("ists", toggleIst(form.ists, value))}
       />
-      <ToggleRow
-        label="CONDILOMA HPV"
-        value={form.hpvWart}
-        onChange={(value) => update("hpvWart", value)}
-      />
+      {form.ists.includes("HPV") ? (
+        <ToggleRow
+          label="CONDILOMA HPV"
+          value={form.hpvWart}
+          onChange={(value) => update("hpvWart", value)}
+        />
+      ) : null}
     </StepSection>
   );
 }

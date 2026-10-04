@@ -1,19 +1,17 @@
-import { Modal, Pressable, StyleSheet, View } from "react-native";
 import { useState } from "react";
+import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
-import { useTheme } from "@/hooks/use-theme";
 
 type OptionRowProps = {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  options: string[];
+  options: readonly string[];
 };
 
 export function OptionRow({ label, value, onChange, options }: OptionRowProps) {
-  const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
   function selectOption(option: string) {
@@ -23,22 +21,18 @@ export function OptionRow({ label, value, onChange, options }: OptionRowProps) {
 
   return (
     <>
-      <View style={[styles.optionRow, { borderBottomColor: theme.border }]}> 
+      <View style={styles.optionRow}>
         <ThemedText type="code" themeColor="textSecondary">
           {label}
         </ThemedText>
 
         <Pressable
-          style={[
-            styles.optionField,
-            {
-              backgroundColor: theme.backgroundElement,
-              borderColor: theme.border,
-            },
-          ]}
+          accessibilityRole="button"
+          accessibilityLabel={`${label}: ${value}`}
+          style={styles.optionField}
           onPress={() => setIsOpen(true)}
         >
-          <ThemedText>{value}</ThemedText>
+          <ThemedText style={styles.optionValue}>{value}</ThemedText>
           <ThemedText style={styles.arrow}>⌄</ThemedText>
         </Pressable>
       </View>
@@ -49,40 +43,33 @@ export function OptionRow({ label, value, onChange, options }: OptionRowProps) {
         animationType="fade"
         onRequestClose={() => setIsOpen(false)}
       >
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setIsOpen(false)}
-        >
-          <View
-            style={[
-              styles.modalCard,
-              {
-                backgroundColor: theme.backgroundElement,
-                borderColor: theme.border,
-              },
-            ]}
-          >
+        <Pressable style={styles.modalOverlay} onPress={() => setIsOpen(false)}>
+          <View style={styles.modalCard}>
             <ThemedText type="code" themeColor="textSecondary">
               {label}
             </ThemedText>
-            {options.map((option) => (
-              <Pressable
-                key={option}
-                onPress={() => selectOption(option)}
-                style={[
-                  styles.option,
-                  option === value && {
-                    backgroundColor: theme.primary,
-                  },
-                ]}
-              >
-                <ThemedText
-                  themeColor={option === value ? "textPrimaryLight" : "text"}
-                >
-                  {option}
-                </ThemedText>
-              </Pressable>
-            ))}
+
+            <ScrollView contentContainerStyle={styles.optionList}>
+              {options.map((option) => {
+                const isSelected = option === value;
+
+                return (
+                  <Pressable
+                    key={option}
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: isSelected }}
+                    onPress={() => selectOption(option)}
+                    style={[styles.option, isSelected && styles.optionSelected]}
+                  >
+                    <ThemedText
+                      themeColor={isSelected ? "textPrimaryLight" : "text"}
+                    >
+                      {option}
+                    </ThemedText>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
           </View>
         </Pressable>
       </Modal>
@@ -103,10 +90,17 @@ const styles = StyleSheet.create({
     minHeight: 48,
     borderWidth: 1,
     borderRadius: 12,
+    borderColor: Theme.border,
+    backgroundColor: Theme.backgroundElement,
     paddingHorizontal: Spacing.two,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: Spacing.two,
+  },
+
+  optionValue: {
+    flex: 1,
   },
 
   arrow: {
@@ -118,13 +112,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: Spacing.three,
-    backgroundColor: "rgba(16, 33, 42, 0.28)",
+    backgroundColor: "rgba(38, 48, 31, 0.28)",
   },
 
   modalCard: {
+    maxHeight: "80%",
     borderWidth: 1,
     borderRadius: 16,
+    borderColor: Theme.border,
+    backgroundColor: Theme.backgroundElement,
     padding: Spacing.three,
+    gap: Spacing.two,
+  },
+
+  optionList: {
     gap: Spacing.one,
   },
 
@@ -132,5 +133,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.two,
+  },
+
+  optionSelected: {
+    backgroundColor: Theme.primary,
   },
 });

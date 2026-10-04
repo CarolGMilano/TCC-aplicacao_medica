@@ -5,8 +5,9 @@ import { ThemedText } from "@/components/shared/themed-text";
 
 type ChoiceRowProps = {
   label: string;
-  options: string[];
-  selected: string;
+  options: readonly string[];
+  // Uma opção (seleção única) ou várias (seleção múltipla).
+  selected: string | string[];
   onSelect: (value: string) => void;
   inline?: boolean;
 };
@@ -26,12 +27,16 @@ export function ChoiceRow({
 
       <View style={[styles.choiceList, inline && styles.choiceListInline]}>
         {options.map((option) => {
-          const isSelected = option === selected;
+          const isSelected = Array.isArray(selected)
+            ? selected.includes(option)
+            : option === selected;
 
           return (
             <Pressable
               key={option}
               onPress={() => onSelect(option)}
+              accessibilityRole={Array.isArray(selected) ? "checkbox" : "radio"}
+              accessibilityState={{ checked: isSelected }}
               style={[styles.choice, isSelected && styles.choiceSelected]}
             >
               <ThemedText

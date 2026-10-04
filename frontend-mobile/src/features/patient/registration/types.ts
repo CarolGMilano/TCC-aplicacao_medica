@@ -1,3 +1,5 @@
+export type SmokingStatus = "Fuma" | "Parou" | "Nunca";
+
 export type PatientForm = {
   name: string;
   birthDay: string;
@@ -11,13 +13,15 @@ export type PatientForm = {
   abortions: number;
   menarche: number;
   menopause: boolean;
+  menopauseAge: number;
   sexarche: number;
-  multiplePartners: boolean;
+  // Enviado como "vvs" para o backend. Confirmar o significado com as médicas.
+  vvs: boolean;
   contraception: string;
   partners: number;
-  ist: string;
+  ists: string[];
   hpvWart: boolean;
-  smoking: string;
+  smoking: SmokingStatus;
   smokingStart: number;
   smokingEnd: number;
   cigarettesPerDay: number;

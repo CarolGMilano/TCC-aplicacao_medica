@@ -5,15 +5,32 @@ import { ThemedText } from "@/components/shared/themed-text";
 
 type RoundButtonProps = {
   label: string;
+  accessibilityLabel: string;
   active?: boolean;
+  disabled?: boolean;
   onPress: () => void;
 };
 
-export function RoundButton({ label, active, onPress }: RoundButtonProps) {
+export function RoundButton({
+  label,
+  accessibilityLabel,
+  active,
+  disabled,
+  onPress,
+}: RoundButtonProps) {
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.roundButton, active && styles.roundButtonActive]}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled }}
+      hitSlop={6}
+      style={[
+        styles.roundButton,
+        active && styles.roundButtonActive,
+        disabled && styles.roundButtonDisabled,
+      ]}
     >
       <ThemedText themeColor={active ? "textPrimaryLight" : "textSecondary"}>
         {label}
@@ -36,5 +53,9 @@ const styles = StyleSheet.create({
   roundButtonActive: {
     backgroundColor: Theme.primary,
     borderColor: Theme.primary,
+  },
+
+  roundButtonDisabled: {
+    opacity: 0.4,
   },
 });

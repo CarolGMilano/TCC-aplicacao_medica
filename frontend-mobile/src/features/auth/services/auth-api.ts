@@ -7,9 +7,14 @@ const localHost = Platform.OS === "android" ? "10.0.2.2" : "localhost";
 /**
  * Configure EXPO_PUBLIC_API_URL when the backend is running on another host.
  * Android emulators use 10.0.2.2 to reach the host machine's localhost.
+ * O Spring Boot roda na 8081 (backend/src/main/resources/application.yaml);
+ * por isso o Metro (Expo) sobe na 8082 pelos scripts do package.json.
  */
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ?? `http://${localHost}:8081`;
+
+// Login mock só para desenvolvimento sem backend; o backend exige JWT real.
+const USE_MOCK_LOGIN = false;
 
 export type LoginResponse = {
   token: string;
@@ -20,14 +25,13 @@ export async function login(
   email: string,
   senha: string,
 ): Promise<LoginResponse> {
-  const USE_MOCK_LOGIN = true;
-  
   if (USE_MOCK_LOGIN) {
-    // Mock login response for testing purposes
     const mockResponse: LoginResponse = {
       token: 'token-desenvolvimento',
       tipo: 'MEDICO',
     };
+    // Sem isso o cadastro de paciente sempre acusa "sessão expirada".
+    saveToken(mockResponse.token);
     return mockResponse;
   }
 

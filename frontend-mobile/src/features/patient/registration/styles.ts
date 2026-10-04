@@ -1,15 +1,11 @@
 import { StyleSheet } from "react-native";
 
-import {
-  FontFamilies,
-  Spacing,
-  Theme,
-  Typography,
-} from "@/constants/theme";
+import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 
 export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: Theme.background,
   },
 
   screen: {
@@ -17,7 +13,7 @@ export const styles = StyleSheet.create({
   },
 
   content: {
-    paddingBottom: 100,
+    paddingBottom: 140,
   },
 
   header: {
@@ -66,20 +62,26 @@ export const styles = StyleSheet.create({
   },
 
   review: {
-    backgroundColor: Theme.background,
+    backgroundColor: Theme.backgroundElement,
     marginTop: Spacing.three,
   },
 
+  footer: {
+    position: "absolute",
+    bottom: Spacing.three,
+    left: Spacing.three,
+    right: Spacing.three,
+    gap: Spacing.two,
+  },
+
   error: {
+    backgroundColor: Theme.treatmentLight,
+    borderRadius: 12,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
 
   continue: {
-    position: "absolute",
-    bottom: 16,
-    left: Spacing.three,
-    right: Spacing.three,
     minHeight: 54,
     borderRadius: 28,
     alignItems: "center",
@@ -92,6 +94,10 @@ export const styles = StyleSheet.create({
   },
 
   pressed: {
-    opacity: 0.8,
+    backgroundColor: Theme.primaryHoverDark,
+  },
+
+  disabled: {
+    opacity: 0.6,
   },
 });
