@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  BackHandler,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,9 +15,10 @@ import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 
 import { styles as registrationStyles } from "../registration/styles";
-import { RecordHeader } from "./components";
+import { RecordFooter, RecordHeader } from "./components";
 import { fetchPatient } from "./services/patient-record-api";
 import {
+  EditTab,
   HabitsTab,
   IstTab,
   ObstetricTab,
@@ -25,6 +27,7 @@ import {
   VisitsTab,
 } from "./tabs";
 import type { PatientRecord, RecordTab } from "./types";
+import { useRecordEdit } from "./use-record-edit";
 import { toPatientRecord } from "./utils";
 
 type PatientRecordScreenProps = {
@@ -63,10 +66,31 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
     };
   }, [id, attempt]);
 
-  function retry() {
+  function reload() {
     setError("");
     setAttempt((current) => current + 1);
   }
+
+  const edit = useRecordEdit(record, reload);
+
+  // Trocar de aba descarta a edição em andamento, como no layout.
+  function changeTab(next: RecordTab) {
+    edit.cancel();
+    setTab(next);
+  }
+
+  // Durante a edição, o botão voltar do Android só cancela a edição.
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        if (!edit.editing) return false;
+        edit.cancel();
+        return true;
+      },
+    );
+    return () => subscription.remove();
+  });
 
   // Volta para a lista sem empilhar outra tela de pacientes.
   const goToPatients = () => router.navigate("/patients");
@@ -80,12 +104,12 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
               <ThemedText themeColor="error" style={styles.centeredText}>
                 {error}
               </ThemedText>
-              <Pressable onPress={retry} accessibilityRole="button">
+              <Pressable onPress={reload} accessibilityRole="button">
                 <ThemedText type="code">TENTAR DE NOVO</ThemedText>
               </Pressable>
               <Pressable onPress={goToPatients} accessibilityRole="button">
                 <ThemedText type="code" themeColor="textSecondary">
-                  ←  PACIENTES
+                  ← PACIENTES
                 </ThemedText>
               </Pressable>
             </>
@@ -108,18 +132,37 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
             record={record}
             tab={tab}
             created={created}
+            editing={edit.editing}
             onBack={goToPatients}
-            onTabChange={setTab}
+            onTabChange={changeTab}
           />
           <View>
-            {tab === "personal" && <PersonalTab record={record} />}
-            {tab === "obstetric" && <ObstetricTab record={record} />}
-            {tab === "sexual" && <SexualTab record={record} />}
-            {tab === "ist" && <IstTab record={record} />}
-            {tab === "habits" && <HabitsTab record={record} />}
+            {tab !== "visits" && edit.draft ? (
+              <EditTab tab={tab} form={edit.draft} update={edit.update} />
+            ) : null}
+            {!edit.editing && tab === "personal" && (
+              <PersonalTab record={record} />
+            )}
+            {!edit.editing && tab === "obstetric" && (
+              <ObstetricTab record={record} />
+            )}
+            {!edit.editing && tab === "sexual" && <SexualTab record={record} />}
+            {!edit.editing && tab === "ist" && <IstTab record={record} />}
+            {!edit.editing && tab === "habits" && <HabitsTab record={record} />}
             {tab === "visits" && <VisitsTab created={created} />}
           </View>
         </ScrollView>
+
+        {tab !== "visits" ? (
+          <RecordFooter
+            editing={edit.editing}
+            saving={edit.saving}
+            error={edit.error}
+            onEdit={edit.start}
+            onCancel={edit.cancel}
+            onSave={() => edit.save(tab)}
+          />
+        ) : null}
       </ThemedView>
     </SafeAreaView>
   );

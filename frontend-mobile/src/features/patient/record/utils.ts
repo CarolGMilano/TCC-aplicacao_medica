@@ -2,6 +2,7 @@ import {
   contraceptionMap,
   initialForm,
   istMap,
+  istOptions,
   smokingMap,
   statusMap,
 } from "../registration/constants";
@@ -34,6 +35,12 @@ export function toPatientRecord(detail: PatientDetail): PatientRecord {
     id: detail.idPaciente,
     age: detail.idade,
     priorityGroup: detail.grupoPrioritario,
+    ids: {
+      obstetric: obstetric?.idDados,
+      sexual: sexual?.idDados,
+      habits: habits?.idHistorico,
+      ists,
+    },
     missing: {
       obstetric: !obstetric,
       sexual: !sexual,
@@ -63,7 +70,10 @@ export function toPatientRecord(detail: PatientDetail): PatientRecord {
         contraception: contraceptionLabels[sexual.mac] ?? sexual.mac,
         partners: sexual.numParceiros,
       }),
-      ists: ists.map((item) => istLabels[item.ist] ?? item.ist),
+      // Mantém a ordem das opções da tela, não a ordem de cadastro.
+      ists: ists
+        .map((item) => istLabels[item.ist] ?? item.ist)
+        .sort((a, b) => istOptions.indexOf(a) - istOptions.indexOf(b)),
       hpvWart: ists.some((item) => item.ist === "HPV" && item.condilomaHpv),
       ...(habits && {
         smoking: smokingLabels[habits.fumante] ?? "Nunca",

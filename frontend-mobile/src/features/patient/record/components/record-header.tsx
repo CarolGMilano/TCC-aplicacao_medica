@@ -13,6 +13,7 @@ type RecordHeaderProps = {
   record: PatientRecord;
   tab: RecordTab;
   created: boolean;
+  editing: boolean;
   onBack: () => void;
   onTabChange: (tab: RecordTab) => void;
 };
@@ -21,6 +22,7 @@ export function RecordHeader({
   record,
   tab,
   created,
+  editing,
   onBack,
   onTabChange,
 }: RecordHeaderProps) {
@@ -35,12 +37,12 @@ export function RecordHeader({
       <View style={registrationStyles.headerTop}>
         <Pressable onPress={onBack} accessibilityRole="button" hitSlop={8}>
           <ThemedText type="code" themeColor="textSecondary">
-            ←  PACIENTES
+            ← PACIENTES
           </ThemedText>
         </Pressable>
-        {created ? (
+        {editing || created ? (
           <Badge
-            label="Cadastrada"
+            label={editing ? "Editando" : "Cadastrada"}
             color={Theme.textPrimaryLight}
             background={Theme.primary}
           />
