@@ -11,7 +11,7 @@ import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 type InputFieldProps = {
-  label: string;
+  label?: string;
   value: string;
   placeholder?: string;
   onChangeText: (value: string) => void;
@@ -33,9 +33,11 @@ export function InputField({
 }: InputFieldProps) {
   return (
     <View style={[styles.inputField, containerStyle]}>
-      <ThemedText type="code" themeColor="textSecondary">
-        {label}
-      </ThemedText>
+      {label ? (
+        <ThemedText type="code" themeColor="textSecondary">
+          {label}
+        </ThemedText>
+      ) : null}
 
       <TextInput
         value={value}

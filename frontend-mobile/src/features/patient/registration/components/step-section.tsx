@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { Spacing, Theme } from "@/constants/theme";
+import { Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
-import { ThemedView } from "@/components/shared/themed-view";
 
 type StepSectionProps = {
   title: string;
@@ -12,12 +11,12 @@ type StepSectionProps = {
 
 export function StepSection({ title, children }: StepSectionProps) {
   return (
-    <View style={styles.section}>
-      <ThemedView type="backgroundSelected" style={styles.sectionTitle}>
-        <ThemedText type="code" themeColor="textSecondary">
+    <View>
+      <View style={styles.sectionTitle}>
+        <ThemedText type="code" style={styles.titleText}>
           {title}
         </ThemedText>
-      </ThemedView>
+      </View>
 
       {children}
     </View>
@@ -25,15 +24,18 @@ export function StepSection({ title, children }: StepSectionProps) {
 }
 
 const styles = StyleSheet.create({
-  section: {
-    marginTop: Spacing.three,
-  },
-
+  // Título da seção como cabeçalho: espaço acima e linha verde abaixo,
+  // para separar os grupos sem criar uma faixa de fundo.
   sectionTitle: {
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: Theme.border,
+    paddingTop: Spacing.four,
+    paddingBottom: Spacing.two,
+    borderBottomWidth: 2,
+    borderBottomColor: Theme.primary,
+  },
+
+  titleText: {
+    color: Theme.text,
+    fontWeight: Typography.weights.bold,
   },
 });

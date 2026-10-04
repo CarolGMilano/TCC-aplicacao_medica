@@ -46,11 +46,15 @@ export function Counter({
           onPress={() => onChange(Math.min(max, value + 1))}
         />
 
-        {suffix ? (
-          <ThemedText type="code" themeColor="textSecondary">
-            {suffix}
-          </ThemedText>
-        ) : null}
+        {/* Espaço fixo para a unidade, para os contadores ficarem alinhados
+            mesmo nas linhas sem "ANOS". */}
+        <View style={styles.suffix}>
+          {suffix ? (
+            <ThemedText type="code" themeColor="textSecondary">
+              {suffix}
+            </ThemedText>
+          ) : null}
+        </View>
       </View>
     </View>
   );
@@ -74,11 +78,15 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
 
+  suffix: {
+    width: 40,
+  },
+
   counterValue: {
     minWidth: 36,
     textAlign: "center",
     fontFamily: FontFamilies.detail,
-    fontSize: Typography.sizes.subtitle,
-    lineHeight: Typography.lineHeights.title,
+    fontSize: Typography.sizes.greeting,
+    lineHeight: Typography.lineHeights.greeting,
   },
 });

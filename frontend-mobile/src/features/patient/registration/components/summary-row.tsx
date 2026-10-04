@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.three,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: Theme.border,
     gap: Spacing.three,

@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 
   text: {
     fontFamily: FontFamilies.secondary,
-    fontSize: Typography.sizes.micro,
+    fontSize: Typography.sizes.caption,
     letterSpacing: Typography.letterSpacing.tight,
   },
 });
