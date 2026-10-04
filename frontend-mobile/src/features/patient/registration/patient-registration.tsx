@@ -76,8 +76,12 @@ export function PatientRegistration() {
 
     setIsSubmitting(true);
     try {
-      await registerPatient(form);
-      router.replace("/patients");
+      const id = await registerPatient(form);
+      // Como no layout, abre a ficha da paciente recém-cadastrada.
+      router.replace({
+        pathname: "/patients/[id]",
+        params: { id: String(id), created: "1" },
+      });
     } catch (requestError) {
       setError(
         requestError instanceof Error
