@@ -1,23 +1,13 @@
 import { router } from "expo-router";
-import { useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { BackHandler, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 
-import {
-  contraceptionMap,
-  initialForm,
-  istMap,
-  smokingMap,
-  statusMap,
-  stepTitles,
-  totalSteps,
-} from "./constants";
-
-import type { PatientForm } from "./types";
-import { styles } from "./styles";
+import { initialForm, stepTitles, totalSteps } from "./constants";
+import { registerPatient } from "./services/patient-registration-api";
 import {
   HabitsStep,
   IstStep,
@@ -26,9 +16,12 @@ import {
   ReviewStep,
   SexualStep,
 } from "./steps";
-import { registerPatient } from "./services/patient-registration-api";
+import { styles } from "./styles";
+import type { PatientForm } from "./types";
+import { validateForm, validateStep } from "./utils";
 
 export function PatientRegistration() {
+  const scrollRef = useRef<ScrollView>(null);
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
@@ -37,63 +30,53 @@ export function PatientRegistration() {
   const update = <Key extends keyof PatientForm>(
     key: Key,
     value: PatientForm[Key],
-  ) => setForm((current) => ({ ...current, [key]: value }));
-
-  async function nextStep() {
-    if (step < totalSteps) {
-      setStep((current) => current + 1);
-      return;
-    }
-
-    if (
-      !form.name.trim() ||
-      !form.record.trim() ||
-      !form.birthDay ||
-      !form.birthMonth ||
-      !form.birthYear
-    ) {
-      setError("Preencha nome, data de nascimento e prontuário.");
-      return;
-    }
-
+  ) => {
     setError("");
-    setIsSubmitting(true);
+    setForm((current) => ({ ...current, [key]: value }));
+  };
 
+  function goToStep(target: number) {
+    setError("");
+    setStep(target);
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }
+
+  function goBack() {
+    if (step === 1) router.back();
+    else goToStep(step - 1);
+  }
+
+  // Botão voltar do Android volta uma etapa em vez de sair do cadastro.
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        if (step === 1) return false;
+        goToStep(step - 1);
+        return true;
+      },
+    );
+    return () => subscription.remove();
+  });
+
+  async function handleContinue() {
+    if (step < totalSteps) {
+      const stepError = validateStep(step, form);
+      if (stepError) setError(stepError);
+      else goToStep(step + 1);
+      return;
+    }
+
+    const invalid = validateForm(form);
+    if (invalid) {
+      goToStep(invalid.step);
+      setError(invalid.error);
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      await registerPatient({
-        paciente: {
-          nome: form.name,
-          dataNascimento: `${form.birthYear}-${form.birthMonth.padStart(2, "0")}-${form.birthDay.padStart(2, "0")}`,
-          prontuario: form.record,
-          status: statusMap[form.status] ?? "AGUARDANDO_PROCEDIMENTO",
-        },
-        dadosGinecoObstetricos: {
-          numGestacao: form.pregnancies,
-          numPartoNormal: form.vaginalBirths,
-          numCesariana: form.cesareans,
-          numAborto: form.abortions,
-          menarca: form.menarche,
-          menopausa: null,
-        },
-        saudeSexual: {
-          sexarca: form.sexarche,
-          mac: contraceptionMap[form.contraception] ?? "NENHUM",
-          numParceiros: form.partners,
-          vvs: form.multiplePartners,
-        },
-        historicoTabagismo: {
-          cigarrosDia: form.cigarettesPerDay,
-          idadeInicio: form.smokingStart,
-          idadeFim: form.smokingEnd,
-          fumante: smokingMap[form.smoking] ?? "NAO_FUMANTE",
-        },
-        historicoIst: [
-          {
-            ist: istMap[form.ist] ?? "NENHUMA",
-            condilomaHpv: form.hpvWart,
-          },
-        ],
-      });
+      await registerPatient(form);
       router.replace("/patients");
     } catch (requestError) {
       setError(
@@ -106,67 +89,89 @@ export function PatientRegistration() {
     }
   }
 
+  const buttonLabel = isSubmitting
+    ? "Cadastrando..."
+    : step === totalSteps
+      ? "Cadastrar paciente"
+      : "Continuar";
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ThemedView style={styles.screen}>
         <ScrollView
+          ref={scrollRef}
           contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           <RegistrationHeader
             step={step}
             title={stepTitles[step - 1]}
-            patientName={form.name || "NOVA PACIENTE"}
-            onBack={() =>
-              step === 1 ? router.back() : setStep((current) => current - 1)
+            subtitle={
+              step === 1 ? "NOVA PACIENTE" : form.name.trim().toUpperCase()
             }
+            onBack={goBack}
           />
           {step === 1 && <PersonalStep form={form} update={update} />}
           {step === 2 && <ObstetricStep form={form} update={update} />}
           {step === 3 && <SexualStep form={form} update={update} />}
           {step === 4 && <IstStep form={form} update={update} />}
           {step === 5 && <HabitsStep form={form} update={update} />}
-          {step === 6 && <ReviewStep form={form} />}
+          {step === 6 && <ReviewStep form={form} onEdit={goToStep} />}
+        </ScrollView>
+
+        <View style={styles.footer}>
           {error ? (
-            <ThemedText themeColor="error" style={styles.error}>
+            <ThemedText
+              themeColor="error"
+              type="small"
+              accessibilityLiveRegion="polite"
+              style={styles.error}
+            >
               {error}
             </ThemedText>
           ) : null}
-        </ScrollView>
-        <Pressable
-          accessibilityRole="button"
-          disabled={isSubmitting}
-          onPress={nextStep}
-          style={({ pressed }) => [styles.continue, pressed && styles.pressed]}
-        >
-          <ThemedText themeColor="textPrimaryLight" style={styles.continueText}>
-            {isSubmitting
-              ? "Cadastrando..."
-              : step === totalSteps
-                ? "Cadastrar paciente"
-                : "Continuar"}
-          </ThemedText>
-        </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: isSubmitting }}
+            disabled={isSubmitting}
+            onPress={handleContinue}
+            style={({ pressed }) => [
+              styles.continue,
+              pressed && styles.pressed,
+              isSubmitting && styles.disabled,
+            ]}
+          >
+            <ThemedText
+              themeColor="textPrimaryLight"
+              style={styles.continueText}
+            >
+              {buttonLabel}
+            </ThemedText>
+          </Pressable>
+        </View>
       </ThemedView>
     </SafeAreaView>
   );
 }
 
+type RegistrationHeaderProps = {
+  step: number;
+  title: string;
+  subtitle: string;
+  onBack: () => void;
+};
+
 function RegistrationHeader({
   step,
   title,
-  patientName,
+  subtitle,
   onBack,
-}: {
-  step: number;
-  title: string;
-  patientName: string;
-  onBack: () => void;
-}) {
+}: RegistrationHeaderProps) {
   return (
     <View style={styles.header}>
       <View style={styles.headerTop}>
-        <Pressable onPress={onBack} accessibilityRole="button">
+        <Pressable onPress={onBack} accessibilityRole="button" hitSlop={8}>
           <ThemedText type="code" themeColor="textSecondary">
             {step === 1 ? "×  CANCELAR" : "←  VOLTAR"}
           </ThemedText>
@@ -186,7 +191,7 @@ function RegistrationHeader({
       </View>
       <ThemedText style={styles.title}>{title}</ThemedText>
       <ThemedText type="code" themeColor="textSecondary">
-        {patientName}
+        {subtitle}
       </ThemedText>
     </View>
   );

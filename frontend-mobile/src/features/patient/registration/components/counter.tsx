@@ -9,10 +9,19 @@ type CounterProps = {
   label: string;
   value: number;
   suffix?: string;
+  min?: number;
+  max?: number;
   onChange: (value: number) => void;
 };
 
-export function Counter({ label, value, suffix, onChange }: CounterProps) {
+export function Counter({
+  label,
+  value,
+  suffix,
+  min = 0,
+  max = 120,
+  onChange,
+}: CounterProps) {
   return (
     <View style={styles.row}>
       <ThemedText type="code" themeColor="textSecondary">
@@ -22,12 +31,20 @@ export function Counter({ label, value, suffix, onChange }: CounterProps) {
       <View style={styles.counter}>
         <RoundButton
           label="−"
-          onPress={() => onChange(Math.max(0, value - 1))}
+          accessibilityLabel={`Diminuir ${label.toLowerCase()}`}
+          disabled={value <= min}
+          onPress={() => onChange(Math.max(min, value - 1))}
         />
 
         <ThemedText style={styles.counterValue}>{value}</ThemedText>
 
-        <RoundButton label="+" active onPress={() => onChange(value + 1)} />
+        <RoundButton
+          label="+"
+          accessibilityLabel={`Aumentar ${label.toLowerCase()}`}
+          active
+          disabled={value >= max}
+          onPress={() => onChange(Math.min(max, value + 1))}
+        />
 
         {suffix ? (
           <ThemedText type="code" themeColor="textSecondary">
@@ -58,7 +75,10 @@ const styles = StyleSheet.create({
   },
 
   counterValue: {
+    minWidth: 36,
+    textAlign: "center",
     fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.subtitle,
+    lineHeight: Typography.lineHeights.title,
   },
 });

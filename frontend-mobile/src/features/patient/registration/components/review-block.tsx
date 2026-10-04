@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
@@ -6,19 +6,38 @@ import { ThemedText } from "@/components/shared/themed-text";
 type ReviewBlockProps = {
   title: string;
   value: string;
-  detail: string;
+  detail?: string;
+  onEdit: () => void;
 };
 
-export function ReviewBlock({ title, value, detail }: ReviewBlockProps) {
+export function ReviewBlock({
+  title,
+  value,
+  detail,
+  onEdit,
+}: ReviewBlockProps) {
   return (
     <View style={styles.reviewBlock}>
-      <ThemedText type="code" themeColor="textSecondary">
-        {title}
-      </ThemedText>
+      <View style={styles.header}>
+        <ThemedText type="code" themeColor="textSecondary">
+          {title}
+        </ThemedText>
 
-      <ThemedText>{value}</ThemedText>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Alterar ${title.toLowerCase()}`}
+          hitSlop={8}
+          onPress={onEdit}
+        >
+          <ThemedText type="code" themeColor="textSecondary">
+            ALTERAR
+          </ThemedText>
+        </Pressable>
+      </View>
 
-      <ThemedText>{detail}</ThemedText>
+      <ThemedText type="small">{value}</ThemedText>
+
+      {detail ? <ThemedText type="small">{detail}</ThemedText> : null}
     </View>
   );
 }
@@ -30,5 +49,11 @@ const styles = StyleSheet.create({
     gap: Spacing.one,
     borderBottomWidth: 1,
     borderBottomColor: Theme.border,
+  },
+
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
   },
 });

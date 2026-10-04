@@ -1,33 +1,29 @@
 import { Counter, OptionRow, StepSection, ToggleRow } from "../components";
-import { StepProps } from "../types";
-
-const contraceptionOptions = [
-  "Anticoncepcional oral combinado",
-  "Anticoncepcional oral progestagênio isolado",
-  "Implante de etonogestrel",
-  "DIU hormonal",
-  "DIU não hormonal",
-  "Laqueadura tubária",
-  "Anel vaginal",
-  "Adesivo transdérmico",
-  "Preservativo",
-  "Nenhum",
-];
+import { contraceptionOptions, minAges } from "../constants";
+import type { StepProps } from "../types";
+import { getAge } from "../utils";
 
 export function SexualStep({ form, update }: StepProps) {
+  const age = getAge(form) ?? undefined;
+
   return (
-    <StepSection title="INÍCIO DA VIDA SEXUAL">
-      <Counter
-        label="SEXARCA"
-        value={form.sexarche}
-        suffix="ANOS"
-        onChange={(value) => update("sexarche", value)}
-      />
-      <ToggleRow
-        label="VVS"
-        value={form.multiplePartners}
-        onChange={(value) => update("multiplePartners", value)}
-      />
+    <>
+      <StepSection title="INÍCIO DA VIDA SEXUAL">
+        <Counter
+          label="SEXARCA"
+          value={form.sexarche}
+          min={minAges.sexarche}
+          max={age}
+          suffix="ANOS"
+          onChange={(value) => update("sexarche", value)}
+        />
+        <ToggleRow
+          label="VVS"
+          value={form.vvs}
+          onChange={(value) => update("vvs", value)}
+        />
+      </StepSection>
+
       <StepSection title="CONTRACEPÇÃO E PARCEIROS">
         <OptionRow
           label="MAC"
@@ -38,9 +34,10 @@ export function SexualStep({ form, update }: StepProps) {
         <Counter
           label="Nº DE PARCEIROS"
           value={form.partners}
+          max={999}
           onChange={(value) => update("partners", value)}
         />
       </StepSection>
-    </StepSection>
+    </>
   );
 }

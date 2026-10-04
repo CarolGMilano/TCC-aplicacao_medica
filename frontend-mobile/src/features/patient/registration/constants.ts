@@ -1,7 +1,4 @@
-import { PatientForm } from "./types";
-
-
-export const totalSteps = 6;
+import type { PatientForm, SmokingStatus } from "./types";
 
 export const stepTitles = [
   "Dados pessoais",
@@ -12,6 +9,17 @@ export const stepTitles = [
   "Conferir e cadastrar",
 ];
 
+export const totalSteps = stepTitles.length;
+
+// Idades mínimas dos contadores, conforme o layout.
+export const minAges = {
+  menarche: 8,
+  menopause: 30,
+  sexarche: 8,
+  smoking: 5,
+};
+
+// Valores neutros: nada clínico vem pré-marcado.
 export const initialForm: PatientForm = {
   name: "",
   birthDay: "",
@@ -25,16 +33,17 @@ export const initialForm: PatientForm = {
   abortions: 0,
   menarche: 12,
   menopause: false,
+  menopauseAge: 45,
   sexarche: 17,
-  multiplePartners: false,
-  contraception: "Anticoncepcional oral combinado",
+  vvs: false,
+  contraception: "Nenhum",
   partners: 0,
-  ist: "HPV",
-  hpvWart: true,
+  ists: [],
+  hpvWart: false,
   smoking: "Nunca",
   smokingStart: 18,
-  smokingEnd: 39,
-  cigarettesPerDay: 12,
+  smokingEnd: 18,
+  cigarettesPerDay: 0,
 };
 
 export const statusMap: Record<string, string> = {
@@ -47,9 +56,10 @@ export const statusMap: Record<string, string> = {
 };
 
 export const contraceptionMap: Record<string, string> = {
-  "Anticoncepcional oral combinado": "ANTICONCEPCIONAL_ORAL_COMBINADO",
-  "Anticoncepcional oral progestagênio isolado":
+  Nenhum: "NENHUM",
+  "Anticoncepcional oral de progestagênio isolado":
     "ANTICONCEPCIONAL_ORAL_PROGESTAGENIO_ISOLADO",
+  "Anticoncepcional oral combinado": "ANTICONCEPCIONAL_ORAL_COMBINADO",
   "Implante de etonogestrel": "IMPLANTE_ETONOGESTREL",
   "DIU hormonal": "DIU_HORMONAL",
   "DIU não hormonal": "DIU_NAO_HORMONAL",
@@ -57,10 +67,9 @@ export const contraceptionMap: Record<string, string> = {
   "Anel vaginal": "ANEL_VAGINAL",
   "Adesivo transdérmico": "ADESIVO_TRANSDERMICO",
   Preservativo: "PRESERVATIVO",
-  Nenhum: "NENHUM",
 };
 
-export const smokingMap: Record<string, string> = {
+export const smokingMap: Record<SmokingStatus, string> = {
   Fuma: "FUMANTE",
   Parou: "EX_FUMANTE",
   Nunca: "NAO_FUMANTE",
@@ -77,3 +86,10 @@ export const istMap: Record<string, string> = {
   "Não sabe": "NAO_SABE",
   Nenhuma: "NENHUMA",
 };
+
+// As opções da tela saem dos mapas: uma única fonte para tela e backend.
+export const statusOptions = Object.keys(statusMap);
+export const contraceptionOptions = Object.keys(contraceptionMap);
+export const istOptions = Object.keys(istMap);
+export const smokingOptions = Object.keys(smokingMap) as SmokingStatus[];
+export const exclusiveIsts = ["Não sabe", "Nenhuma"];
