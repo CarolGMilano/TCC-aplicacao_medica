@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   code: {
     fontFamily: FontFamilies.secondary,
-    fontWeight: Typography.weights.bold,
-    fontSize: Typography.sizes.caption,
+    fontSize: Typography.sizes.notice,
+    letterSpacing: Typography.letterSpacing.tight,
   },
 });

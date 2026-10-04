@@ -1,5 +1,7 @@
 import { View } from "react-native";
 
+import { ThemedText } from "@/components/shared/themed-text";
+
 import { InputField, OptionRow, StepSection, SummaryRow } from "../components";
 import { statusOptions } from "../constants";
 import { styles } from "../styles";
@@ -22,34 +24,40 @@ export function PersonalStep({ form, update }: StepProps) {
           maxLength={45}
           onChangeText={(value) => update("name", value)}
         />
-        <View style={styles.dateRow}>
-          <InputField
-            label="DIA"
-            value={form.birthDay}
-            placeholder="DD"
-            keyboardType="number-pad"
-            maxLength={2}
-            containerStyle={styles.dateDay}
-            onChangeText={(value) => update("birthDay", digits(value))}
-          />
-          <InputField
-            label="MÊS"
-            value={form.birthMonth}
-            placeholder="MM"
-            keyboardType="number-pad"
-            maxLength={2}
-            containerStyle={styles.dateMonth}
-            onChangeText={(value) => update("birthMonth", digits(value))}
-          />
-          <InputField
-            label="ANO"
-            value={form.birthYear}
-            placeholder="AAAA"
-            keyboardType="number-pad"
-            maxLength={4}
-            containerStyle={styles.dateYear}
-            onChangeText={(value) => update("birthYear", digits(value))}
-          />
+        {/* Um único rótulo para os três campos, como no layout. */}
+        <View style={styles.dateField}>
+          <ThemedText type="code" themeColor="textSecondary">
+            DATA DE NASCIMENTO
+          </ThemedText>
+          <View style={styles.dateRow}>
+            <InputField
+              value={form.birthDay}
+              placeholder="DD"
+              keyboardType="number-pad"
+              maxLength={2}
+              containerStyle={styles.dateDay}
+              inputStyle={styles.dateInput}
+              onChangeText={(value) => update("birthDay", digits(value))}
+            />
+            <InputField
+              value={form.birthMonth}
+              placeholder="MM"
+              keyboardType="number-pad"
+              maxLength={2}
+              containerStyle={styles.dateMonth}
+              inputStyle={styles.dateInput}
+              onChangeText={(value) => update("birthMonth", digits(value))}
+            />
+            <InputField
+              value={form.birthYear}
+              placeholder="AAAA"
+              keyboardType="number-pad"
+              maxLength={4}
+              containerStyle={styles.dateYear}
+              inputStyle={styles.dateInput}
+              onChangeText={(value) => update("birthYear", digits(value))}
+            />
+          </View>
         </View>
         <SummaryRow
           label="IDADE CALCULADA"

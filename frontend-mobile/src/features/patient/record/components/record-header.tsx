@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { Spacing, Theme } from "@/constants/theme";
+import { Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { styles as registrationStyles } from "../../registration/styles";
@@ -90,6 +90,7 @@ export function RecordHeader({
               <ThemedText
                 type="small"
                 numberOfLines={1}
+                style={styles.tabLabel}
                 themeColor={active ? "text" : "textSecondary"}
               >
                 {item.label}
@@ -126,6 +127,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: "transparent",
     marginBottom: -1,
+  },
+
+  // Menor que o corpo para os seis rótulos caberem sem cortar.
+  tabLabel: {
+    fontSize: Typography.sizes.notice,
   },
 
   tabActive: {

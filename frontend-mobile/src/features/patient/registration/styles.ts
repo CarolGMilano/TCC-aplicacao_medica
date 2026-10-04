@@ -44,21 +44,43 @@ export const styles = StyleSheet.create({
     lineHeight: Typography.lineHeights.title,
   },
 
+  dateField: {
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+    gap: Spacing.two,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.border,
+  },
+
   dateRow: {
     flexDirection: "row",
     gap: Spacing.two,
   },
 
+  // Os campos da data ficam dentro de dateField, sem borda nem recuo próprios.
   dateDay: {
     flex: 1,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    borderBottomWidth: 0,
   },
 
   dateMonth: {
     flex: 1,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    borderBottomWidth: 0,
   },
 
   dateYear: {
     flex: 1.7,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    borderBottomWidth: 0,
+  },
+
+  dateInput: {
+    textAlign: "center",
   },
 
   review: {
