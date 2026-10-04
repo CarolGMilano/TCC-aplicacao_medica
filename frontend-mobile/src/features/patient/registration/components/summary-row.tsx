@@ -15,7 +15,7 @@ export function SummaryRow({ label, value }: SummaryRowProps) {
         {label}
       </ThemedText>
 
-      <ThemedText>{value}</ThemedText>
+      <ThemedText style={styles.value}>{value}</ThemedText>
     </View>
   );
 }
@@ -28,5 +28,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     borderBottomWidth: 1,
     borderBottomColor: Theme.border,
+    gap: Spacing.three,
+  },
+
+  // Valores longos (ex.: MAC) quebram linha em vez de sair da tela.
+  value: {
+    flexShrink: 1,
+    textAlign: "right",
   },
 });

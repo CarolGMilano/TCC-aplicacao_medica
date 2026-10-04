@@ -74,7 +74,8 @@ export function toPatientRegistration(form: PatientForm): PatientRegistration {
   };
 }
 
-export async function registerPatient(form: PatientForm): Promise<void> {
+// Devolve o id da paciente criada, usado para abrir a ficha.
+export async function registerPatient(form: PatientForm): Promise<number> {
   const token = getToken();
 
   if (!token) {
@@ -90,7 +91,10 @@ export async function registerPatient(form: PatientForm): Promise<void> {
     body: JSON.stringify(toPatientRegistration(form)),
   });
 
-  if (response.ok) return;
+  if (response.ok) {
+    const created = (await response.json()) as { idPaciente: number };
+    return created.idPaciente;
+  }
 
   if (response.status === 401 || response.status === 403) {
     throw new Error("Sua sessão expirou. Faça login novamente.");

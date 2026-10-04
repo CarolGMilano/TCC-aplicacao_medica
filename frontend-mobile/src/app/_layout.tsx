@@ -36,6 +36,7 @@ export default function RootLayout() {
         <Stack.Screen name="forgot-password" />
         <Stack.Screen name="dashboard" />
         <Stack.Screen name="patients" />
+        <Stack.Screen name="patients/[id]" />
         <Stack.Screen name="new-patient" />
       </Stack>
     </ThemeProvider>
