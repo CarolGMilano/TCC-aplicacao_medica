@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
-import { Spacing, Theme, Typography } from "@/constants/theme";
+import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 type StepSectionProps = {
@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
 
   titleText: {
     color: Theme.text,
-    fontWeight: Typography.weights.bold,
+    fontFamily: FontFamilies.primarySemiBold,
+    fontSize: Typography.sizes.bodySmall,
   },
 });

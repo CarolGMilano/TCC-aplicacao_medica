@@ -17,6 +17,28 @@ export function getBirthDate(form: PatientForm) {
   return isValid && date <= new Date() ? date : null;
 }
 
+// Erro da data de nascimento, mostrado já durante a digitação.
+// Retorna null enquanto a data estiver incompleta e sem erro aparente.
+export function getBirthDateError(form: PatientForm) {
+  const day = Number(form.birthDay);
+  const month = Number(form.birthMonth);
+
+  if (form.birthDay.length === 2 && (day < 1 || day > 31))
+    return "Dia inválido.";
+  if (form.birthMonth.length === 2 && (month < 1 || month > 12))
+    return "Mês inválido.";
+  if (form.birthYear.length !== 4 || !form.birthDay || !form.birthMonth)
+    return null;
+
+  const date = new Date(Number(form.birthYear), month - 1, day);
+  if (date.getMonth() !== month - 1) return "Essa data não existe.";
+  if (date > new Date()) return "A data não pode ser no futuro.";
+
+  const age = getAge(form);
+  if (age !== null && age > 120) return "Confira o ano de nascimento.";
+  return null;
+}
+
 export function getAge(form: PatientForm) {
   const birthDate = getBirthDate(form);
   if (!birthDate) return null;
@@ -58,8 +80,9 @@ export function validateStep(step: number, form: PatientForm) {
   switch (step) {
     case 1:
       if (!form.name.trim()) return "Informe o nome completo.";
+      if (/\d/.test(form.name)) return "O nome não pode ter números.";
+      if (getBirthDateError(form)) return getBirthDateError(form);
       if (age === null) return "Informe uma data de nascimento válida.";
-      if (age > 120) return "Confira o ano de nascimento.";
       if (!form.record.trim()) return "Informe o número do prontuário.";
       return null;
     case 2:

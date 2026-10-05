@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
   },
 
   text: {
-    fontFamily: FontFamilies.secondary,
-    fontSize: Typography.sizes.caption,
+    fontFamily: FontFamilies.primaryMedium,
+    fontSize: Typography.sizes.small,
     letterSpacing: Typography.letterSpacing.tight,
   },
 });

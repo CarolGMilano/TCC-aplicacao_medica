@@ -1,6 +1,10 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { JetBrainsMono_400Regular } from "@expo-google-fonts/jetbrains-mono";
-import { Poppins_400Regular } from "@expo-google-fonts/poppins";
+import {
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+} from "@expo-google-fonts/poppins";
 import { PTSerif_400Regular } from "@expo-google-fonts/pt-serif";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -14,6 +18,10 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [fontsLoaded, fontError] = useFonts({
     Poppins: Poppins_400Regular,
+    // Pesos registrados com nome próprio: no Android, fontWeight não
+    // escolhe o arquivo certo de uma fonte customizada.
+    "Poppins-Medium": Poppins_500Medium,
+    "Poppins-SemiBold": Poppins_600SemiBold,
     "JetBrains Mono": JetBrainsMono_400Regular,
     "PT Serif": PTSerif_400Regular,
   });

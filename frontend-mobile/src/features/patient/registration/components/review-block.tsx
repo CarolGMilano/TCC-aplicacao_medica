@@ -35,7 +35,7 @@ export function ReviewBlock({
         </Pressable>
       </View>
 
-      <ThemedText type="small">{value}</ThemedText>
+      <ThemedText>{value}</ThemedText>
 
       {detail ? <ThemedText type="small">{detail}</ThemedText> : null}
     </View>

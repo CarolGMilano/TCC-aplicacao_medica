@@ -33,7 +33,7 @@ export function OptionRow({ label, value, onChange, options }: OptionRowProps) {
           onPress={() => setIsOpen(true)}
         >
           <ThemedText style={styles.optionValue}>{value}</ThemedText>
-          <ThemedText style={styles.arrow}>⌄</ThemedText>
+          <View style={styles.chevron} />
         </Pressable>
       </View>
 
@@ -103,9 +103,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  arrow: {
-    fontSize: 18,
-    lineHeight: 18,
+  // Seta para baixo desenhada com duas bordas de um quadrado girado,
+  // centralizada na altura do campo (o caractere "⌄" ficava no canto).
+  chevron: {
+    width: 9,
+    height: 9,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: Theme.textSecondary,
+    transform: [{ rotate: "45deg" }],
+    marginTop: -4,
+    marginRight: Spacing.one,
   },
 
   modalOverlay: {

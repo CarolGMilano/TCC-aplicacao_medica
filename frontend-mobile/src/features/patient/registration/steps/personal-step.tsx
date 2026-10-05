@@ -6,13 +6,14 @@ import { InputField, OptionRow, StepSection, SummaryRow } from "../components";
 import { statusOptions } from "../constants";
 import { styles } from "../styles";
 import type { StepProps } from "../types";
-import { getAge } from "../utils";
+import { getAge, getBirthDateError } from "../utils";
 
 // Mantém só dígitos nos campos numéricos (o teclado aceita colar texto).
 const digits = (value: string) => value.replace(/\D/g, "");
 
 export function PersonalStep({ form, update }: StepProps) {
   const age = getAge(form);
+  const dateError = getBirthDateError(form);
 
   return (
     <>
@@ -58,6 +59,11 @@ export function PersonalStep({ form, update }: StepProps) {
               onChangeText={(value) => update("birthYear", digits(value))}
             />
           </View>
+          {dateError ? (
+            <ThemedText type="small" themeColor="error">
+              {dateError}
+            </ThemedText>
+          ) : null}
         </View>
         <SummaryRow
           label="IDADE CALCULADA"
