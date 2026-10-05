@@ -89,8 +89,9 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.bodySmall,
     color: Colors.light.primary,
   },
+  // Rótulos em maiúsculas: Poppins média em vez da mono fina, mais legível.
   code: {
-    fontFamily: FontFamilies.secondary,
+    fontFamily: FontFamilies.primaryMedium,
     fontSize: Typography.sizes.notice,
     letterSpacing: Typography.letterSpacing.tight,
   },

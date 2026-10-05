@@ -1,11 +1,23 @@
 import { router, usePathname } from "expo-router";
-import { SymbolView } from "expo-symbols";
+import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FontFamilies, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 import { useTheme } from "@/hooks/use-theme";
+
+// Cada ícone tem o nome do SF Symbols (iOS) e do Material Symbols (Android
+// e web). Só com o nome do iOS, o ícone some no Android.
+const icons = {
+  dashboard: { ios: "house.fill", android: "home", web: "home" },
+  patients: { ios: "person.2", android: "group", web: "group" },
+  newPatient: {
+    ios: "person.badge.plus",
+    android: "person_add",
+    web: "person_add",
+  },
+} satisfies Record<string, SymbolViewProps["name"]>;
 
 export function BottomNav() {
   const theme = useTheme();
@@ -29,13 +41,13 @@ export function BottomNav() {
         <NavItem
           active={!isPatients}
           label="Dashboard"
-          icon="house.fill"
+          icon={icons.dashboard}
           onPress={() => router.replace("/dashboard")}
         />
         <NavItem
           active={isPatients}
           label="Pacientes"
-          icon="person.2"
+          icon={icons.patients}
           onPress={() => router.push("/patients")}
         />
       </View>
@@ -50,7 +62,7 @@ export function BottomNav() {
         ]}
       >
         <SymbolView
-          name="person.badge.plus"
+          name={icons.newPatient}
           tintColor={Theme.textPrimaryLight}
           size={22}
         />
@@ -67,7 +79,7 @@ function NavItem({
 }: {
   active: boolean;
   label: string;
-  icon: "house.fill" | "person.2";
+  icon: SymbolViewProps["name"];
   onPress: () => void;
 }) {
   const theme = useTheme();

@@ -22,7 +22,7 @@ export function VisitItem({ visit }: VisitItemProps) {
       <View style={[styles.bar, visit.highlight && styles.barHighlight]} />
 
       <View style={styles.content}>
-        <ThemedText type="small" numberOfLines={2}>
+        <ThemedText numberOfLines={2}>
           {visit.title}
         </ThemedText>
 
