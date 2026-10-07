@@ -1,8 +1,10 @@
+import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Pressable,
   StyleSheet,
   TextInput,
   View,
@@ -32,9 +34,26 @@ export function PatientList() {
       <ThemedView style={styles.screen}>
         <View style={styles.content}>
           <View style={styles.headerTop}>
-            <ThemedText type="code" themeColor="textSecondary">
-              ← DASHBOARD
-            </ThemedText>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Voltar para o Dashboard"
+              hitSlop={8}
+              onPress={() => router.replace("/dashboard")}
+              style={styles.backButton}
+            >
+              <SymbolView
+                name={{
+                  ios: "arrow.left",
+                  android: "arrow_back",
+                  web: "arrow_back",
+                }}
+                tintColor={Theme.textSecondary}
+                size={19}
+              />
+              <ThemedText type="code" themeColor="textSecondary">
+                DASHBOARD
+              </ThemedText>
+            </Pressable>
           </View>
           <View style={styles.titleRow}>
             <ThemedText style={styles.title}>Pacientes</ThemedText>
@@ -129,6 +148,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.one,
+  },
 
   titleRow: {
     paddingTop: 1,
@@ -187,5 +211,6 @@ const styles = StyleSheet.create({
   },
 
   centeredText: { textAlign: "center" },
+
   emptyList: { flexGrow: 1 },
 });

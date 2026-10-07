@@ -1,10 +1,18 @@
 import { router } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { useEffect, useRef, useState } from "react";
-import { BackHandler, Pressable, ScrollView, View } from "react-native";
+import {
+  BackHandler,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
+import { Spacing, Theme } from "@/constants/theme";
 
 import { initialForm, stepTitles, totalSteps } from "./constants";
 import { registerPatient } from "./services/patient-registration-api";
@@ -176,9 +184,28 @@ function RegistrationHeader({
     <View style={styles.header}>
       <View style={styles.headerTop}>
         <Pressable onPress={onBack} accessibilityRole="button" hitSlop={8}>
-          <ThemedText type="code" themeColor="textSecondary">
-            {step === 1 ? "×  CANCELAR" : "←  VOLTAR"}
-          </ThemedText>
+          <View style={headerStyles.backButton}>
+            <SymbolView
+              name={
+                step === 1
+                  ? {
+                      ios: "xmark",
+                      android: "close",
+                      web: "close",
+                    }
+                  : {
+                      ios: "arrow.left",
+                      android: "arrow_back",
+                      web: "arrow_back",
+                    }
+              }
+              tintColor={Theme.textSecondary}
+              size={19}
+            />
+            <ThemedText type="code" themeColor="textSecondary">
+              {step === 1 ? "CANCELAR" : "VOLTAR"}
+            </ThemedText>
+          </View>
         </Pressable>
         <ThemedText type="code" themeColor="textSecondary">
           ETAPA {step} DE {totalSteps}
@@ -200,3 +227,11 @@ function RegistrationHeader({
     </View>
   );
 }
+
+const headerStyles = StyleSheet.create({
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.one,
+  },
+});

@@ -39,8 +39,8 @@ export function StatusFilter({
       >
         <Pressable style={styles.overlay} onPress={onClose}>
           <View style={styles.menu}>
-          <ThemedText style={styles.title}>STATUS DA PACIENTE</ThemedText>
-          {options.map((option) => (
+            <ThemedText style={styles.title}>STATUS DA PACIENTE</ThemedText>
+            {options.map((option) => (
               <Pressable
                 key={option}
                 accessibilityRole="radio"
@@ -83,12 +83,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flex: 1,
   },
-  selectText: { fontSize: Typography.sizes.small },
+
+  selectText: {
+    fontSize: Typography.sizes.small,
+  },
+
   chevron: {
     fontFamily: FontFamilies.primarySemiBold,
     fontSize: Typography.sizes.body,
     lineHeight: 17,
   },
+
   overlay: {
     flex: 1,
     backgroundColor: "#00000026",
@@ -96,6 +101,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingHorizontal: 2,
   },
+
   menu: {
     backgroundColor: Theme.backgroundElement,
     borderRadius: 14,
@@ -103,6 +109,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two,
     elevation: 5,
   },
+
   title: {
     fontFamily: FontFamilies.primaryMedium,
     fontSize: Typography.sizes.small,
@@ -110,13 +117,23 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.one,
     paddingHorizontal: Spacing.one,
   },
+
   option: {
     minHeight: 44,
     borderRadius: 10,
     paddingHorizontal: Spacing.one,
     justifyContent: "center",
   },
-  selectedOption: { backgroundColor: Theme.primary },
-  optionText: { fontSize: Typography.sizes.body },
-  selectedOptionText: { color: Theme.textPrimaryLight },
+
+  selectedOption: {
+    backgroundColor: Theme.primary,
+  },
+
+  optionText: {
+    fontSize: Typography.sizes.body,
+  },
+
+  selectedOptionText: {
+    color: Theme.textPrimaryLight,
+  },
 });

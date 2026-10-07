@@ -53,25 +53,38 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: Spacing.two,
   },
-  identity: { flex: 1, gap: 3 },
+
+  identity: {
+    flex: 1,
+    gap: 3,
+  },
+
   name: {
     fontSize: Typography.sizes.bodySmall,
     lineHeight: Typography.lineHeights.body,
   },
-  details: { alignItems: "flex-end", gap: 4 },
+
+  details: {
+    alignItems: "flex-end",
+    gap: 4,
+  },
+
   badge: {
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
+
   badgeText: {
     fontFamily: FontFamilies.primaryMedium,
     fontSize: Typography.sizes.tiny,
     letterSpacing: Typography.letterSpacing.tight,
   },
+
   visit: {
     fontSize: Typography.sizes.small,
     lineHeight: Typography.lineHeights.compact,
   },
+
   pressed: { opacity: 0.7 },
 });
