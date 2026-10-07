@@ -26,10 +26,12 @@
           Pacientes
         </a>
 
+        @if (authService.possuiAlgumaRole([TipoUsuario.ADMINISTRADOR])) {
         <a routerLink="/profissionais" routerLinkActive="item-ativo">
           <div class="pagina-detalhe"></div>
           Profissionais
         </a>
+        }
 
         <a routerLink="/novo-paciente" class="botao-novo-paciente">
           <mat-icon>add</mat-icon>
@@ -71,10 +73,6 @@
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <div class="barra-superior">
-      <!-- breadcrumb -->
-    </div>
-
     <main class="conteudo-principal">
       <router-outlet></router-outlet>
     </main>
