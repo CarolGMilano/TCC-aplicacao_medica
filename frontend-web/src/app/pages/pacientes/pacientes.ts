@@ -1,9 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CampoBusca, Loading, CabecalhoPagina, IPaciente, StatusPaciente, StatusPacienteLabel, TipoUsuario, RodapeTabela, Exclusao } from '../../shared';
 import { MatIconModule } from '@angular/material/icon';
-import { PacientesService, PerfilService } from '../../services';
+import { PacientesService } from '../../services';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/auth/auth.service';
 
 @Component({
   selector: 'app-pacientes',
@@ -20,7 +21,7 @@ import { RouterLink } from '@angular/router';
 })
 export class Pacientes implements OnInit {
   private service = inject(PacientesService);
-  private readonly perfilService = inject(PerfilService);
+  private readonly authService = inject(AuthService);
 
   private dialog = inject(MatDialog);
   private tempoBusca: ReturnType<typeof setTimeout> | null = null;
@@ -48,14 +49,7 @@ export class Pacientes implements OnInit {
   ngOnInit() {
     this.listar();
 
-    this.perfilService.buscar().subscribe({
-      next: (usuario) => {
-        this.tipoUsuarioLogado.set(usuario.tipo);
-      },
-      error: (erro) => {
-        console.error('Erro ao buscar usuário logado:', erro);
-      }
-    });
+    this.tipoUsuarioLogado.set(this.authService.getTipoUsuario());
   }
 
   filtrarPorTipo(tipo: StatusPaciente | null) {

@@ -1,0 +1,58 @@
+@if (loading()) { <app-loading /> }
+<section class="pagina">
+  <app-cabecalho-pagina titulo="Nova paciente" subtitulo="Cadastro e histórico inicial" />
+  <nav class="etapas" aria-label="Etapas do cadastro">
+    @for (titulo of titulos; track titulo; let i = $index) {
+      <span [class.ativa]="i === etapa()" [class.concluida]="i < etapa()" [attr.aria-current]="i === etapa() ? 'step' : null">{{ i + 1 }}. {{ titulo }}</span>
+    }
+  </nav>
+  <form class="card" [formGroup]="formulario" (ngSubmit)="etapa() === 5 ? cadastrar() : continuar()">
+    <header><span>ETAPA {{ etapa() + 1 }} DE 6</span><h2>{{ titulos[etapa()] }}</h2><p>Informe dados confirmados. Não utilize zero ou “não” para substituir informações desconhecidas.</p></header>
+    <div class="campos">
+      @switch (etapa()) {
+        @case (0) {
+          <div formGroupName="paciente" class="grade">
+            <label class="amplo">Nome completo<input formControlName="nome" maxlength="45" autocomplete="name" />@if (invalido('paciente.nome')) { <small>Informe o nome, com até 45 caracteres.</small> }</label>
+            <label>Data de nascimento<input type="date" formControlName="dataNascimento" [max]="hoje" />@if (invalido('paciente.dataNascimento')) { <small>Informe uma data válida, não futura.</small> }</label>
+            <label>Prontuário<input formControlName="prontuario" maxlength="50" />@if (invalido('paciente.prontuario')) { <small>Informe o prontuário, com até 50 caracteres.</small> }</label>
+            <label class="amplo">Status<select formControlName="status"><option [ngValue]="null">Selecione</option>@for (s of status; track s[0]) { <option [value]="s[0]">{{ s[1] }}</option> }</select>@if (invalido('paciente.status')) { <small>Selecione o status.</small> }</label>
+          </div>
+        }
+        @case (1) {
+          <div formGroupName="dadosGinecoObstetricos" class="grade">
+            @for (campo of camposObstetricos; track campo[0]) {
+              <label>{{ campo[1] }}<input type="number" min="0" step="1" [formControlName]="campo[0]" />@if (invalido('dadosGinecoObstetricos.' + campo[0])) { <small>Informe um número inteiro não negativo.</small> }</label>
+            }
+          </div>
+        }
+        @case (2) {
+          <div formGroupName="saudeSexual" class="grade">
+            <label>Idade da sexarca<input type="number" min="0" step="1" formControlName="sexarca" /></label>
+            <label>Número de parceiros<input type="number" min="0" step="1" formControlName="numParceiros" /></label>
+            <label class="amplo">Método contraceptivo<select formControlName="mac"><option [ngValue]="null">Selecione</option>@for (m of metodos; track m[0]) { <option [value]="m[0]">{{ m[1] }}</option> }</select></label>
+            <label>VVS<select formControlName="vvs"><option [ngValue]="null">Selecione</option><option [ngValue]="true">Sim</option><option [ngValue]="false">Não</option></select><span class="apoio">Sigla utilizada no registro clínico; confirme seu significado com a equipe.</span></label>
+          </div>
+        }
+        @case (3) {
+          <fieldset><legend>ISTs informadas</legend><div class="opcoes">@for (ist of ists; track ist[0]) { <label class="checkbox"><input type="checkbox" [checked]="formulario.controls.historicoIst.value.includes(ist[0])" (change)="selecionarIst(ist[0], $event)" />{{ ist[1] }}</label> }</div></fieldset>
+          @if (formulario.controls.historicoIst.value.includes('HPV')) { <label>Condiloma relacionado ao HPV<select formControlName="condilomaHpv"><option [ngValue]="null">Selecione</option><option [ngValue]="true">Sim</option><option [ngValue]="false">Não</option></select></label> }
+        }
+        @case (4) {
+          <div formGroupName="historicoTabagismo" class="grade">
+            <label class="amplo">Situação<select formControlName="fumante"><option [ngValue]="null">Selecione</option><option value="NAO_FUMANTE">Não fumante</option><option value="FUMANTE">Fumante</option><option value="EX_FUMANTE">Ex-fumante</option></select></label>
+            @if (formulario.controls.historicoTabagismo.controls.fumante.value && formulario.controls.historicoTabagismo.controls.fumante.value !== 'NAO_FUMANTE') {
+              <label>Cigarros por dia<input type="number" min="0" step="1" formControlName="cigarrosDia" /></label>
+              <label>Idade de início<input type="number" min="0" step="1" formControlName="idadeInicio" /></label>
+              @if (formulario.controls.historicoTabagismo.controls.fumante.value === 'EX_FUMANTE') { <label>Idade de término<input type="number" min="0" step="1" formControlName="idadeFim" /></label> }
+            }
+          </div>
+        }
+        @case (5) {
+          @for (texto of resumo(); track $index; let i = $index) { <section class="resumo"><h3>{{ titulos[i] }}</h3><p>{{ texto }}</p><button type="button" class="secundario" (click)="etapa.set(i)">Revisar seção</button></section> }
+        }
+      }
+      @if (erro()) { <p class="erro" role="alert">{{ erro() }}</p> }
+    </div>
+    <footer><button type="button" class="secundario" [disabled]="loading()" (click)="cancelar()">Cancelar</button><div>@if (etapa() > 0) { <button type="button" class="secundario" [disabled]="loading()" (click)="voltar()">Voltar</button> }<button type="submit" [disabled]="loading()">{{ etapa() === 5 ? 'Cadastrar paciente' : 'Continuar' }}</button></div></footer>
+  </form>
+</section>

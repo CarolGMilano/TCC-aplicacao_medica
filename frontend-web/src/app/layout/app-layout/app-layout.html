@@ -26,10 +26,12 @@
           Pacientes
         </a>
 
+        @if (authService.possuiAlgumaRole([TipoUsuario.ADMINISTRADOR])) {
         <a routerLink="/profissionais" routerLinkActive="item-ativo">
           <div class="pagina-detalhe"></div>
           Profissionais
         </a>
+        }
 
         <a routerLink="/novo-paciente" class="botao-novo-paciente">
           <mat-icon>add</mat-icon>

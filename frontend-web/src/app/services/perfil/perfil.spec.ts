@@ -1,13 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 
-import { Perfil } from './perfil';
+import { PerfilService } from './perfil';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('Perfil', () => {
-  let service: Perfil;
+  let service: PerfilService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Perfil);
+    TestBed.configureTestingModule({ providers: [provideHttpClient()] });
+    service = TestBed.inject(PerfilService);
   });
 
   it('should be created', () => {

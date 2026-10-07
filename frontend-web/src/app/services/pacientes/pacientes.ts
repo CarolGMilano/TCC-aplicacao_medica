@@ -1,13 +1,16 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments';
-import { IPaciente, IPacienteResponse, StatusPaciente } from '../../shared';
+import { IPaciente, IPacienteResponse, IPacienteCompletoRequest, StatusPaciente } from '../../shared';
 import { catchError, map, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PacientesService {
+  cadastrarCompleto(dados: IPacienteCompletoRequest): Observable<IPaciente> {
+    return this._httpClient.post<IPaciente>(`${this.BASE_URL}/completo`, dados);
+  }
   private readonly _httpClient = inject(HttpClient);
   private readonly BASE_URL = `${environment.apiUrl}/pacientes`;
 
