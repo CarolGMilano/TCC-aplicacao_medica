@@ -48,7 +48,7 @@ export function Counter({
 
         {/* Espaço fixo para a unidade, para os contadores ficarem alinhados
             mesmo nas linhas sem "ANOS". */}
-        <View style={styles.suffix}>
+        <View style={[styles.suffix, !suffix && styles.suffixEmpty]}>
           {suffix ? (
             <ThemedText type="code" themeColor="textSecondary">
               {suffix}
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     minHeight: 60,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
+    paddingRight: 1,
     borderBottomWidth: 1,
     borderBottomColor: Theme.border,
     flexDirection: "row",
@@ -88,5 +89,9 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.greeting,
     lineHeight: Typography.lineHeights.greeting,
+  },
+
+  suffixEmpty: {
+    width: 0,
   },
 });

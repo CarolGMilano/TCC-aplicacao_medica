@@ -14,7 +14,7 @@ export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ?? `http://${localHost}:8081`;
 
 // Login mock só para desenvolvimento sem backend; o backend exige JWT real.
-const USE_MOCK_LOGIN = false;
+const USE_MOCK_LOGIN = true;
 
 export type LoginResponse = {
   token: string;
