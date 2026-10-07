@@ -1,9 +1,29 @@
-.pagina { padding: 20px 40px; display: flex; flex-direction: column; gap: 24px; color: var(--cor-texto-primario-escuro); font-family: var(--fonte-primaria); }
+.pagina { box-sizing: border-box; padding: 20px 40px; display: flex; flex-direction: column; gap: 20px; color: var(--cor-texto-primario-escuro); font-family: var(--fonte-primaria); font-weight: 300; }
 .etapas { display: flex; flex-wrap: wrap; gap: 8px; span { padding: 8px 12px; border: 1px solid var(--cor-borda); border-radius: 24px; font-size: 12px; } .ativa { background: var(--cor-primaria); color: white; } .concluida { background: var(--cor-card-detalhe); } }
-.card { border: 1px solid var(--cor-borda); border-radius: 20px; background: var(--cor-fundo-secundario); box-shadow: var(--sombra); overflow: hidden; max-width: 1000px; }
+.card { border: 1px solid var(--cor-borda); border-radius: 20px; background: var(--cor-fundo-secundario); box-shadow: var(--sombra); overflow: hidden; width: 100%; min-width: 0; box-sizing: border-box; }
 header, footer { padding: 24px; background: var(--cor-card-detalhe); } header span { font-family: var(--fonte-secundaria); font-size: 12px; } h2 { font-family: var(--fonte-detalhe); font-weight: 400; margin: 10px 0; } header p, .apoio { font-size: 13px; color: var(--cor-texto-secundario-escuro); }
 .campos { padding: 24px; } .grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; } .amplo { grid-column: 1 / -1; }
 label { display: flex; flex-direction: column; gap: 8px; font-size: 13px; } input, select { box-sizing: border-box; width: 100%; padding: 12px; border: 1px solid var(--cor-borda); border-radius: 10px; background: var(--cor-fundo-secundario); color: inherit; font: 14px var(--fonte-primaria); } input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--cor-primaria); outline-offset: 3px; } .ng-invalid.ng-touched { border-color: var(--cor-erro); } small, .erro { color: var(--cor-erro); font-size: 13px; }
 fieldset { border: 0; padding: 0; margin: 0 0 24px; } legend { margin-bottom: 16px; } .opcoes { display: flex; flex-wrap: wrap; gap: 16px; } .checkbox { flex-direction: row; align-items: center; padding: 12px; background: var(--cor-card-detalhe); border-radius: 10px; input { width: 18px; height: 18px; accent-color: var(--cor-primaria); } }
 footer { display: flex; justify-content: space-between; gap: 16px; div { display: flex; gap: 12px; } } button { border: 1px solid transparent; border-radius: 50px; padding: 12px 20px; font: 13px var(--fonte-primaria); color: white; background: var(--cor-primaria); cursor: pointer; &:hover { background: var(--cor-primaria-hover-escura); } &:disabled { opacity: .6; cursor: wait; } } .secundario { color: var(--cor-texto-primario-escuro); background: white; border-color: var(--cor-borda); &:hover { background: var(--cor-card-detalhe); } } .resumo { padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--cor-borda); h3 { font-size: 14px; } p { overflow-wrap: anywhere; font-size: 14px; } }
 @media (max-width: 700px) { .pagina { padding: 20px 16px; } .grade { grid-template-columns: 1fr; } footer { flex-wrap: wrap; } }
+
+// Mesma hierarquia tipográfica do formulário compartilhado de profissionais.
+header { padding: 25px 25px 15px; }
+header span, label, legend {
+  font-family: var(--fonte-secundaria);
+  font-size: 10px;
+  font-weight: 100;
+  text-transform: uppercase;
+}
+h2 { font-size: 25px; font-weight: 100; }
+header p, .apoio { font: 300 12px var(--fonte-primaria); text-transform: none; }
+.campos { padding: 20px 25px; }
+.grade { gap: 20px; }
+input, select { padding: 10px; font: 300 12px var(--fonte-primaria); text-transform: none; min-width: 0; }
+small, .erro { font: 300 12px var(--fonte-primaria); text-transform: none; }
+.checkbox { font: 300 12px var(--fonte-primaria); text-transform: none; }
+footer { padding: 20px 25px; }
+button { padding: 10px 15px; font: 400 12px var(--fonte-primaria); }
+.resumo h3 { font: 100 12px var(--fonte-secundaria); text-transform: uppercase; }
+.resumo p { font: 300 12px var(--fonte-primaria); }
