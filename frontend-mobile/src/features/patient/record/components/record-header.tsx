@@ -1,3 +1,4 @@
+import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { Spacing, Theme, Typography } from "@/constants/theme";
@@ -36,9 +37,20 @@ export function RecordHeader({
     <View style={registrationStyles.header}>
       <View style={registrationStyles.headerTop}>
         <Pressable onPress={onBack} accessibilityRole="button" hitSlop={8}>
-          <ThemedText type="code" themeColor="textSecondary">
-            ← PACIENTES
-          </ThemedText>
+          <View style={styles.backButton}>
+            <SymbolView
+              name={{
+                ios: "arrow.left",
+                android: "arrow_back",
+                web: "arrow_back",
+              }}
+              tintColor={Theme.textSecondary}
+              size={19}
+            />
+            <ThemedText type="code" themeColor="textSecondary">
+              PACIENTES
+            </ThemedText>
+          </View>
         </Pressable>
         {editing || created ? (
           <Badge
@@ -104,6 +116,12 @@ export function RecordHeader({
 }
 
 const styles = StyleSheet.create({
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.one,
+  },
+
   identity: {
     gap: Spacing.one,
   },
