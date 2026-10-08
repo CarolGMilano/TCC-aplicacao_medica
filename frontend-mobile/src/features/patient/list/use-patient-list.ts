@@ -1,19 +1,26 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
 
 import { fetchPatients } from "./services/patient-list-api";
 import type { PatientListItem } from "./types";
 
 export function usePatientList(status: string, search: string) {
   const [patients, setPatients] = useState<PatientListItem[]>([]);
+  const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  const loadPatients = useCallback(() => {
     let active = true;
+
+    setIsLoading(true);
+    setError("");
 
     fetchPatients(search, status)
       .then((result) => {
-        if (active) setPatients(result);
+        if (!active) return;
+        setPatients(result.patients);
+        setTotal(result.total);
       })
       .catch((requestError: unknown) => {
         if (!active) return;
@@ -31,6 +38,8 @@ export function usePatientList(status: string, search: string) {
       active = false;
     };
   }, [search, status]);
+
+  useFocusEffect(loadPatients);
 
   const filteredPatients = useMemo(() => {
     const normalizedSearch = search
@@ -50,5 +59,5 @@ export function usePatientList(status: string, search: string) {
     });
   }, [patients, search, status]);
 
-  return { patients, filteredPatients, error, isLoading };
+  return { patients, filteredPatients, total, error, isLoading };
 }

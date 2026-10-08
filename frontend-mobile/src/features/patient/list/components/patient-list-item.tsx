@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
@@ -16,6 +17,13 @@ export function PatientListItem({ patient }: PatientListItemProps) {
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={`Abrir ficha de ${patient.name}`}
+      onPress={() =>
+        router.push({
+          pathname: "/patients/[id]",
+          params: { id: String(patient.id) },
+        })
+      }
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View style={styles.identity}>

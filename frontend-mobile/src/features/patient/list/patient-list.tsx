@@ -27,7 +27,10 @@ export function PatientList() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("Todas");
   const [filterOpen, setFilterOpen] = useState(false);
-  const { filteredPatients, error, isLoading } = usePatientList(status, search);
+  const { patients, filteredPatients, total, error, isLoading } = usePatientList(
+    status,
+    search,
+  );
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -58,7 +61,7 @@ export function PatientList() {
           <View style={styles.titleRow}>
             <ThemedText style={styles.title}>Pacientes</ThemedText>
             <ThemedText type="code" themeColor="textSecondary">
-              248 NA UNIDADE
+              {isLoading ? "—" : total || patients.length} NA UNIDADE
             </ThemedText>
           </View>
           <View style={styles.searchBox}>
