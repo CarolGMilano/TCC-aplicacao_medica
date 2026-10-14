@@ -13,6 +13,7 @@ import { ThemedText } from "@/components/shared/themed-text";
 type InputFieldProps = {
   label?: string;
   value: string;
+  prefix?: string;
   placeholder?: string;
   onChangeText: (value: string) => void;
   keyboardType?: "default" | "numeric" | "number-pad";
@@ -24,6 +25,7 @@ type InputFieldProps = {
 export function InputField({
   label,
   value,
+  prefix,
   placeholder,
   onChangeText,
   keyboardType = "default",
@@ -39,15 +41,22 @@ export function InputField({
         </ThemedText>
       ) : null}
 
-      <TextInput
-        value={value}
-        placeholder={placeholder}
-        onChangeText={onChangeText}
-        keyboardType={keyboardType}
-        maxLength={maxLength}
-        placeholderTextColor={Theme.muted}
-        style={[styles.textInput, inputStyle]}
-      />
+      <View style={prefix ? styles.inputRow : undefined}>
+        {prefix ? (
+          <ThemedText style={styles.prefix} themeColor="textSecondary">
+            {prefix}
+          </ThemedText>
+        ) : null}
+        <TextInput
+          value={value}
+          placeholder={placeholder}
+          onChangeText={onChangeText}
+          keyboardType={keyboardType}
+          maxLength={maxLength}
+          placeholderTextColor={Theme.muted}
+          style={[styles.textInput, prefix && styles.textInputWithPrefix, inputStyle]}
+        />
+      </View>
     </View>
   );
 }
@@ -71,5 +80,28 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.input,
     color: Theme.text,
+  },
+
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Theme.backgroundElement,
+    borderWidth: 1,
+    borderColor: Theme.border,
+    borderRadius: 12,
+    minHeight: 48,
+  },
+
+  prefix: {
+    paddingLeft: Spacing.two,
+    fontFamily: FontFamilies.primary,
+    fontSize: Typography.sizes.input,
+  },
+
+  textInputWithPrefix: {
+    flex: 1,
+    backgroundColor: "transparent",
+    borderWidth: 0,
+    borderRadius: 0,
   },
 });

@@ -73,9 +73,8 @@ export function PersonalStep({ form, update }: StepProps) {
           label="PRONTUÁRIO"
           value={form.record}
           placeholder="Número do prontuário"
-          keyboardType="number-pad"
           maxLength={50}
-          onChangeText={(value) => update("record", digits(value))}
+          onChangeText={(value) => update("record", value)}
         />
       </StepSection>
 

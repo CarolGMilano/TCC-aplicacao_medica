@@ -11,6 +11,7 @@ export type PatientRegistration = {
     prontuario: string;
     status: string;
   };
+
   dadosGinecoObstetricos: {
     numGestacao: number;
     numPartoNormal: number;
@@ -19,18 +20,21 @@ export type PatientRegistration = {
     menarca: number;
     menopausa: number | null;
   };
+
   saudeSexual: {
     sexarca: number;
     mac: string;
     numParceiros: number;
     vvs: boolean;
   };
+
   historicoTabagismo: {
     cigarrosDia: number;
     idadeInicio: number | null;
     idadeFim: number | null;
     fumante: string;
   };
+
   historicoIst: {
     ist: string;
     condilomaHpv: boolean;
@@ -47,6 +51,7 @@ export function toPatientRegistration(form: PatientForm): PatientRegistration {
       prontuario: form.record.trim(),
       status: statusMap[form.status],
     },
+
     dadosGinecoObstetricos: {
       numGestacao: form.pregnancies,
       numPartoNormal: form.vaginalBirths,
@@ -55,18 +60,21 @@ export function toPatientRegistration(form: PatientForm): PatientRegistration {
       menarca: form.menarche,
       menopausa: form.menopause ? form.menopauseAge : null,
     },
+
     saudeSexual: {
       sexarca: form.sexarche,
       mac: contraceptionMap[form.contraception],
       numParceiros: form.partners,
       vvs: form.vvs,
     },
+
     historicoTabagismo: {
       cigarrosDia: smokes ? form.cigarettesPerDay : 0,
       idadeInicio: smokes ? form.smokingStart : null,
       idadeFim: form.smoking === "Parou" ? form.smokingEnd : null,
       fumante: smokingMap[form.smoking],
     },
+
     historicoIst: form.ists.map((ist) => ({
       ist: istMap[ist],
       condilomaHpv: ist === "HPV" && form.hpvWart,
