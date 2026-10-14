@@ -149,7 +149,13 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
             {!edit.editing && tab === "sexual" && <SexualTab record={record} />}
             {!edit.editing && tab === "ist" && <IstTab record={record} />}
             {!edit.editing && tab === "habits" && <HabitsTab record={record} />}
-            {tab === "visits" && <VisitsTab patientId={record.id} />}
+            {tab === "visits" && (
+              <VisitsTab
+                patientId={record.id}
+                patientName={record.form.name}
+                patientRecord={record.form.record}
+              />
+            )}
           </View>
         </ScrollView>
 

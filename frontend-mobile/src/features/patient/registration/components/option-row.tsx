@@ -9,9 +9,16 @@ type OptionRowProps = {
   value: string;
   onChange: (value: string) => void;
   options: readonly string[];
+  actionLabel?: string;
 };
 
-export function OptionRow({ label, value, onChange, options }: OptionRowProps) {
+export function OptionRow({
+  label,
+  value,
+  onChange,
+  options,
+  actionLabel,
+}: OptionRowProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   function selectOption(option: string) {
@@ -26,15 +33,32 @@ export function OptionRow({ label, value, onChange, options }: OptionRowProps) {
           {label}
         </ThemedText>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`${label}: ${value}`}
-          style={styles.optionField}
-          onPress={() => setIsOpen(true)}
-        >
-          <ThemedText style={styles.optionValue}>{value}</ThemedText>
-          <View style={styles.chevron} />
-        </Pressable>
+        {actionLabel ? (
+          <View style={styles.compactValue}>
+            <ThemedText style={styles.statusDot}>●</ThemedText>
+            <ThemedText style={styles.optionValue}>{value}</ThemedText>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`${actionLabel}: ${label}`}
+              style={styles.actionButton}
+              onPress={() => setIsOpen(true)}
+            >
+              <ThemedText type="code" themeColor="textSecondary">
+                {actionLabel}
+              </ThemedText>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${label}: ${value}`}
+            style={styles.optionField}
+            onPress={() => setIsOpen(true)}
+          >
+            <ThemedText style={styles.optionValue}>{value}</ThemedText>
+            <View style={styles.chevron} />
+          </Pressable>
+        )}
       </View>
 
       <Modal
@@ -101,6 +125,27 @@ const styles = StyleSheet.create({
 
   optionValue: {
     flex: 1,
+  },
+
+  compactValue: {
+    minHeight: 32,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.one,
+  },
+
+  statusDot: {
+    color: Theme.waitingDark,
+    fontSize: 16,
+  },
+
+  actionButton: {
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: Theme.textSecondary,
+    borderRadius: 12,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.one,
   },
 
   // Seta para baixo desenhada com duas bordas de um quadrado girado,
