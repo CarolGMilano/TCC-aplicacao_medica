@@ -1,0 +1,29 @@
+import { getToken } from "@/features/auth/auth-session";
+import { API_BASE_URL } from "@/features/auth/services/auth-api";
+
+import { saveMockConsultation } from "../mocks";
+import type { ConsultationRequest } from "../types";
+
+export const USE_MOCK_CONSULTATION = false;
+
+export async function createConsultation(request: ConsultationRequest) {
+  if (USE_MOCK_CONSULTATION) return saveMockConsultation(request);
+
+  const token = getToken();
+  if (!token) throw new Error("Sua sessão expirou. Faça login novamente.");
+
+  const response = await fetch(`${API_BASE_URL}/api/consultas`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (response.ok) return response.json();
+  if (response.status === 401 || response.status === 403) {
+    throw new Error("Sua sessão expirou. Faça login novamente.");
+  }
+  throw new Error("Não foi possível salvar a consulta.");
+}

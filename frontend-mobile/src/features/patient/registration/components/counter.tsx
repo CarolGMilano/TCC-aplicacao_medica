@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
@@ -11,6 +11,7 @@ type CounterProps = {
   suffix?: string;
   min?: number;
   max?: number;
+  editable?: boolean;
   onChange: (value: number) => void;
 };
 
@@ -20,6 +21,7 @@ export function Counter({
   suffix,
   min = 0,
   max = 120,
+  editable = false,
   onChange,
 }: CounterProps) {
   return (
@@ -36,7 +38,22 @@ export function Counter({
           onPress={() => onChange(Math.max(min, value - 1))}
         />
 
-        <ThemedText style={styles.counterValue}>{value}</ThemedText>
+        {editable ? (
+          <TextInput
+            accessibilityLabel={label}
+            value={String(value)}
+            keyboardType="number-pad"
+            selectTextOnFocus
+            onChangeText={(text) => {
+              const digits = text.replace(/\D/g, "");
+              const nextValue = digits ? Number(digits) : min;
+              onChange(Math.min(max, Math.max(min, nextValue)));
+            }}
+            style={styles.counterInput}
+          />
+        ) : (
+          <ThemedText style={styles.counterValue}>{value}</ThemedText>
+        )}
 
         <RoundButton
           label="+"
@@ -89,6 +106,18 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.greeting,
     lineHeight: Typography.lineHeights.greeting,
+  },
+
+  counterInput: {
+    width: 42,
+    minHeight: 40,
+    paddingHorizontal: 0,
+    textAlign: "center",
+    fontFamily: FontFamilies.detail,
+    fontSize: Typography.sizes.greeting,
+    color: Theme.text,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.border,
   },
 
   suffixEmpty: {

@@ -4,6 +4,10 @@ import { API_BASE_URL } from "@/features/auth/services/auth-api";
 import { toPatientRegistration } from "../../registration/services/patient-registration-api";
 import type { PatientForm } from "../../registration/types";
 import type { DataTab, PatientRecord } from "../types";
+import {
+  USE_MOCK_PATIENT_RECORD,
+  updateMockPatientStatus,
+} from "./patient-record-api";
 
 const historyPaths = {
   obstetric: "/api/historico/gineco-obstetrico",
@@ -86,6 +90,10 @@ export function saveTab(
 
   switch (tab) {
     case "personal":
+      if (USE_MOCK_PATIENT_RECORD) {
+        updateMockPatientStatus(idPaciente, form.status);
+        return Promise.resolve();
+      }
       return send("PUT", `/api/pacientes/${idPaciente}`, payload.paciente);
     case "obstetric":
       return saveHistory(historyPaths.obstetric, record.ids.obstetric, {

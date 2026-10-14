@@ -35,6 +35,7 @@ export function SexualStep({ form, update }: StepProps) {
           label="Nº DE PARCEIROS"
           value={form.partners}
           max={999}
+          editable
           onChange={(value) => update("partners", value)}
         />
       </StepSection>

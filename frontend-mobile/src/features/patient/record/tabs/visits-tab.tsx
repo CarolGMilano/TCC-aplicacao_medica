@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
@@ -11,9 +12,15 @@ import type { VisitLists, VisitType } from "../types";
 
 type VisitsTabProps = {
   patientId: number;
+  patientName: string;
+  patientRecord: string;
 };
 
-export function VisitsTab({ patientId }: VisitsTabProps) {
+export function VisitsTab({
+  patientId,
+  patientName,
+  patientRecord,
+}: VisitsTabProps) {
   const [visits, setVisits] = useState<VisitLists | null>(null);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<VisitType>("consultations");
@@ -45,13 +52,38 @@ export function VisitsTab({ patientId }: VisitsTabProps) {
     return <ActivityIndicator style={styles.loading} color={Theme.primary} />;
   }
 
+  const newRecordButton = (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Adicionar novo registro"
+      onPress={() =>
+        router.push({
+          pathname: "/patients/[id]/new-record",
+          params: {
+            id: String(patientId),
+            name: patientName,
+            record: patientRecord,
+          },
+        })
+      }
+      style={({ pressed }) => [styles.newRecord, pressed && styles.pressed]}
+    >
+      <ThemedText type="small" themeColor="textPrimaryLight">
+        + Novo registro
+      </ThemedText>
+    </Pressable>
+  );
+
   // Sem nenhum atendimento, o layout mostra só o aviso, sem filtros.
   if (Object.values(visits).every((list) => list.length === 0)) {
     return (
-      <EmptyState
-        title="Nenhum atendimento ainda"
-        note="Lance a primeira colposcopia, exame, procedimento ou consulta desta paciente."
-      />
+      <View style={styles.emptyContainer}>
+        <EmptyState
+          title="Nenhum atendimento ainda"
+          note="Lance a primeira colposcopia, exame, procedimento ou consulta desta paciente."
+        />
+        {newRecordButton}
+      </View>
     );
   }
 
@@ -91,6 +123,7 @@ export function VisitsTab({ patientId }: VisitsTabProps) {
       ) : (
         <EmptyState title="Nenhum registro nesta aba" />
       )}
+      {newRecordButton}
     </View>
   );
 }
@@ -125,4 +158,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
   },
+
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+
+  newRecord: {
+    alignItems: "center",
+    backgroundColor: Theme.primary,
+    borderRadius: 24,
+    marginHorizontal: Spacing.three,
+    marginTop: Spacing.four,
+    marginBottom: Spacing.four,
+    paddingVertical: Spacing.three,
+  },
+
+  pressed: { opacity: 0.75 },
 });

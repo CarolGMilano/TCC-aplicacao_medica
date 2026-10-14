@@ -9,6 +9,8 @@ import {
 } from "../constants";
 import type { Visit, VisitLists } from "../types";
 
+export const USE_MOCK_VISITS = false;
+
 // Campos comuns às respostas de atendimento do backend.
 type VisitResponse = {
   nomeMedico: string;
@@ -78,6 +80,16 @@ function base(item: VisitResponse, date: string) {
 // Busca os cinco tipos de atendimento da paciente, já ordenados do mais
 // recente para o mais antigo pelo backend.
 export async function fetchVisits(id: number): Promise<VisitLists> {
+  if (USE_MOCK_VISITS) {
+    return {
+      consultations: [],
+      cytology: [],
+      pcr: [],
+      colposcopy: [],
+      procedures: [],
+    };
+  }
+
   const [consultations, cytology, pcr, colposcopy, procedures] =
     await Promise.all([
       get<Consultation[]>(`/api/consultas/paciente/${id}`),
