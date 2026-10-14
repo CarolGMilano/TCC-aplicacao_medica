@@ -1,6 +1,7 @@
 import { getToken } from "@/features/auth/auth-session";
 import { API_BASE_URL } from "@/features/auth/services/auth-api";
 
+import { mockPatients } from "../mocks/patients";
 import { statusMap } from "../../registration/constants";
 import type { PatientListItem } from "../types";
 
@@ -22,6 +23,8 @@ type PatientPage = {
 const statusLabels = Object.fromEntries(
   Object.entries(statusMap).map(([label, value]) => [value, label]),
 );
+
+export const USE_MOCK_PATIENTS = false;
 
 function formatLastVisit(value: string | null) {
   if (!value) return "sem consultas";
@@ -51,6 +54,13 @@ export async function fetchPatients(
   search = "",
   status = "Todas",
 ): Promise<PatientListResult> {
+  if (USE_MOCK_PATIENTS) {
+    return {
+      patients: mockPatients.map((patient) => ({ ...patient })),
+      total: mockPatients.length,
+    };
+  }
+
   const token = getToken();
 
   if (!token) {
