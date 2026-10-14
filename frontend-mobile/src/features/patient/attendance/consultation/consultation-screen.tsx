@@ -32,8 +32,12 @@ const statusLabels = Object.fromEntries(
 
 export function ConsultationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const now = new Date();
   const [form, setForm] = useState<ConsultationForm>({
-    date: new Date().toLocaleDateString("pt-BR"),
+    date: now.toLocaleDateString("pt-BR"),
+    time: `${String(now.getHours()).padStart(2, "0")}:${String(
+      now.getMinutes(),
+    ).padStart(2, "0")}`,
     observation: "",
   });
   const [error, setError] = useState("");
@@ -82,12 +86,16 @@ export function ConsultationScreen() {
       setError("Informe a observação da consulta.");
       return;
     }
+    if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(form.time)) {
+      setError("Informe um horário válido no formato HH:MM.");
+      return;
+    }
     setSaving(true);
     try {
       const [day, month, year] = form.date.split("/");
       await createConsultation({
         idPaciente: Number(id),
-        dataHora: `${year}-${month}-${day}T00:00:00`,
+        dataHora: `${year}-${month}-${day}T${form.time}:00`,
         observacao: form.observation.trim(),
       });
       router.back();
@@ -121,6 +129,12 @@ export function ConsultationScreen() {
             label="DATA DO REGISTRO"
             value={form.date}
             onChangeText={(date) => setForm({ ...form, date })}
+          />
+          <LabeledInput
+            label="HORÁRIO"
+            value={form.time}
+            onChangeText={(time) => setForm({ ...form, time })}
+            placeholder="HH:MM"
           />
           <LabeledInput
             label="OBSERVAÇÃO"
