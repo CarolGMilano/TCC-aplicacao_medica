@@ -1,0 +1,230 @@
+<form #formularioForm="ngForm" class="formulario">
+  <div class="cabecalho">
+    <h2 class="cabecalho-titulo">
+      @if (modoAtual === 'adicionar') {
+        Novo PCR DNA HPV
+      } @else if (modoAtual === 'alterar') {
+        Alterar PCR DNA HPV
+      } @else {
+        PCR DNA HPV
+      }
+    </h2>
+  </div>
+
+  <div class="campos">
+    @if(modoAtual !== 'adicionar'){
+      <div class="campo-cabecalho">
+        <div class="cabecalho-container">
+          <p class="container-titulo">Última alteração</p>
+          <p class="container-dado">{{ pcr.dataEdicao | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+  
+        <div class="cabecalho-container">
+          <p class="container-titulo">Profissional responsável</p>
+          <p class="container-dado">{{ pcr.nomeMedico }}</p>
+        </div>
+      </div>
+    }
+
+    <div class="campo">
+      @if(modoAtual !== 'visualizar') {
+        <label class="campo-label" for="dataExame">
+          Data do exame
+        </label>
+        
+        <div class="campo-conteudo">
+          <input
+            class="campo-input"
+            [class.campo-invalido]="
+              formularioForm.controls['dataExame']?.touched &&
+              novaPCR.dataRegistro &&
+              !validarData()
+            "
+            type="date"
+            [(ngModel)]="novaPCR.dataRegistro"
+            id="dataExame"
+            name="dataExame"
+            min="1900-01-01"
+            [max]="dataAtual"
+            required
+          >
+  
+          @if (
+            formularioForm.controls['dataExame']?.touched &&
+            formularioForm.controls['dataExame']?.hasError('required')
+          ) {
+            <span class="campo-erro">
+              Data do exame é obrigatória.
+            </span>
+          }
+  
+          @if (
+            formularioForm.controls['dataExame']?.touched &&
+            novaPCR.dataRegistro &&
+            !validarData()
+          ) {
+            <span class="campo-erro">
+              A data deve estar entre 01/01/1900 e hoje.
+            </span>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Data do exame</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ pcr.dataRegistro | date:'dd/MM/yyyy' }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      @if (modoAtual !== 'visualizar') {
+        <label class="campo-label">Resultado</label>
+
+        <div class="campo-conteudo">
+          <div class="opcoes-radio">
+            @for (resultado of resultadoPCROpcoes; track resultado) {
+              <label 
+                class="opcao-radio"
+                [class.selecionado]="novaPCR.resultado === resultado">
+                <input
+                  type="radio"
+                  [name]="'resultado-' + resultado"
+                  [value]="resultado"
+                  [(ngModel)]="novaPCR.resultado"
+                  required
+                />
+
+                <span>{{ ResultadoPCRLabel[resultado] }}</span>
+              </label>
+            }
+          </div>
+        </div>
+      } @else {
+        <p class="campo-label">Resultado</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ ResultadoPCRLabel[pcr.resultado] }}
+          </p>
+        </div>
+      }
+    </div>
+
+    @if(novaPCR.resultado === resultadoPCR.POSITIVO){
+      <div class="campo">
+        @if (modoAtual !== 'visualizar') {
+          <label class="campo-label">Tipos de HPV</label>
+  
+          <div class="campo-conteudo">
+            <div class="opcoes-checkbox">
+              @for (tipo of tipoHPVOpcoes; track tipo) {
+                <label 
+                  class="opcao-checkbox"
+                  [class.selecionado]="novaPCR.tiposHpv.includes(tipo)">
+                  <input
+                    type="checkbox"
+                    [name]="'tipo-' + tipo"
+                    [checked]="novaPCR.tiposHpv.includes(tipo)"
+                    (change)="alterarTipoHPV(tipo, $event)"
+
+                  />
+  
+                  <span>{{ TipoHPVLabel[tipo] }}</span>
+                </label>
+              }
+            </div>
+
+            @if (
+              novaPCR.resultado === resultadoPCR.POSITIVO &&
+              novaPCR.tiposHpv.length === 0
+            ) {
+              <span class="campo-aviso">
+                Selecione ao menos um tipo de HPV.
+              </span>
+            }
+          </div>
+        } @else {
+          <p class="campo-label">Tipos de HPV</p>
+  
+          <div class="campo-conteudo">
+            <p class="container-dado">
+              {{ pcr.tiposHpv.map(tipo => TipoHPVLabel[tipo]).join(', ') }}
+            </p>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="campo">     
+      @if (modoAtual !== 'visualizar') {
+        <label class="campo-label" for="observacoes">
+          Observações
+        </label>
+
+        <div class="campo-conteudo">
+          <textarea
+            class="campo-input"
+            id="observacoes"
+            name="observacoes"
+            required
+            [(ngModel)]="novaPCR.observacao"
+            rows="4">
+          </textarea>
+
+          @if (formularioForm.controls['observacoes']?.touched &&
+              formularioForm.controls['observacoes']?.hasError('required')) {
+            <p class="campo-erro">A observação é obrigatória.</p>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Observações</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ pcr.observacao }}
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="acoes">
+    @if (modoAtual === 'visualizar') {
+      <button
+        class="botao-acao acao-cancelar"
+        type="button"
+        (click)="cancelar()">
+        Fechar
+      </button>
+
+      <button
+        class="botao-acao acao-salvar"
+        type="button"
+        (click)="editar()">
+        Editar
+      </button>
+    } @else {
+      <button
+        class="botao-acao acao-cancelar"
+        type="button"
+        (click)="cancelar()">
+        Cancelar
+      </button>
+
+      <button
+        class="botao-acao acao-salvar"
+        type="button"
+        [disabled]="
+          formularioForm.invalid ||
+          (novaPCR.resultado === resultadoPCR.POSITIVO &&
+          novaPCR.tiposHpv.length === 0) || 
+          !validarData()"
+        (click)="salvar(formularioForm)">
+        Salvar
+      </button>
+    }
+  </div>
+</form>
