@@ -1,0 +1,1076 @@
+@if (loading()) {
+  <app-loading></app-loading>
+}
+
+<section class="pagina">
+  <div class="cabecalho">
+    @if(paciente()) {
+      <div class="cabecalho-titulo">
+        <h1>{{ paciente()!.nome }}</h1>
+        
+        @if(paciente()!.grupoPrioritario){
+          <div class="tag-prioritario">
+            <div class="prioritario-elemento"></div>
+            <p class="prioritario-texto">Grupo prioritário</p>
+          </div>
+        }
+        
+        <div
+            class="tag-status"
+            [class.em_investigacao]="paciente()!.status === StatusPaciente.EM_INVESTIGACAO"
+            [class.em_tratamento]="paciente()!.status === StatusPaciente.EM_TRATAMENTO"
+            [class.aguardando_procedimento]="paciente()!.status === StatusPaciente.AGUARDANDO_PROCEDIMENTO"
+            [class.pos_procedimento]="paciente()!.status === StatusPaciente.POS_PROCEDIMENTO"
+            [class.alta]="paciente()!.status === StatusPaciente.ALTA"
+            [class.acompanhamento_preventivo]="paciente()!.status === StatusPaciente.ACOMPANHAMENTO_PREVENTIVO"
+          >
+          <div class="status-elemento"></div>
+          <p class="status-texto">{{ StatusPacienteLabel[paciente()!.status] }}</p>
+        </div>
+      </div>
+
+      <div class="cabecalho-dados">
+        <div class="dados-container">
+          <p class="container-titulo">Data de nascimento</p>
+          <p class="container-valor">{{ paciente()!.dataNascimento | date:'dd/MM/yyyy' }}</p>
+        </div>
+
+        <div class="dados-container">
+          <p class="container-titulo">Idade</p>
+          <p class="container-valor">{{ paciente()!.idade }} anos</p>
+        </div>
+
+        <div class="dados-container">
+          <p class="container-titulo">Prontuário</p>
+          <p class="container-valor">{{ paciente()!.prontuario }}</p>
+        </div>
+
+        <button class="dados-edicao" (click)="abrirEdicao()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="dados-clinicos">
+    <div class="clinicos-cabecalho">
+      <h2 class="cabecalho-titulo">Dados clínicos</h2>
+      <h2 class="cabecalho-subtitulo">Informações de referência da paciente.</h2>
+    </div>
+
+    <div class="clinicos-corpo">
+      <div class="corpo-container">
+        <div class="container-cabecalho">
+          <h3 class="cabecalho-titulo">Dados gineco-obstétricos</h3>
+
+          @if (!editandoGinecoObstetrico) {
+            <button
+              class="cabecalho-botao"
+              (click)="editarGinecoObstetrico()"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+
+          @if (editandoGinecoObstetrico) {
+            <div class="acoes-edicao">
+              <button
+                class="edicao-botao edicao-cancelar"
+                type="button"
+                (click)="cancelarEdicaoGinecoObstetrico()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+
+              <button
+                class="edicao-botao edicao-salvar"
+                type="button"
+                [disabled]="!dadosGinecoObstetricos.menarca"
+                (click)="salvarDadosGinecoObstetricos()"
+              >
+                <mat-icon>check</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+
+        @if (editandoGinecoObstetrico) {
+          <div class="container-dados">
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Ciclo menstrual</p>
+
+              <div class="grupo-dados">
+                <div class="dados-container">
+                  <p class="container-titulo">Menarca</p>
+
+                  <div class="campo-edicao">
+                    <div class="container-input">
+                      <input
+                        type="text"
+                        maxlength="2"
+                        numeros
+                        placeholder="0"
+                        [(ngModel)]="dadosGinecoObstetricos.menarca"
+                        [class.campo-input]="!dadosGinecoObstetricos.menarca"
+                      />
+
+                      <p>anos</p>
+                    </div>
+
+                    @if (!dadosGinecoObstetricos.menarca) {
+                      <span class="campo-erro">
+                        A menarca é obrigatória.
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Menopausa</p>
+
+                  <div class="container-input">
+                    <input
+                      type="text"
+                      maxlength="2"
+                      numeros
+                      placeholder="0"
+                      [(ngModel)]="dadosGinecoObstetricos.menopausa"
+                    />
+                    <p>anos</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Histórico obstétrico</p>
+
+              <div class="grupo-dados">
+                <div class="dados-container">
+                  <p class="container-titulo">Gestações</p>
+
+                  <div class="container-contador">
+                    <button
+                      [disabled]="dadosGinecoObstetricos.numGestacao === 0"
+                      (click)="dadosGinecoObstetricos.numGestacao = dadosGinecoObstetricos.numGestacao - 1"
+                    >
+                      -
+                    </button>
+
+                    <span>{{ dadosGinecoObstetricos.numGestacao }}</span>
+
+                    <button
+                      (click)="dadosGinecoObstetricos.numGestacao = dadosGinecoObstetricos.numGestacao + 1"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Partos normais</p>
+
+                  <div class="container-contador">
+                    <button
+                      [disabled]="dadosGinecoObstetricos.numPartoNormal === 0"
+                      (click)="dadosGinecoObstetricos.numPartoNormal = dadosGinecoObstetricos.numPartoNormal - 1"
+                    >
+                      -
+                    </button>
+
+                    <span>{{ dadosGinecoObstetricos.numPartoNormal }}</span>
+
+                    <button
+                      (click)="dadosGinecoObstetricos.numPartoNormal = dadosGinecoObstetricos.numPartoNormal + 1"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Cesarianas</p>
+
+                  <div class="container-contador">
+                    <button
+                      [disabled]="dadosGinecoObstetricos.numCesariana === 0"
+                      (click)="dadosGinecoObstetricos.numCesariana = dadosGinecoObstetricos.numCesariana - 1"
+                    >
+                      -
+                    </button>
+
+                    <span>{{ dadosGinecoObstetricos.numCesariana }}</span>
+
+                    <button
+                      (click)="dadosGinecoObstetricos.numCesariana = dadosGinecoObstetricos.numCesariana + 1"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Abortos</p>
+
+                  <div class="container-contador">
+                    <button
+                      [disabled]="dadosGinecoObstetricos.numAborto === 0"
+                      (click)="dadosGinecoObstetricos.numAborto = dadosGinecoObstetricos.numAborto - 1"
+                    >
+                      -
+                    </button>
+
+                    <span>{{ dadosGinecoObstetricos.numAborto }}</span>
+
+                    <button
+                      (click)="dadosGinecoObstetricos.numAborto = dadosGinecoObstetricos.numAborto + 1"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="container-dados">
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Ciclo menstrual</p>
+
+              <div class="grupo-dados">
+                <div class="dados-container">
+                  <p class="container-titulo">Menarca</p>
+                  <p class="container-dado">
+                    {{ paciente()?.dadosGinecoObstetricos?.[0]?.menarca ?? '-' }} anos
+                  </p>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Menopausa</p>
+                  <p class="container-dado">
+                    {{ paciente()?.dadosGinecoObstetricos?.[0]?.menopausa
+                      ? paciente()?.dadosGinecoObstetricos?.[0]?.menopausa + ' anos'
+                      : '-' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Histórico obstétrico</p>
+
+              <div class="grupo-dados">
+                <div class="dados-container">
+                  <p class="container-titulo">Gestações</p>
+                  <p class="container-dado">
+                    {{ paciente()?.dadosGinecoObstetricos?.[0]?.numGestacao ?? '-' }}
+                  </p>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Partos normais</p>
+                  <p class="container-dado">
+                    {{ paciente()?.dadosGinecoObstetricos?.[0]?.numPartoNormal ?? '-' }}
+                  </p>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Cesarianas</p>
+                  <p class="container-dado">
+                    {{ paciente()?.dadosGinecoObstetricos?.[0]?.numCesariana ?? '-' }}
+                  </p>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Abortos</p>
+                  <p class="container-dado">
+                    {{ paciente()?.dadosGinecoObstetricos?.[0]?.numAborto ?? '-' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="corpo-container">
+        <div class="container-cabecalho">
+          <h3 class="cabecalho-titulo">Saúde sexual</h3>
+
+          @if (!editandoSaudeSexual) {
+            <button
+              class="cabecalho-botao"
+              (click)="editarSaudeSexual()"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+
+          @if (editandoSaudeSexual) {
+            <div class="acoes-edicao">
+              <button
+                class="edicao-botao edicao-cancelar"
+                type="button"
+                (click)="cancelarEdicaoSaudeSexual()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+
+              <button
+                class="edicao-botao edicao-salvar"
+                type="button"
+                [disabled]="!saudeSexual.sexarca"
+                (click)="salvarSaudeSexual()"
+              >
+                <mat-icon>check</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+
+        @if (editandoSaudeSexual) {
+          <div class="container-dados">
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Início da vida sexual</p>
+
+              <div class="grupo-dados">
+                <div class="dados-container">
+                  <p class="container-titulo">Sexarca</p>
+
+                  <div class="campo-edicao">
+                    <div class="container-input">
+                      <input
+                        type="text"
+                        maxlength="2"
+                        numeros
+                        placeholder="0"
+                        [(ngModel)]="saudeSexual.sexarca"
+                        [class.campo-input]="!saudeSexual.sexarca"
+                      />
+                      <p>anos</p>
+                    </div>
+
+                    @if (!saudeSexual.sexarca) {
+                      <span class="campo-erro">
+                        A sexarca é obrigatória.
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">VVS</p>
+
+                  <div class="container-vvs">
+                    <label
+                      class="vvs-opcao"
+                      [class.selecionado]="saudeSexual.vvs === true"
+                    >
+                      <input
+                        type="radio"
+                        name="vvs"
+                        [checked]="saudeSexual.vvs === true"
+                        (change)="saudeSexual.vvs = true"
+                      >
+                      <span>Sim</span>
+                    </label>
+
+                    <label
+                      class="vvs-opcao"
+                      [class.selecionado]="saudeSexual.vvs === false"
+                    >
+                      <input
+                        type="radio"
+                        name="vvs"
+                        [checked]="saudeSexual.vvs === false"
+                        (change)="saudeSexual.vvs = false"
+                      >
+                      <span>Não</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Contracepção e parceiros</p>
+
+              <div class="grupo-dados">
+                <div class="dados-MAC">
+                  <p class="mac-titulo">MAC</p>
+
+                  <select
+                    [(ngModel)]="saudeSexual.mac"
+                  >
+                    <option [ngValue]="" disabled>Selecione</option>
+
+                    @for (mac of macOpcoes; track mac) {
+                      <option [ngValue]="mac">
+                        {{ MACLabel[mac] }}
+                      </option>
+                    }
+                  </select>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Nº de parceiros</p>
+
+                  <div class="container-contador">
+                    <button
+                      [disabled]="saudeSexual.numParceiros === 0"
+                      (click)="saudeSexual.numParceiros = saudeSexual.numParceiros - 1"
+                    >
+                      -
+                    </button>
+
+                    <span>{{ saudeSexual.numParceiros }}</span>
+
+                    <button
+                      (click)="saudeSexual.numParceiros = saudeSexual.numParceiros + 1"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="container-dados">
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Início da vida sexual</p>
+
+              <div class="grupo-dados">
+                <div class="dados-container">
+                  <p class="container-titulo">Sexarca</p>
+                  <p class="container-dado">
+                    {{ paciente()?.saudeSexual?.[0]?.sexarca ?? '-' }} anos
+                  </p>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">VVS</p>
+                  <p class="container-dado">
+                    {{ paciente()?.saudeSexual?.[0]?.vvs
+                      ? 'Sim'
+                      : 'Não' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Contracepção e parceiros</p>
+
+              <div class="grupo-dados">
+                <div class="dados-container">
+                  <p class="container-titulo">MAC</p>
+                  <p class="container-dado">
+                    {{ paciente()?.saudeSexual?.[0]?.mac
+                        ? MACLabel[paciente()!.saudeSexual![0].mac!]
+                        : '-' }}
+                  </p>
+                </div>
+
+                <div class="dados-container">
+                  <p class="container-titulo">Nº de parceiros</p>
+                  <p class="container-dado">
+                    {{ paciente()?.saudeSexual?.[0]?.numParceiros ?? '-' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="corpo-container">
+        <div class="container-cabecalho">
+          <h3 class="cabecalho-titulo">Histórico de IST</h3>
+
+          @if (!editandoHistoricoIST) {
+            <button
+              class="cabecalho-botao"
+              (click)="editarHistoricoIST()"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+
+          @if (editandoHistoricoIST) {
+            <div class="acoes-edicao">
+              <button
+                class="edicao-botao edicao-cancelar"
+                type="button"
+                (click)="cancelarEdicaoHistoricoIST()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+
+              <button
+                class="edicao-botao edicao-salvar"
+                type="button"
+                [disabled]="historicoISTEdicao.length === 0"
+                (click)="salvarHistoricoIST()"
+              >
+                <mat-icon>check</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+
+        @if (editandoHistoricoIST) {
+          <div class="container-dados">
+            <div class="dados-grupo">
+              <p class="grupo-titulo">ISTs identificadas</p>
+
+              <div class="opcoes-ist">
+                @for (ist of istOpcoes; track ist) {
+                  <label
+                    class="ist-opcao"
+                    [class.selecionado]="historicoISTEdicao.some(h => h.ist === ist)"
+                  >
+                    <input
+                      type="checkbox"
+                      [checked]="historicoISTEdicao.some(h => h.ist === ist)"
+                      (change)="alternarIST(ist)"
+                    >
+                    <span>{{ IstLabel[ist] }}</span>
+                  </label>
+                }
+              </div>
+
+              @if (historicoISTEdicao.some(h => h.ist === this.ist.HPV)) {
+                <div class="condiloma-container">
+                  <p class="condiloma-titulo">Condiloma HPV?</p>
+
+                  <div class="container-condiloma">
+                    <label
+                      class="condiloma-opcao"
+                      [class.selecionado]="
+                        historicoISTEdicao.find(h => h.ist === this.ist.HPV)?.condilomaHpv === true
+                      "
+                    >
+                      <input
+                        type="radio"
+                        name="condiloma"
+                        [checked]="
+                          historicoISTEdicao.find(h => h.ist === this.ist.HPV)?.condilomaHpv === true
+                        "
+                        (change)="alterarCondilomaHpv(true)"
+                      >
+                      <span>Sim</span>
+                    </label>
+
+                    <label
+                      class="condiloma-opcao"
+                      [class.selecionado]="
+                        historicoISTEdicao.find(h => h.ist === this.ist.HPV)?.condilomaHpv === false
+                      "
+                    >
+                      <input
+                        type="radio"
+                        name="condiloma"
+                        [checked]="
+                          historicoISTEdicao.find(h => h.ist === this.ist.HPV)?.condilomaHpv === false
+                        "
+                        (change)="alterarCondilomaHpv(false)"
+                      >
+                      <span>Não</span>
+                    </label>
+
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="container-dados">
+            <div class="dados-grupo">
+              <p class="grupo-titulo">ISTs identificadas</p>
+
+              <div class="lista-ist">
+                @for (historico of paciente()?.historicoIst ?? []; track historico.idHistorico) {
+                  <div class="item-ist">
+                    <span class="ist-marcador"></span>
+
+                    <span class="ist-nome">
+                      {{ IstLabel[historico.ist] }}
+                    </span>
+
+                    @if (historico.ist === this.ist.HPV) {
+                      <span class="ist-detalhe">
+                        {{ historico.condilomaHpv ? 'Condiloma' : 'Sem condiloma' }}
+                      </span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="corpo-container">
+        <div class="container-cabecalho">
+          <h3 class="cabecalho-titulo">Tabagismo</h3>
+
+          @if (!editandoHistoricoTabagista) {
+            <button
+              class="cabecalho-botao"
+              (click)="editarHistoricoTabagista()"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+          }
+
+          @if (editandoHistoricoTabagista) {
+            <div class="acoes-edicao">
+              <button
+                class="edicao-botao edicao-cancelar"
+                type="button"
+                (click)="cancelarEdicaoHistoricoTabagista()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+
+              <button
+                class="edicao-botao edicao-salvar"
+                type="button"
+                [disabled]="!podeSalvarHistoricoTabagista()"
+                (click)="salvarHistoricoTabagista()"
+              >
+                <mat-icon>check</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+
+        @if (editandoHistoricoTabagista) {
+          <div class="container-dados">
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Histórico</p>
+
+              <div class="grupo-dados">
+                <div class="dados-tabagismo">
+                  <p class="tabagismo-titulo">Situação</p>
+
+                  <select [(ngModel)]="historicoTabagismo.fumante">
+                    @for (status of statusTabagistaOpcoes; track status) {
+                      <option [ngValue]="status">
+                        {{ StatusTabagistaLabel[status] }}
+                      </option>
+                    }
+                  </select>
+                </div>
+
+                @if (
+                  historicoTabagismo.fumante === StatusTabagista.FUMANTE ||
+                  historicoTabagismo.fumante === StatusTabagista.EX_FUMANTE
+                ) {
+                  <div class="dados-container">
+                    <p class="container-titulo">Cigarros/dia</p>
+
+                    <div class="campo-edicao">
+                      <div class="container-input">
+                        <input
+                          type="text"
+                          maxlength="3"
+                          numeros
+                          placeholder="0"
+                          [(ngModel)]="historicoTabagismo.cigarrosDia"
+                          [class.campo-input]="!historicoTabagismo.cigarrosDia"
+                        />
+                      </div>
+  
+                      @if (!historicoTabagismo.cigarrosDia) {
+                        <span class="campo-erro">
+                          Cigarros/dia é obrigatório.
+                        </span>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="dados-container">
+                    <p class="container-titulo">Começou aos</p>
+
+                    <div class="campo-edicao">
+                      <div class="container-input">
+                        <input
+                          type="text"
+                          maxlength="2"
+                          numeros
+                          placeholder="0"
+                          [(ngModel)]="historicoTabagismo.idadeInicio"
+                          [class.campo-input]="!historicoTabagismo.idadeInicio"
+                        />
+                        <p>anos</p>
+                      </div>
+
+                      @if (!historicoTabagismo.idadeInicio) {
+                        <span class="campo-erro">
+                          Idade de início é obrigatório.
+                        </span>
+                      }
+                    </div>
+                  </div>
+
+                  @if (
+                    historicoTabagismo.fumante === StatusTabagista.EX_FUMANTE
+                  ) {
+                    <div class="dados-container">
+                      <p class="container-titulo">Parou aos</p>
+
+                      <div class="campo-edicao">
+                        <div class="container-input">
+                          <input
+                            type="text"
+                            maxlength="2"
+                            numeros
+                            placeholder="0"
+                            [(ngModel)]="historicoTabagismo.idadeFim"
+                            [class.campo-input]="!historicoTabagismo.idadeFim"
+                          />
+                          <p>anos</p>
+                        </div>
+  
+                        @if (!historicoTabagismo.idadeFim) {
+                          <span class="campo-erro">
+                            Idade que parou é obrigatório.
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="container-dados">
+            <div class="dados-grupo">
+              <p class="grupo-titulo">Histórico</p>
+
+              <div class="grupo-dados">
+                <div class="dados-container">
+                  <p class="container-titulo">Situação</p>
+                  <p class="container-dado">
+                    {{ paciente()?.historicoTabagismo?.[0]?.fumante
+                      ? StatusTabagistaLabel[paciente()!.historicoTabagismo![0].fumante]
+                      : '-' }}
+                  </p>
+                </div>
+
+                @if (
+                  paciente()?.historicoTabagismo?.[0]?.fumante === StatusTabagista.FUMANTE ||
+                  paciente()?.historicoTabagismo?.[0]?.fumante === StatusTabagista.EX_FUMANTE
+                ) {
+                  <div class="dados-container">
+                    <p class="container-titulo">Começou aos</p>
+                    <p class="container-dado">
+                      {{ paciente()?.historicoTabagismo?.[0]?.idadeInicio ?? '-' }} anos
+                    </p>
+                  </div>
+
+                  @if (
+                    paciente()?.historicoTabagismo?.[0]?.fumante === StatusTabagista.EX_FUMANTE
+                  ) {
+                    <div class="dados-container">
+                      <p class="container-titulo">Parou aos</p>
+                      <p class="container-dado">
+                        {{ paciente()?.historicoTabagismo?.[0]?.idadeFim ?? '-' }} anos
+                      </p>
+                    </div>
+                  }
+
+                  <div class="dados-container">
+                    <p class="container-titulo">Cigarro/dia</p>
+                    <p class="container-dado">
+                      {{ paciente()?.historicoTabagismo?.[0]?.cigarrosDia }}
+                    </p>
+                  </div>
+
+                  <div class="dados-container">
+                    <p class="container-titulo">Carga tabágica</p>
+                    <p class="container-dado">
+                      {{ calcularCargaTabagica() }} maços-ano
+                    </p>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="dados-acompanhamento">
+    <div class="acompanhamento-cabecalho">
+      <h2 class="cabecalho-titulo">Histórico clínico</h2>
+      <h2 class="cabecalho-subtitulo">Consultas, exames, colposcopias e procedimentos em ordem cronológica.</h2>
+    </div>
+
+    <div class="acompanhamento-nav">
+      <div class="nav-secao">
+        <button
+          class="secao-botao"
+          [class.ativo]="secaoSelecionada === secaoAcompanhamento.CONSULTAS"
+          (click)="selecionarSecao(secaoAcompanhamento.CONSULTAS)"
+        >
+          Consultas
+        </button>
+
+        <button
+          class="secao-botao"
+          [class.ativo]="secaoSelecionada === secaoAcompanhamento.CITOLOGIAS"
+          (click)="selecionarSecao(secaoAcompanhamento.CITOLOGIAS)"
+        >
+          Citologias
+        </button>
+
+        <button
+          class="secao-botao"
+          [class.ativo]="secaoSelecionada === secaoAcompanhamento.PCR"
+          (click)="selecionarSecao(secaoAcompanhamento.PCR)"
+        >
+          PCR DNA HPV
+        </button>
+
+        <button
+          class="secao-botao"
+          [class.ativo]="secaoSelecionada === secaoAcompanhamento.COLPOSCOPIAS"
+          (click)="selecionarSecao(secaoAcompanhamento.COLPOSCOPIAS)"
+        >
+          Colposcopias
+        </button>
+
+        <button
+          class="secao-botao"
+          [class.ativo]="secaoSelecionada === secaoAcompanhamento.PROCEDIMENTOS"
+          (click)="selecionarSecao(secaoAcompanhamento.PROCEDIMENTOS)"
+        >
+          Procedimentos
+        </button>
+      </div>
+  
+      <button class="botao-adicionar" (click)="adicionarAcompanhamento()">
+        <mat-icon>add</mat-icon>
+        {{ textoBotaoAdicionar }}
+      </button>
+    </div>
+
+    <div class="acompanhamento-secao">
+      @if (secaoSelecionada === secaoAcompanhamento.CONSULTAS) {
+        @for (consulta of consultas(); track consulta.idConsulta) {
+          <div 
+            class="acompanhamento-item"
+            (click)="abrirPopupConsulta('visualizar', consulta)"
+          >
+            <div class="item-container">
+              <div class="container-elemento"></div>
+
+              <div class="container-info">
+                <p class="info-titulo">{{ consulta.dataHora | date:'dd/MM/yyyy HH:mm' }}</p>
+                <p class="info-subtitulo">{{ consulta.nomeMedico.length > 20 ? (consulta.nomeMedico | slice:0:20 ) + '...' : consulta.nomeMedico }}</p>
+              </div>
+
+              <div class="container-dado">
+                <p class="dado-subtitulo">
+                  {{ consulta.observacao.length > 50
+                    ? (consulta.observacao | slice:0:100) + '...'
+                    : consulta.observacao }}
+                </p>
+              </div>
+            </div>
+
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+        } @empty {
+          <p class="acompanhamento-vazio">Nenhuma consulta cadastrada.</p>
+        }
+      }
+
+      @if (secaoSelecionada === secaoAcompanhamento.CITOLOGIAS) {
+        @for (citologia of citologias(); track citologia.idExame) {
+          <div 
+            class="acompanhamento-item"
+            (click)="abrirPopupCitologia('visualizar', citologia)"
+            [class.item-alterado]="citologia.resultado !== ResultadoCitologia.NILM"
+          >
+            <div class="item-container">
+              <div class="container-elemento"></div>
+
+              <div class="container-info">
+                <p class="info-titulo">{{ citologia.dataRegistro | date:'dd/MM/yyyy' }}</p>
+                <p class="info-subtitulo">{{ citologia.nomeMedico.length > 20 ? (citologia.nomeMedico | slice:0:20 ) + '...' : citologia.nomeMedico }}</p>
+              </div>
+
+              <div class="container-dado">
+                <p class="dado-titulo">{{ ResultadoCitologiaLabel[citologia.resultado] }}</p>
+                <p class="dado-subtitulo">
+                {{ citologia.observacao.length > 50
+                  ? (citologia.observacao | slice:0:100) + '...'
+                  : citologia.observacao }}
+                </p>
+              </div>
+            </div>
+
+            <span
+              class="tag-alterado"
+              [class.tag-invisivel]="citologia.resultado === ResultadoCitologia.NILM"
+            >
+              Alterado
+            </span>
+
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+        } @empty {
+          <p class="acompanhamento-vazio">Nenhuma citologia cadastrada.</p>
+        }
+      }
+
+      @if (secaoSelecionada === secaoAcompanhamento.PCR) {
+        @for (pcr of pcrs(); track pcr.idExame) {
+          <div 
+            class="acompanhamento-item"
+            (click)="abrirPopupPCR('visualizar', pcr)"
+            [class.item-alterado]="pcr.resultado !== ResultadoPCR.NEGATIVO"
+          >
+            <div class="item-container">
+              <div class="container-elemento"></div>
+
+              <div class="container-info">
+                <p class="info-titulo">{{ pcr.dataRegistro | date:'dd/MM/yyyy' }}</p>
+                <p class="info-subtitulo">{{ pcr.nomeMedico.length > 20 ? (pcr.nomeMedico | slice:0:20 ) + '...' : pcr.nomeMedico }}</p>
+              </div>
+
+              <div class="container-dado">
+                <p class="dado-titulo">{{ ResultadoPCRLabel[pcr.resultado] }}</p>
+                <p class="dado-subtitulo">
+                {{ pcr.observacao.length > 50
+                  ? (pcr.observacao | slice:0:100) + '...'
+                  : pcr.observacao }}
+                </p>
+              </div>
+            </div>
+
+            <span
+              class="tag-alterado"
+              [class.tag-invisivel]="pcr.resultado === ResultadoPCR.NEGATIVO"
+            >
+              Alterado
+            </span>
+
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+        } @empty {
+          <p class="acompanhamento-vazio">Nenhum PCR DNA HPV cadastrado.</p>
+        }
+      }
+
+      @if (secaoSelecionada === secaoAcompanhamento.COLPOSCOPIAS) {
+        @for (colposcopia of colposcopias(); track colposcopia.idColposcopia) {
+          <div 
+            class="acompanhamento-item"
+            (click)="abrirPopupColposcopia('visualizar', colposcopia)"
+            [class.item-alterado]="colposcopia.grauLesao"
+          >
+            <div class="item-container">
+              <div class="container-elemento"></div>
+
+              <div class="container-info">
+                <p class="info-titulo">{{ colposcopia.dataRegistro | date:'dd/MM/yyyy' }}</p>
+                <p class="info-subtitulo">{{ colposcopia.nomeMedico.length > 20 ? (colposcopia.nomeMedico | slice:0:20 ) + '...' : colposcopia.nomeMedico }}</p>
+              </div>
+
+              <div class="container-dado">
+                <p class="dado-titulo">{{ colposcopia.grauLesao ? TipoAchadoLabel[colposcopia.grauLesao] : 'Sem lesão' }}</p>
+                <p class="dado-subtitulo">
+                {{ colposcopia.observacao.length > 50
+                  ? (colposcopia.observacao | slice:0:100) + '...'
+                  : colposcopia.observacao }}
+                </p>
+              </div>
+            </div>
+            
+            <span
+              class="tag-alterado"
+              [class.tag-invisivel]="!colposcopia.verETratar"
+            >
+              Ver e tratar
+            </span>
+
+            <span
+              class="tag-alterado"
+              [class.tag-invisivel]="!colposcopia.recidiva"
+            >
+              Recidiva
+            </span>
+
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+        } @empty {
+          <p class="acompanhamento-vazio">Nenhuma colposcopia cadastrada.</p>
+        }
+      }
+
+      @if (secaoSelecionada === secaoAcompanhamento.PROCEDIMENTOS) {
+        @for (procedimento of procedimentos(); track procedimento.idProcedimento) {
+          <div 
+            class="acompanhamento-item"
+            (click)="abrirPopupProcedimento('visualizar', procedimento)"
+            [class.item-alterado]="procedimento.resultado"
+          >
+            <div class="item-container">
+              <div class="container-elemento"></div>
+
+              <div class="container-info">
+                <p class="info-titulo">{{ procedimento.dataRegistro | date:'dd/MM/yyyy' }}</p>
+                <p class="info-subtitulo">{{ procedimento.nomeMedico.length > 20 ? (procedimento.nomeMedico | slice:0:20 ) + '...' : procedimento.nomeMedico }}</p>
+              </div>
+
+              <div class="container-dado">
+                <p class="dado-titulo">{{ ResultadoProcedimentoLabel[procedimento.resultado] }}</p>
+                <p class="dado-subtitulo">
+                {{ procedimento.observacao.length > 50
+                  ? (procedimento.observacao | slice:0:100) + '...'
+                  : procedimento.observacao }}
+                </p>
+              </div>
+            </div>
+
+            <mat-icon>chevron_right</mat-icon>
+          </div>
+        } @empty {
+          <p class="acompanhamento-vazio">Nenhum procedimento cadastrado.</p>
+        }
+      }
+    </div>
+
+    <div class="acompanhamento-rodape">
+      @switch (secaoSelecionada) {
+        @case (secaoAcompanhamento.CONSULTAS) {
+          <p>{{ consultas().length }} consultas cadastradas</p>
+        }
+
+        @case (secaoAcompanhamento.CITOLOGIAS) {
+          <p>{{ citologias().length }} citologias cadastradas</p>
+        }
+          
+        @case (secaoAcompanhamento.PCR) {
+          <p>{{ pcrs().length }} exames PCR cadastrados</p>
+        }
+          
+        @case (secaoAcompanhamento.COLPOSCOPIAS) {
+          <p>{{ colposcopias().length }} colposcopias cadastradas</p>
+        }
+        
+        @case (secaoAcompanhamento.PROCEDIMENTOS) {
+          <p>{{ procedimentos().length }} procedimentos cadastrados</p>
+        }
+      }
+    </div>
+  </div>
+</section>
