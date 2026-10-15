@@ -1,0 +1,163 @@
+<form #formularioForm="ngForm" class="formulario">
+  <div class="cabecalho">
+    <h2 class="cabecalho-titulo">
+      Dados pessoais
+    </h2>
+  </div>
+
+  <div class="campos">
+    <div class="campo">
+      <label class="campo-label" for="nome">
+        Nome
+      </label>
+
+      <div class="campo-conteudo">
+        <input
+          class="campo-input"
+          type="text"
+          [(ngModel)]="paciente.nome"
+          id="nome"
+          name="nome"
+          required
+        >
+
+        @if (formularioForm.controls['nome']?.touched &&
+             formularioForm.controls['nome']?.hasError('required')) {
+
+          <span class="campo-erro">
+            Nome é obrigatório.
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label class="campo-label" for="dataNascimento">
+        Data de nascimento
+      </label>
+
+      <div class="campo-conteudo">
+        <input
+          class="campo-input"
+          [class.campo-invalido]="
+            formularioForm.controls['dataNascimento']?.touched &&
+            paciente.dataNascimento &&
+            !validarDataNascimento()
+          "
+          type="date"
+          [(ngModel)]="paciente.dataNascimento"
+          id="dataNascimento"
+          name="dataNascimento"
+          min="1900-01-01"
+          [max]="dataAtual"
+          required
+        >
+
+        @if (
+          formularioForm.controls['dataNascimento']?.touched &&
+          formularioForm.controls['dataNascimento']?.hasError('required')
+        ) {
+          <span class="campo-erro">
+            Data de nascimento é obrigatória.
+          </span>
+        }
+
+        @if (
+          formularioForm.controls['dataNascimento']?.touched &&
+          paciente.dataNascimento &&
+          !validarDataNascimento()
+        ) {
+          <span class="campo-erro">
+            A data deve estar entre 01/01/1900 e hoje.
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label class="campo-label" for="prontuario">
+        Prontuário
+      </label>
+
+      <div class="campo-conteudo">
+        <input
+          class="campo-input"
+          type="text"
+          [(ngModel)]="paciente.prontuario"
+          id="prontuario"
+          name="prontuario"
+          required
+        >
+
+        @if (
+          formularioForm.controls['prontuario']?.touched &&
+          formularioForm.controls['prontuario']?.hasError('required')
+        ) {
+          <span class="campo-erro">
+            Prontuário é obrigatório.
+          </span>
+        }
+
+        @if (
+          formularioForm.controls['prontuario']?.hasError('prontuarioConflito')
+        ) {
+          <span class="campo-erro">
+            Este prontuário já está cadastrado.
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <label class="campo-label" for="status">
+        Status da paciente
+      </label>
+
+      <div class="campo-conteudo">
+        <select
+          class="campo-select"
+          id="status"
+          name="status"
+          [(ngModel)]="paciente.status"
+          required>
+
+          <option value="" disabled>
+            Selecione um status
+          </option>
+
+          @for (status of statusOptions; track status) {
+            <option [value]="status">
+              {{ StatusPacienteLabel[status] }}
+            </option>
+          }
+        </select>
+
+        @if (
+          formularioForm.controls['status']?.touched &&
+          formularioForm.controls['status']?.hasError('required')
+        ) {
+          <span class="campo-erro">
+            Status da paciente é obrigatório.
+          </span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="acoes">
+    <button
+      class="botao-acao acao-cancelar"
+      type="button"
+      (click)="cancelar()">
+      Cancelar
+    </button>
+
+    <button
+      class="botao-acao acao-salvar"
+      type="button"
+      [disabled]="formularioForm.invalid || !validarDataNascimento()"
+      (click)="salvar(formularioForm)">
+      Salvar alterações
+    </button>
+  </div>
+</form>
