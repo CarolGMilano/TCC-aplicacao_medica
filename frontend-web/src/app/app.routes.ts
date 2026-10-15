@@ -4,7 +4,7 @@ import { authGuard } from './core/auth/auth.guard';
 import { Login } from './features/auth/login/login';
 import { AppLayout } from './layout/app-layout/app-layout';
 
-import { Profissionais, Perfil, Pacientes/*, Paciente*/ } from './pages';
+import { Profissionais, Perfil, Pacientes, Paciente } from './pages';
 
 export const routes: Routes = [
   {
@@ -19,63 +19,51 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: Profissionais,
-        /*
         data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
-        */
       },
 
       {
         path: 'profissionais',
         component: Profissionais,
-        /*
         data: {
-          role: ['ADMINISTRADOR']
+          /*role: ['ADMINISTRADOR']*/
         }
-        */
       },
       
       {
         path: 'pacientes',
         component: Pacientes,        
-        /*
         data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
-        */
       },
 
-      /*
+      
       { 
         path: 'pacientes/:id', 
         component: Paciente,
-        
         data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
-        
       },
-      */
+      
 
       {
         path: 'novo-paciente',
         component: Profissionais,
-        /*
         data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
-        */
       },
 
       {
         path: 'perfil',
         component: Perfil,
-        /*
         data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
-        */
       },
 
       {
