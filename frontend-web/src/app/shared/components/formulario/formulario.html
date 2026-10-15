@@ -136,7 +136,7 @@
       </label>
 
       <div class="campo-tipo">
-        @for (tipo of tiposUsuario; track tipo) {
+        @for (tipo of tipoUsuarioOptions; track tipo) {
           <label
             class="opcao-tipo"
             [class.selecionado]="profissional.tipo === tipo">
