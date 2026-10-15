@@ -27,7 +27,9 @@ export function PatientListItem({ patient }: PatientListItemProps) {
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View style={styles.identity}>
-        <ThemedText style={styles.name}>{patient.name}</ThemedText>
+        <ThemedText style={styles.name} numberOfLines={1}>
+          {patient.name}
+        </ThemedText>
         <ThemedText type="subtitle" themeColor="textSecondary">
           {patient.age} anos · PRT {patient.record}
         </ThemedText>
@@ -36,11 +38,11 @@ export function PatientListItem({ patient }: PatientListItemProps) {
         {colors ? (
           <View style={[styles.badge, { backgroundColor: colors.background }]}>
             <ThemedText style={[styles.badgeText, { color: colors.text }]}>
-              {patient.status.toUpperCase()}
+              {patient.status}
             </ThemedText>
           </View>
         ) : null}
-        <ThemedText style={styles.visit}>
+        <ThemedText type="small" themeColor="textSecondary">
           última consulta em {patient.lastVisit}
         </ThemedText>
       </View>
@@ -68,8 +70,7 @@ const styles = StyleSheet.create({
   },
 
   name: {
-    fontSize: Typography.sizes.bodySmall,
-    lineHeight: Typography.lineHeights.body,
+    fontFamily: FontFamilies.primaryMedium,
   },
 
   details: {
@@ -85,13 +86,9 @@ const styles = StyleSheet.create({
 
   badgeText: {
     fontFamily: FontFamilies.primaryMedium,
-    fontSize: Typography.sizes.tiny,
-    letterSpacing: Typography.letterSpacing.tight,
-  },
-
-  visit: {
     fontSize: Typography.sizes.small,
     lineHeight: Typography.lineHeights.compact,
+    letterSpacing: Typography.letterSpacing.tight,
   },
 
   pressed: { opacity: 0.7 },

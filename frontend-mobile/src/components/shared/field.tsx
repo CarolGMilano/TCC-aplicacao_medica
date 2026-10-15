@@ -23,7 +23,7 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
 
   return (
     <View style={styles.wrapper}>
-      <ThemedText themeColor="textSecondary" style={styles.label}>
+      <ThemedText type="code" themeColor="textSecondary" style={styles.label}>
         {label}
       </ThemedText>
       <View
@@ -35,7 +35,7 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
         <TextInput
           {...props}
           style={[styles.input, { color: theme.text }, style]}
-          placeholderTextColor={theme.text}
+          placeholderTextColor={theme.placeholder}
           secureTextEntry={password && !visible}
           autoCapitalize={password ? "none" : props.autoCapitalize}
         />
@@ -44,14 +44,14 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
             accessibilityRole="button"
             onPress={() => setVisible((current) => !current)}
           >
-            <ThemedText style={styles.showButton}>
+            <ThemedText type="code" themeColor="textSecondary">
               {visible ? "OCULTAR" : "MOSTRAR"}
             </ThemedText>
           </Pressable>
         ) : null}
       </View>
       {error ? (
-        <ThemedText themeColor="error" style={styles.error}>
+        <ThemedText type="small" themeColor="error" style={styles.error}>
           {error}
         </ThemedText>
       ) : null}
@@ -61,11 +61,7 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
 
 const styles = StyleSheet.create({
   wrapper: { gap: 2 },
-  label: {
-    letterSpacing: Typography.letterSpacing.wide,
-    alignSelf: "flex-start",
-    fontSize: Typography.sizes.label,
-  },
+  label: { alignSelf: "flex-start" },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -75,19 +71,12 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    // Deixa o campo encolher para o "MOSTRAR" caber ao lado (no web o input não encolhe sozinho).
+    minWidth: 0,
     fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.input,
     lineHeight: Typography.lineHeights.input,
     paddingVertical: 8,
   },
-  showButton: {
-    fontSize: Typography.sizes.micro,
-    fontFamily: FontFamilies.secondary,
-    letterSpacing: Typography.letterSpacing.normal,
-  },
-  error: {
-    fontSize: Typography.sizes.small,
-    lineHeight: Typography.lineHeights.caption,
-    marginTop: 2,
-  },
+  error: { marginTop: 2 },
 });

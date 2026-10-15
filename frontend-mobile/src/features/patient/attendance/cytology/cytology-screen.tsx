@@ -3,10 +3,12 @@ import { useState } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { AttendanceHeader, DateInput, LabeledInput, SaveButton, styles as formStyles } from "../components";
 import { OptionRow } from "../../registration/components";
+import { styles as registrationStyles } from "../../registration/styles";
 import { createCytology } from "./cytology-api";
 import { cytologyLabels } from "../../record/constants";
 import type { CytologyForm } from "../types";
@@ -53,10 +55,14 @@ export function CytologyScreen() {
         <AttendanceHeader title="Nova citologia" />
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.meta}>
-            <ThemedText type="code" themeColor="textSecondary">ÚLTIMA EDIÇÃO</ThemedText>
-            <ThemedText type="code" themeColor="textSecondary">MÉDICO RESPONSÁVEL</ThemedText>
-            <ThemedText>—</ThemedText>
-            <ThemedText>Ana Ribeiro</ThemedText>
+            <View style={styles.metaCell}>
+              <ThemedText type="code" themeColor="textSecondary">ÚLTIMA EDIÇÃO</ThemedText>
+              <ThemedText>—</ThemedText>
+            </View>
+            <View style={styles.metaCell}>
+              <ThemedText type="code" themeColor="textSecondary">MÉDICO RESPONSÁVEL</ThemedText>
+              <ThemedText>Ana Ribeiro</ThemedText>
+            </View>
           </View>
           <DateInput label="DATA DO REGISTRO" values={[form.day, form.month, form.year]} onChange={(index, value) => {
             const keys: (keyof CytologyForm)[] = ["day", "month", "year"];
@@ -74,7 +80,7 @@ export function CytologyScreen() {
           <LabeledInput label="OBSERVAÇÃO" value={form.observation} onChangeText={(observation) => setForm({ ...form, observation })} multiline placeholder="Digite uma observação..." />
         </ScrollView>
         <View style={styles.footer}>
-          {error ? <ThemedText type="small" themeColor="error" style={styles.error}>{error}</ThemedText> : null}
+          {error ? <ThemedText type="small" themeColor="error" style={registrationStyles.error}>{error}</ThemedText> : null}
           <SaveButton label="Salvar registro" onPress={save} disabled={saving} />
         </View>
       </KeyboardAvoidingView>
@@ -84,7 +90,14 @@ export function CytologyScreen() {
 
 const styles = StyleSheet.create({
   content: { paddingBottom: 120 },
-  meta: { backgroundColor: "#E9E6DF", padding: 16, display: "flex", gap: 8 },
-  footer: { padding: 16, backgroundColor: "#F2F0EF" },
-  error: { backgroundColor: "#F7DCDB", borderRadius: 12, padding: 12 },
+  meta: {
+    flexDirection: "row",
+    gap: Spacing.three,
+    padding: Spacing.three,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.border,
+    backgroundColor: "#E9E6DF",
+  },
+  metaCell: { flex: 1, gap: Spacing.one },
+  footer: { padding: Spacing.three, gap: Spacing.two, backgroundColor: Theme.background },
 });

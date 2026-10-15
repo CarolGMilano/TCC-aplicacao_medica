@@ -77,7 +77,11 @@ export function AlertListScreen({
             <ThemedText type="code" themeColor="textSecondary">
               {alerts.length} PACIENTES · {percentage}% DAS CADASTRADAS
             </ThemedText>
-            <ThemedText style={styles.description} themeColor="textSecondary">
+            <ThemedText
+              type="small"
+              themeColor="textSecondary"
+              style={styles.description}
+            >
               {description}
             </ThemedText>
           </View>
@@ -113,7 +117,7 @@ export function AlertListScreen({
                 ]}
               >
                 <View style={styles.identity}>
-                  <ThemedText style={styles.name}>{alert.nome}</ThemedText>
+                  <ThemedText>{alert.nome}</ThemedText>
                   <ThemedText type="subtitle" themeColor="textSecondary">
                     PRT {alert.prontuario}
                   </ThemedText>
@@ -188,8 +192,6 @@ const styles = StyleSheet.create({
   },
 
   description: {
-    fontSize: Typography.sizes.small,
-    lineHeight: Typography.lineHeights.compact,
     marginTop: Spacing.one,
   },
 
@@ -203,14 +205,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: Spacing.two,
   },
 
+  // flexShrink: nome longo (vem da API) quebra a linha em vez de empurrar
+  // os dias para fora da tela.
   identity: {
+    flexShrink: 1,
     gap: 3,
-  },
-
-  name: {
-    fontSize: Typography.sizes.bodySmall,
   },
 
   delay: {

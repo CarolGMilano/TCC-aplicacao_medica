@@ -40,8 +40,8 @@ export function VisitItem({ visit }: VisitItemProps) {
           </View>
         ) : null}
 
-        <ThemedText type="code" themeColor="textSecondary">
-          {visit.date} · {visit.doctor.toUpperCase()}
+        <ThemedText type="small" themeColor="textSecondary">
+          {visit.date} · {visit.doctor}
         </ThemedText>
       </View>
     </View>

@@ -17,7 +17,8 @@ export type ThemedTextProps = TextProps & {
     | "subtitle"
     | "link"
     | "linkPrimary"
-    | "code";
+    | "code"
+    | "button";
   themeColor?: ThemeColor;
 };
 
@@ -41,6 +42,7 @@ export function ThemedText({
         type === "link" && styles.link,
         type === "linkPrimary" && styles.linkPrimary,
         type === "code" && styles.code,
+        type === "button" && styles.button,
         style,
       ]}
       {...rest}
@@ -48,40 +50,38 @@ export function ThemedText({
   );
 }
 
+// No Android (Expo Go/SDK 57) o peso vem do nome da família (Poppins-Medium,
+// Poppins-SemiBold); fontWeight com fonte customizada é ignorado ou vira Roboto.
 const styles = StyleSheet.create({
   small: {
     fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.bodySmall,
-    lineHeight: Typography.lineHeights.body,
-    fontWeight: Typography.weights.medium,
+    lineHeight: Typography.lineHeights.input,
   },
   smallBold: {
-    fontFamily: FontFamilies.primary,
+    fontFamily: FontFamilies.primarySemiBold,
     fontSize: Typography.sizes.bodySmall,
     lineHeight: Typography.lineHeights.body,
-    fontWeight: Typography.weights.bold,
   },
   default: {
     fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.body,
     lineHeight: Typography.lineHeights.body,
-    fontWeight: Typography.weights.medium,
   },
   title: {
     fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.display,
-    fontWeight: Typography.weights.semibold,
     lineHeight: Typography.lineHeights.display,
   },
   subtitle: {
-    fontSize: Typography.sizes.label,
-    letterSpacing: Typography.letterSpacing.tight,
-    fontFamily: FontFamilies.secondary,
+    fontFamily: FontFamilies.primary,
+    fontSize: Typography.sizes.bodySmall,
+    lineHeight: Typography.lineHeights.caption,
   },
   link: {
     fontSize: Typography.sizes.bodySmall,
     letterSpacing: Typography.letterSpacing.tight,
-    fontFamily: FontFamilies.secondary,
+    fontFamily: FontFamilies.primaryMedium,
   },
   linkPrimary: {
     fontFamily: FontFamilies.primary,
@@ -93,6 +93,13 @@ const styles = StyleSheet.create({
   code: {
     fontFamily: FontFamilies.primaryMedium,
     fontSize: Typography.sizes.notice,
+    lineHeight: Typography.lineHeights.caption,
     letterSpacing: Typography.letterSpacing.tight,
+  },
+  // Texto dos botões principais: Poppins seminegrito 16.
+  button: {
+    fontFamily: FontFamilies.primarySemiBold,
+    fontSize: Typography.sizes.body,
+    lineHeight: Typography.lineHeights.body,
   },
 });

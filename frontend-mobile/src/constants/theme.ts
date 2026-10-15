@@ -15,6 +15,7 @@ const palette = {
   textSecondaryDark: '#3F4D42',
   textPrimaryLight: '#FFFFFF',
   textSecondaryLight: '#F3EAD6',
+  placeholder: '#5F6B61',
 
   /*Cores de fundo*/
   background: '#F2F0EF',
@@ -78,20 +79,16 @@ export const FontFamilies = {
   primary: 'Poppins',
   primaryMedium: 'Poppins-Medium',
   primarySemiBold: 'Poppins-SemiBold',
-  secondary: 'JetBrains Mono',
   detail: 'PT Serif',
 } as const;
 
 export const Typography = {
   sizes: {
-    tiny: 8,
-    micro: 9,
-    label: 10,
-    caption: 11,
+    // Menor tamanho do app: selos (12). Rótulos 13-14, apoio 14, valores 16.
     small: 12,
     notice: 13,
     bodySmall: 14,
-    input: 15,
+    input: 16,
     body: 16,
     greeting: 25,
     heading: 30,
@@ -111,12 +108,6 @@ export const Typography = {
     logo: 44,
     metric: 48,
     display: 52,
-  },
-  weights: {
-    regular: '400' as const,
-    medium: '500' as const,
-    semibold: '600' as const,
-    bold: '700' as const,
   },
   letterSpacing: {
     tight: 0.5,

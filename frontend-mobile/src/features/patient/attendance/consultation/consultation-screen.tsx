@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import {
@@ -21,6 +22,8 @@ import { createConsultation } from "./consultation-api";
 import type { ConsultationForm } from "../types";
 import { OptionRow } from "../../registration/components";
 import { statusMap, statusOptions } from "../../registration/constants";
+import { styles as registrationStyles } from "../../registration/styles";
+import { statusColors } from "../../record/constants";
 import {
   fetchPatient,
   updatePatientStatus,
@@ -123,6 +126,7 @@ export function ConsultationScreen() {
             value={status}
             options={statusOptions}
             actionLabel="ALTERAR"
+            dotColor={statusColors[status]?.text}
             onChange={changeStatus}
           />
           <LabeledInput
@@ -146,7 +150,11 @@ export function ConsultationScreen() {
         </ScrollView>
         <View style={styles.footer}>
           {error ? (
-            <ThemedText type="small" themeColor="error" style={styles.error}>
+            <ThemedText
+              type="small"
+              themeColor="error"
+              style={registrationStyles.error}
+            >
               {error}
             </ThemedText>
           ) : null}
@@ -164,7 +172,9 @@ export function ConsultationScreen() {
 const styles = StyleSheet.create({
   content: { paddingBottom: 120 },
 
-  footer: { padding: 16, backgroundColor: "#F2F0EF" },
-
-  error: { backgroundColor: "#F7DCDB", borderRadius: 12, padding: 12 },
+  footer: {
+    padding: Spacing.three,
+    gap: Spacing.two,
+    backgroundColor: Theme.background,
+  },
 });

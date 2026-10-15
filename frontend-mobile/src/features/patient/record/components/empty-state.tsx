@@ -11,7 +11,7 @@ type EmptyStateProps = {
 export function EmptyState({ title, note }: EmptyStateProps) {
   return (
     <View style={styles.empty}>
-      <ThemedText>{title}</ThemedText>
+      <ThemedText style={styles.note}>{title}</ThemedText>
       {note ? (
         <ThemedText type="small" themeColor="textSecondary" style={styles.note}>
           {note}

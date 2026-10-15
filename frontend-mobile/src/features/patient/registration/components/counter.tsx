@@ -108,13 +108,17 @@ const styles = StyleSheet.create({
     lineHeight: Typography.lineHeights.greeting,
   },
 
+  // Sem o padding vertical padrão do TextInput no Android, que deixava o campo
+  // mais alto que os outros.
   counterInput: {
     width: 42,
     minHeight: 40,
     paddingHorizontal: 0,
+    paddingVertical: 0,
     textAlign: "center",
     fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.greeting,
+    lineHeight: Typography.lineHeights.greeting,
     color: Theme.text,
     borderBottomWidth: 1,
     borderBottomColor: Theme.border,

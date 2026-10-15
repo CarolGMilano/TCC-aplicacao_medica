@@ -50,7 +50,7 @@ export default function LoginScreen() {
         />
         <View style={styles.heading}>
           <ThemedText style={styles.logo}>CerviCare</ThemedText>
-          <ThemedText style={styles.tagline}>
+          <ThemedText type="code" themeColor="textSecondary">
             SAÚDE DA MULHER · RASTREIO E TRATAMENTO
           </ThemedText>
         </View>
@@ -86,10 +86,7 @@ export default function LoginScreen() {
             {isSubmitting ? (
               <ActivityIndicator color={theme.textPrimaryLight} />
             ) : (
-              <ThemedText
-                themeColor="textPrimaryLight"
-                style={styles.submitText}
-              >
+              <ThemedText type="button" themeColor="textPrimaryLight">
                 Entrar
               </ThemedText>
             )}
@@ -99,7 +96,7 @@ export default function LoginScreen() {
             onPress={() => router.push("/forgot-password")}
             style={styles.forgot}
           >
-            <ThemedText themeColor="accent" style={styles.forgotText}>
+            <ThemedText type="code" themeColor="textSecondary">
               ESQUECI A SENHA
             </ThemedText>
           </Pressable>
@@ -144,12 +141,6 @@ const styles = StyleSheet.create({
     lineHeight: Typography.lineHeights.logo,
   },
 
-  tagline: {
-    fontSize: Typography.sizes.label,
-    letterSpacing: Typography.letterSpacing.expanded,
-    fontFamily: FontFamilies.secondary,
-  },
-
   form: {
     marginTop: 56,
     gap: 28,
@@ -160,12 +151,6 @@ const styles = StyleSheet.create({
     marginTop: -4,
   },
 
-  forgotText: {
-    fontFamily: FontFamilies.secondary,
-    fontSize: Typography.sizes.label,
-    letterSpacing: Typography.letterSpacing.normal,
-  },
-
   submit: {
     minHeight: 58,
     borderRadius: 28,
@@ -174,6 +159,5 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  submitText: { fontWeight: Typography.weights.bold },
   pressed: { opacity: 0.8 },
 });
