@@ -1,0 +1,362 @@
+<form #formularioForm="ngForm" class="formulario">
+  <div class="cabecalho">
+    <h2 class="cabecalho-titulo">
+      @if (modoAtual === 'adicionar') {
+        Novo Procedimento
+      } @else if (modoAtual === 'alterar') {
+        Alterar Procedimento
+      } @else {
+        Procedimento
+      }
+    </h2>
+  </div>
+
+  <div class="campos">
+    @if(modoAtual !== 'adicionar'){
+      <div class="campo-cabecalho">
+        <div class="cabecalho-container">
+          <p class="container-titulo">Última alteração</p>
+          <p class="container-dado">{{ procedimento.dataEdicao | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+  
+        <div class="cabecalho-container">
+          <p class="container-titulo">Profissional responsável</p>
+          <p class="container-dado">{{ procedimento.nomeMedico }}</p>
+        </div>
+      </div>
+    }
+
+    <div class="campo">
+      @if(modoAtual !== 'visualizar') {
+        <label class="campo-label" for="dataExame">
+          Data do exame
+        </label>
+        
+        <div class="campo-conteudo">
+          <input
+            class="campo-input"
+            [class.campo-invalido]="
+              formularioForm.controls['dataExame']?.touched &&
+              novoProcedimento.dataRegistro &&
+              !validarData()
+            "
+            type="date"
+            [(ngModel)]="novoProcedimento.dataRegistro"
+            id="dataExame"
+            name="dataExame"
+            min="1900-01-01"
+            [max]="dataAtual"
+            required
+          >
+  
+          @if (
+            formularioForm.controls['dataExame']?.touched &&
+            formularioForm.controls['dataExame']?.hasError('required')
+          ) {
+            <span class="campo-erro">
+              Data do exame é obrigatória.
+            </span>
+          }
+  
+          @if (
+            formularioForm.controls['dataExame']?.touched &&
+            novoProcedimento.dataRegistro &&
+            !validarData()
+          ) {
+            <span class="campo-erro">
+              A data deve estar entre 01/01/1900 e hoje.
+            </span>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Data do exame</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ procedimento.dataRegistro | date:'dd/MM/yyyy' }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      @if (modoAtual !== 'visualizar') {
+        <p class="campo-label">Tipo</p>
+
+        <div class="campo-conteudo">
+          <div class="opcoes-radio">
+            @for (tipo of TipoProcedimentoOpcoes; track tipo) {
+              <label
+                class="opcao-radio"
+                [class.selecionado]="novoProcedimento.tipo === tipo"
+              >
+                <input
+                  type="radio"
+                  [name]="'tipo-' + tipo"
+                  [value]="tipo"
+                  [(ngModel)]="novoProcedimento.tipo"
+                  required
+                />
+
+                <span>{{ TipoProcedimentoLabel[tipo] }}</span>
+              </label>
+            }
+          </div>
+
+                      
+          @if (!novoProcedimento.tipo) {
+            <span class="campo-aviso">
+              Selecione um tipo de procedimento.
+            </span>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Tipo</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            @if (novoProcedimento.tipo != null) {
+              {{ TipoProcedimentoLabel[novoProcedimento.tipo] }}
+            }
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      @if (modoAtual !== 'visualizar') {
+        <p class="campo-label">Quantidade de fragmentos</p>
+
+        <div class="campo-conteudo">
+          <div class="conteudo-contador">
+            <button
+              [disabled]="novoProcedimento.qtFragmento === 1"
+              (click)="novoProcedimento.qtFragmento = novoProcedimento.qtFragmento - 1"
+            >
+              <mat-icon>remove</mat-icon>
+            </button>
+
+            <span>{{ novoProcedimento.qtFragmento }}</span>
+
+            <button
+              (click)="novoProcedimento.qtFragmento = novoProcedimento.qtFragmento + 1"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+          
+      } @else {
+        <p class="campo-label">Quantidade de fragmentos</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ procedimento.qtFragmento }}
+          </p>
+        </div>
+      }
+    </div>
+
+    @if(novoProcedimento.tipo !== TipoProcedimento.BIOPSIA){
+      <div class="campo">
+        @if (modoAtual !== 'visualizar') {
+          <p class="campo-label">Margem endocervical</p>
+
+          <div class="campo-conteudo">
+            <div class="opcoes-radio">
+              @for (margem of TipoMargemOpcoes; track margem) {
+                <label
+                  class="opcao-radio"
+                  [class.selecionado]="novoProcedimento.margemEndocervical === margem"
+                >
+                  <input
+                    type="radio"
+                    [name]="'margenEndo-' + margem"
+                    [value]="margem"
+                    [(ngModel)]="novoProcedimento.margemEndocervical"
+                    required
+                  />
+                
+                  <span>{{ TipoMargemLabel[margem] }}</span>
+                </label>
+              }
+            </div>
+
+                        
+            @if (!novoProcedimento.margemEndocervical) {
+              <span class="campo-aviso">
+                Selecione uma margem.
+              </span>
+            }
+          </div>
+        } @else {
+          <p class="campo-label">Margem Endocervical</p>
+
+          <div class="campo-conteudo">
+            <p class="container-dado">
+              @if (procedimento.margemEndocervical != null) {
+                {{ TipoMargemLabel[procedimento.margemEndocervical] }}
+              }
+            </p>
+          </div>
+        }
+      </div>
+      
+      <div class="campo">
+        @if (modoAtual !== 'visualizar') {
+          <p class="campo-label">Margem ectocervical</p>
+
+          <div class="campo-conteudo">
+            <div class="opcoes-radio">
+              @for (margem of TipoMargemOpcoes; track margem) {
+                <label
+                  class="opcao-radio"
+                  [class.selecionado]="novoProcedimento.margemEctocervical === margem"
+                >
+                  <input
+                    type="radio"
+                    [name]="'margenEcto-' + margem"
+                    [value]="margem"
+                    [(ngModel)]="novoProcedimento.margemEctocervical"
+                    required
+                  />
+                
+                  <span>{{ TipoMargemLabel[margem] }}</span>
+                </label>
+              }
+            </div>
+
+                        
+            @if (!novoProcedimento.margemEctocervical) {
+              <span class="campo-aviso">
+                Selecione uma margem.
+              </span>
+            }
+          </div>
+        } @else {
+          <p class="campo-label">Margem Ectocervical</p>
+
+          <div class="campo-conteudo">
+            <p class="container-dado">
+              @if (procedimento.margemEctocervical != null) {
+                {{ TipoMargemLabel[procedimento.margemEctocervical] }}
+              }
+            </p>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="campo">
+      @if(modoAtual !== 'visualizar'){
+        <label class="campo-label" for="resultado">
+          Resultado
+        </label>
+        
+        <div class="campo-conteudo">
+          <select
+            class="campo-select"
+            id="resultado"
+            name="resultado"
+            [(ngModel)]="novoProcedimento.resultado"
+            required>
+  
+            <option value="" disabled>
+              Selecione um resultado
+            </option>
+  
+            @for (resultado of ResultadoProcedimentoOpcoes; track resultado) {
+              <option [value]="resultado">
+                {{ ResultadoProcedimentoLabel[resultado] }}
+              </option>
+            }
+          </select>
+  
+          @if (
+            formularioForm.controls['resultado']?.touched &&
+            formularioForm.controls['resultado']?.hasError('required')
+          ) {
+            <span class="campo-erro">
+              Resultado é obrigatório.
+            </span>
+          }
+        </div>
+      }  @else {
+        <p class="campo-label">Resultado</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ ResultadoProcedimentoLabel[procedimento.resultado] }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      @if (modoAtual !== 'visualizar') {
+        <label class="campo-label" for="observacoes">
+          Observações
+        </label>
+
+        <div class="campo-conteudo">
+          <textarea
+            class="campo-input"
+            id="observacoes"
+            name="observacoes"
+            required
+            [(ngModel)]="novoProcedimento.observacao"
+            rows="4">
+          </textarea>
+
+          @if (formularioForm.controls['observacoes']?.touched &&
+              formularioForm.controls['observacoes']?.hasError('required')) {
+            <p class="campo-erro">A observação não pode ficar vazia.</p>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Observações</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ procedimento.observacao }}
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="acoes">
+    @if (modoAtual === 'visualizar') {
+      <button
+        class="botao-acao acao-cancelar"
+        type="button"
+        (click)="cancelar()">
+        Fechar
+      </button>
+
+      <button
+        class="botao-acao acao-salvar"
+        type="button"
+        (click)="editar()">
+        Editar
+      </button>
+    } @else {
+      <button
+        class="botao-acao acao-cancelar"
+        type="button"
+        (click)="cancelar()">
+        Cancelar
+      </button>
+
+      <button
+        class="botao-acao acao-salvar"
+        type="button"
+        [disabled]="
+          formularioForm.invalid ||
+          !validarData()"
+        (click)="salvar(formularioForm)">
+        Salvar
+      </button>
+    }
+  </div>
+</form>
