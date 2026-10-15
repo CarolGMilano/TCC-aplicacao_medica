@@ -8,4 +8,5 @@ export interface IPaciente {
   prontuario: string;
   status: StatusPaciente;
   grupoPrioritario: boolean;
+  ultimaConsulta: string;
 }
