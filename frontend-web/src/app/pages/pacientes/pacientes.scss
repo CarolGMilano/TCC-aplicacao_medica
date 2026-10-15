@@ -19,7 +19,7 @@
       padding: 10px 15px;
       font-family: var(--fonte-primaria);
       font-weight: 400;
-      font-size: 12px;
+      font-size: var(--tam-texto-padrao);
       background-color: var(--cor-primaria);
       color: var(--cor-texto-primario-claro);
       border-radius: 50px;
@@ -67,7 +67,7 @@
       }
       
       .filtro-titulo {
-        font-size: 10px;
+        font-size: var(--tam-texto-label);
         text-transform: uppercase;
         font-weight: 200;
         color: var(--cor-texto-primario-escuro);
@@ -86,7 +86,7 @@
         background-color: var(--cor-fundo-secundario);
         color: var(--cor-texto-primario-escuro);
         font-family: var(--fonte-secundaria);
-        font-size: 10px;
+        font-size: var(--tam-texto-tag);
         font-weight: 200;
         text-transform: uppercase;
         box-shadow: var(--sombra);
@@ -163,7 +163,7 @@
           th {
             padding: 10px 25px;
             font-family: var(--fonte-secundaria);
-            font-size: 10px;
+            font-size: var(--tam-texto-label);
             font-weight: 100;
             text-transform: uppercase;
             text-align: start;
@@ -175,7 +175,7 @@
 
           tr {
             font-family: var(--fonte-primaria);
-            font-size: 10px;
+            font-size: var(--tam-texto-tabela);
             font-weight: 300;
             cursor: pointer;
 
@@ -265,7 +265,7 @@
                 border-radius: 5px;
 
                 font-family: var(--fonte-secundaria);
-                font-size: 8px;
+                font-size: var(--tam-texto-tag);
                 text-transform: uppercase;
 
                 background-color: var(--status-fundo);
@@ -310,6 +310,14 @@
 
                     mat-icon {
                       color: var(--cor-icone-exclusao);
+                    }
+
+                    &:hover {
+                      background-color: var(--cor-icone-exclusao);
+
+                      mat-icon {
+                        color: var(--cor-fundo-secundario);
+                      }
                     }
                   }
                 }

@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { PacientesService, PerfilService } from '../../services';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-pacientes',
@@ -13,7 +14,8 @@ import { RouterLink } from '@angular/router';
     CabecalhoPagina,
     MatIconModule,
     RodapeTabela,
-    RouterLink
+    RouterLink,
+    DatePipe
 ],
   templateUrl: './pacientes.html',
   styleUrl: './pacientes.scss',
