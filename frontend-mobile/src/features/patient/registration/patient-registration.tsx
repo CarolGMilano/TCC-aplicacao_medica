@@ -154,10 +154,7 @@ export function PatientRegistration() {
               isSubmitting && styles.disabled,
             ]}
           >
-            <ThemedText
-              themeColor="textPrimaryLight"
-              style={styles.continueText}
-            >
+            <ThemedText type="button" themeColor="textPrimaryLight">
               {buttonLabel}
             </ThemedText>
           </Pressable>

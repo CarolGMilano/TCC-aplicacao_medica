@@ -4,6 +4,8 @@ import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
+import { Badge } from "../record/components";
+
 export function AttendanceHeader({ title }: { title: string }) {
   const { name, record } = useLocalSearchParams<{
     name: string;
@@ -26,7 +28,13 @@ export function AttendanceHeader({ title }: { title: string }) {
       </Pressable>
       <View style={styles.titleRow}>
         <ThemedText style={styles.title}>{title}</ThemedText>
-        <ThemedText style={styles.badge}>NOVA</ThemedText>
+        <View>
+          <Badge
+            label="Nova"
+            color={Theme.textPrimaryLight}
+            background={Theme.primary}
+          />
+        </View>
       </View>
       <ThemedText type="code" themeColor="textSecondary">
         PACIENTE {name?.toUpperCase()} · PRT {record}
@@ -57,7 +65,7 @@ export function LabeledInput({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={Theme.textSecondary}
+        placeholderTextColor={Theme.placeholder}
         multiline={multiline}
         textAlignVertical={multiline ? "top" : "center"}
         style={[styles.input, multiline && styles.textarea]}
@@ -89,7 +97,7 @@ export function DateInput({
             keyboardType="number-pad"
             maxLength={index === 2 ? 4 : 2}
             placeholder={index === 0 ? "DD" : index === 1 ? "MM" : "AAAA"}
-            placeholderTextColor={Theme.textSecondary}
+            placeholderTextColor={Theme.placeholder}
             style={[
               styles.input,
               styles.dateInput,
@@ -122,7 +130,7 @@ export function SaveButton({
         disabled && styles.disabled,
       ]}
     >
-      <ThemedText type="smallBold" themeColor="textPrimaryLight">
+      <ThemedText type="button" themeColor="textPrimaryLight">
         {label}
       </ThemedText>
     </Pressable>
@@ -154,7 +162,6 @@ export const styles = StyleSheet.create({
     color: Theme.textSecondary,
     fontSize: 26,
     lineHeight: 20,
-    fontWeight: "300",
   },
 
   titleRow: {
@@ -169,16 +176,6 @@ export const styles = StyleSheet.create({
     lineHeight: Typography.lineHeights.title,
   },
 
-  badge: {
-    color: Theme.textPrimaryLight,
-    backgroundColor: Theme.primary,
-    borderRadius: 12,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-    fontFamily: FontFamilies.secondary,
-    fontSize: Typography.sizes.micro,
-  },
-
   field: {
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.three,
@@ -186,11 +183,7 @@ export const styles = StyleSheet.create({
     borderBottomColor: Theme.border,
   },
 
-  label: {
-    fontSize: Typography.sizes.micro,
-    letterSpacing: Typography.letterSpacing.wide,
-    marginBottom: Spacing.two,
-  },
+  label: { marginBottom: Spacing.two },
 
   input: {
     minHeight: 48,

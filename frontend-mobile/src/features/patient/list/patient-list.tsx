@@ -79,7 +79,7 @@ export function PatientList() {
               value={search}
               onChangeText={setSearch}
               placeholder="Buscar por nome ou prontuário"
-              placeholderTextColor={Theme.textSecondary}
+              placeholderTextColor={Theme.placeholder}
               style={styles.searchInput}
               returnKeyType="search"
             />

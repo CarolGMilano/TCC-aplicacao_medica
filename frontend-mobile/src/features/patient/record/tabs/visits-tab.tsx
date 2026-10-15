@@ -71,7 +71,7 @@ export function VisitsTab({
       }
       style={({ pressed }) => [styles.newRecord, pressed && styles.pressed]}
     >
-      <ThemedText type="small" themeColor="textPrimaryLight">
+      <ThemedText type="button" themeColor="textPrimaryLight">
         + Novo registro
       </ThemedText>
     </Pressable>

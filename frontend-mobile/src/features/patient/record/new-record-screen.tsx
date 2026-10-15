@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -38,8 +39,8 @@ export function NewRecordScreen() {
             </ThemedText>
           </Pressable>
           <ThemedText style={styles.title}>Novo registro</ThemedText>
-          <ThemedText type="code" themeColor="textSecondary">
-            {name?.toUpperCase()} · PRT {record}
+          <ThemedText type="small" themeColor="textSecondary">
+            {name} · PRT {record}
           </ThemedText>
         </View>
 
@@ -68,7 +69,15 @@ export function NewRecordScreen() {
               ]}
             >
               <ThemedText>{type}</ThemedText>
-              <ThemedText themeColor="textSecondary">›</ThemedText>
+              <SymbolView
+                name={{
+                  ios: "chevron.right",
+                  android: "chevron_right",
+                  web: "chevron_right",
+                }}
+                tintColor={Theme.textSecondary}
+                size={19}
+              />
             </Pressable>
           ))}
         </View>
@@ -99,7 +108,6 @@ const styles = StyleSheet.create({
     color: Theme.textSecondary,
     fontSize: 26,
     lineHeight: 20,
-    fontWeight: "300",
   },
 
   title: {

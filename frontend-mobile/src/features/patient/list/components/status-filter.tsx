@@ -1,6 +1,6 @@
 import { Modal, Pressable, StyleSheet, View } from "react-native";
 
-import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
+import { Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 type StatusFilterProps = {
@@ -28,8 +28,10 @@ export function StatusFilter({
         onPress={onOpen}
         style={styles.select}
       >
-        <ThemedText style={styles.selectText}>{value}</ThemedText>
-        <ThemedText style={styles.chevron}>⌄</ThemedText>
+        <ThemedText style={styles.selectText} numberOfLines={1}>
+          {value}
+        </ThemedText>
+        <View style={styles.chevron} />
       </Pressable>
       <Modal
         visible={open}
@@ -39,7 +41,13 @@ export function StatusFilter({
       >
         <Pressable style={styles.overlay} onPress={onClose}>
           <View style={styles.menu}>
-            <ThemedText style={styles.title}>STATUS DA PACIENTE</ThemedText>
+            <ThemedText
+              type="code"
+              themeColor="textSecondary"
+              style={styles.title}
+            >
+              STATUS DA PACIENTE
+            </ThemedText>
             {options.map((option) => (
               <Pressable
                 key={option}
@@ -81,17 +89,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: Spacing.two,
     flex: 1,
   },
 
   selectText: {
-    fontSize: Typography.sizes.small,
+    flex: 1,
   },
 
+  // Seta desenhada como a do option-row: o glifo "⌄" vinha da fonte do sistema.
   chevron: {
-    fontFamily: FontFamilies.primarySemiBold,
-    fontSize: Typography.sizes.body,
-    lineHeight: 17,
+    width: 9,
+    height: 9,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: Theme.textSecondary,
+    transform: [{ rotate: "45deg" }],
+    marginTop: -4,
   },
 
   overlay: {
@@ -111,17 +125,14 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontFamily: FontFamilies.primaryMedium,
-    fontSize: Typography.sizes.small,
-    letterSpacing: Typography.letterSpacing.wide,
     marginBottom: Spacing.one,
-    paddingHorizontal: Spacing.one,
+    paddingHorizontal: Spacing.two,
   },
 
   option: {
     minHeight: 44,
     borderRadius: 10,
-    paddingHorizontal: Spacing.one,
+    paddingHorizontal: Spacing.two,
     justifyContent: "center",
   },
 

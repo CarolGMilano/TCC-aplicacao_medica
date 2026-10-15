@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: FontFamilies.primaryMedium,
     fontSize: Typography.sizes.small,
+    lineHeight: Typography.lineHeights.compact,
     letterSpacing: Typography.letterSpacing.tight,
   },
 });

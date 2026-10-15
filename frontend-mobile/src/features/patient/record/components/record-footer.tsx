@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { Spacing, Theme, Typography } from "@/constants/theme";
+import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { styles as registrationStyles } from "../../registration/styles";
@@ -44,7 +44,7 @@ export function RecordFooter({
             onPress={onCancel}
             style={[styles.button, styles.outline]}
           >
-            <ThemedText style={styles.label}>Cancelar</ThemedText>
+            <ThemedText type="button">Cancelar</ThemedText>
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -58,7 +58,7 @@ export function RecordFooter({
               saving && registrationStyles.disabled,
             ]}
           >
-            <ThemedText themeColor="textPrimaryLight" style={styles.label}>
+            <ThemedText themeColor="textPrimaryLight" type="button">
               {saving ? "Salvando..." : "Salvar alterações"}
             </ThemedText>
           </Pressable>
@@ -69,7 +69,7 @@ export function RecordFooter({
           onPress={onEdit}
           style={[styles.button, styles.outline]}
         >
-          <ThemedText style={styles.label}>Editar dados</ThemedText>
+          <ThemedText type="button">Editar dados</ThemedText>
         </Pressable>
       )}
     </View>
@@ -99,9 +99,5 @@ const styles = StyleSheet.create({
   primary: {
     flex: 1.6,
     backgroundColor: Theme.primary,
-  },
-
-  label: {
-    fontWeight: Typography.weights.bold,
   },
 });

@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -107,9 +108,22 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
               <Pressable onPress={reload} accessibilityRole="button">
                 <ThemedText type="code">TENTAR DE NOVO</ThemedText>
               </Pressable>
-              <Pressable onPress={goToPatients} accessibilityRole="button">
+              <Pressable
+                onPress={goToPatients}
+                accessibilityRole="button"
+                style={styles.backButton}
+              >
+                <SymbolView
+                  name={{
+                    ios: "arrow.left",
+                    android: "arrow_back",
+                    web: "arrow_back",
+                  }}
+                  tintColor={Theme.textSecondary}
+                  size={19}
+                />
                 <ThemedText type="code" themeColor="textSecondary">
-                  ← PACIENTES
+                  PACIENTES
                 </ThemedText>
               </Pressable>
             </>
@@ -185,5 +199,11 @@ const styles = StyleSheet.create({
 
   centeredText: {
     textAlign: "center",
+  },
+
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.one,
   },
 });
