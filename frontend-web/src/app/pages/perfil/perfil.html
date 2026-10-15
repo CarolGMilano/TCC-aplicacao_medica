@@ -50,7 +50,7 @@
 
               @if (!nomeEditado.trim()) {
                 <span class="campo-aviso">
-                  O nome não pode ficar vazio.
+                  O nome é obrigatório.
                 </span>
               }
 
@@ -58,14 +58,14 @@
                 <button
                   type="button"
                   (click)="cancelarEdicaoNome()">
-                  Cancelar
+                  <mat-icon>close</mat-icon>
                 </button>
 
                 <button
                   type="button"
                   [disabled]="!nomeEditado.trim()"
                   (click)="salvarNome()">
-                  Salvar
+                  <mat-icon>check</mat-icon>
                 </button>
               </div>
             </div>
