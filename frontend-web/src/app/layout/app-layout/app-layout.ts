@@ -14,7 +14,7 @@ import {
 
 import { AuthService } from '../../core/auth/auth.service';
 import { PerfilService } from '../../services';
-import { IProfissional } from '../../shared';
+import { IProfissional, Breadcrumb } from '../../shared';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -28,8 +28,9 @@ import { CommonModule } from '@angular/common';
     MatSidenavModule,
     MatToolbarModule,
     MatIconModule,
-    CommonModule
-  ],
+    CommonModule,
+    Breadcrumb
+],
   templateUrl: './app-layout.html',
   styleUrl: './app-layout.scss',
 })
