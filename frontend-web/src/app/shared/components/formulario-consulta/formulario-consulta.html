@@ -1,0 +1,96 @@
+<form #formularioForm="ngForm" class="formulario">
+  <div class="cabecalho">
+    <h2 class="cabecalho-titulo">
+      {{ data.modo === 'adicionar'
+        ? 'Nova consulta'
+        : 'Consulta' }}
+    </h2>
+  </div>
+
+  <div class="campos">
+    <div class="campo-paciente">
+      <div class="paciente-container">
+        <p class="container-titulo">Paciente</p>
+        <p class="container-dado">{{ paciente.nome }}</p>
+      </div>
+
+      <div class="paciente-container">
+        
+        @if (data.modo === 'adicionar') {
+          <p class="container-titulo">Status da paciente</p>
+          
+          <select
+            [(ngModel)]="statusEditado"
+            name="status"
+          >
+            @for (status of statusOpcoes; track status) {
+              <option [ngValue]="status">
+                {{ StatusPacienteLabel[status] }}
+              </option>
+            }
+          </select>
+        } @else {
+          <p class="container-titulo">Profissional responsável</p>
+          <p class="container-dado">{{ consulta.nomeMedico }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="campo">
+      <p class="campo-label">
+        Data da consulta
+      </p>
+
+      <div class="campo-conteudo">
+        <p>{{ consulta.dataHora | date:'dd/MM/yyyy HH:mm' }}</p>
+      </div>
+    </div>
+
+    <div class="campo">
+      <p class="campo-label">Observações</p>
+
+      <div class="campo-conteudo">
+        @if (data.modo === 'adicionar') {
+          <textarea
+            class="campo-input"
+            id="observacoes"
+            name="observacoes"
+            required
+            [(ngModel)]="consulta.observacao"
+            rows="4">
+          </textarea>
+
+          @if (formularioForm.controls['observacoes']?.touched &&
+             formularioForm.controls['observacoes']?.hasError('required')) {
+            <p class="campo-erro">A observação é obrigatória.</p>
+          }
+        } @else {
+          <p class="container-dado">
+            {{ consulta.observacao || 'Sem observações' }}
+          </p>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="acoes">
+    <button
+      class="botao-acao acao-cancelar"
+      type="button"
+      (click)="cancelar()">
+
+      {{ data.modo === 'adicionar' ? 'Cancelar' : 'Fechar' }}
+    </button>
+
+    @if (data.modo === 'adicionar') {
+      <button
+        class="botao-acao acao-salvar"
+        type="button"
+        [disabled]="formularioForm.invalid"
+        (click)="salvar(formularioForm)">
+
+        Salvar
+      </button>
+    }
+  </div>
+</form>
