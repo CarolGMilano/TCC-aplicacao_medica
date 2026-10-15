@@ -36,6 +36,8 @@ html {
   --cor-primaria-hover-clara: #7D9580;
 
   --cor-secundaria: #E79897;
+  --cor-secundaria-clara: #e7989714;
+  --cor-secundaria-hover-clara: #e798970c;
   --cor-terciaria: #FCC88A;
 
    /* Textos */
@@ -43,6 +45,17 @@ html {
   --cor-texto-secundario-escuro: #3F4D42;
   --cor-texto-primario-claro: #FFFFFF;
   --cor-texto-secundario-claro: #F3EAD6;
+
+  --tam-texto-titulo-pagina: 30px;
+  --tam-texto-titulo-secao: 20px;
+  --tam-texto-subtitulo: 16px;
+  --tam-texto-padrao: 14px;
+  --tam-texto-label: 12px;
+  --tam-texto-tabela: 12px;
+  --tam-texto-botao: 14px;
+  --tam-texto-breadcrumb: 12px;
+  --tam-texto-auxiliar: 12px;
+  --tam-texto-tag: 10px;
 
   /* Fundos e bordas */
   --cor-fundo-primario: #F2F0EF;
@@ -95,6 +108,10 @@ html {
   /* Estados */
   --cor-erro: #A8494A;
   --cor-atencao: #c28a00;
+
+  /* Tags */
+  --cor-alterado-escuro: #A94F50;
+  --cor-alterado-claro: #FCE0DF;
 }
 
 body {
