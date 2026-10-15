@@ -1,0 +1,501 @@
+<form #formularioForm="ngForm" class="formulario">
+  <div class="cabecalho">
+    <h2 class="cabecalho-titulo">
+      @if (modoAtual === 'adicionar') {
+        Nova Colposcopia
+      } @else if (modoAtual === 'alterar') {
+        Alterar Colposcopia
+      } @else {
+        Colposcopia
+      }
+    </h2>
+  </div>
+
+  <div class="campos">
+    @if(modoAtual !== 'adicionar'){
+      <div class="campo-cabecalho">
+        <div class="cabecalho-container">
+          <p class="container-titulo">Última alteração</p>
+          <p class="container-dado">{{ colposcopia.dataEdicao | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+  
+        <div class="cabecalho-container">
+          <p class="container-titulo">Profissional responsável</p>
+          <p class="container-dado">{{ colposcopia.nomeMedico }}</p>
+        </div>
+      </div>
+    }
+
+    <div class="campo">
+      @if(modoAtual !== 'visualizar') {
+        <label class="campo-label" for="dataExame">
+          Data do exame
+        </label>
+        
+        <div class="campo-conteudo">
+          <input
+            class="campo-input"
+            [class.campo-invalido]="
+              formularioForm.controls['dataExame']?.touched &&
+              novaColposcopia.dataRegistro &&
+              !validarData()
+            "
+            type="date"
+            [(ngModel)]="novaColposcopia.dataRegistro"
+            id="dataExame"
+            name="dataExame"
+            min="1900-01-01"
+            [max]="dataAtual"
+            required
+          >
+  
+          @if (
+            formularioForm.controls['dataExame']?.touched &&
+            formularioForm.controls['dataExame']?.hasError('required')
+          ) {
+            <span class="campo-erro">
+              Data do exame é obrigatória.
+            </span>
+          }
+  
+          @if (
+            formularioForm.controls['dataExame']?.touched &&
+            novaColposcopia.dataRegistro &&
+            !validarData()
+          ) {
+            <span class="campo-erro">
+              A data deve estar entre 01/01/1900 e hoje.
+            </span>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Data do exame</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ novaColposcopia.dataRegistro | date:'dd/MM/yyyy' }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      @if (modoAtual !== 'visualizar') {
+        <p class="campo-label">Estrogenização</p>
+
+        <div class="campo-conteudo">
+          <div class="opcoes-radio">
+            @for (opcao of [true, false]; track opcao) {
+              <label
+                class="opcao-radio"
+                [class.selecionado]="novaColposcopia.estrogenizacao === opcao"
+              >
+                <input
+                  type="radio"
+                  [name]="'estrogenizacao-' + opcao"
+                  [value]="opcao"
+                  [(ngModel)]="novaColposcopia.estrogenizacao"
+                  required
+                />
+
+                <span>{{ opcao ? 'Sim' : 'Não' }}</span>
+              </label>
+            }
+          </div>
+        </div>
+      } @else {
+        <p class="campo-label">Estrogenização</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ colposcopia.estrogenizacao ? 'Sim' : 'Não' }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      @if (modoAtual !== 'visualizar') {
+        <p class="campo-label">Junção Escamocolunar</p>
+
+        <div class="campo-conteudo">
+          <div class="opcoes-radio">
+            @for (JEC of JECOpcoes; track JEC) {
+              <label
+                class="opcao-radio"
+                [class.selecionado]="novaColposcopia.jec === JEC"
+              >
+                <input
+                  type="radio"
+                  [name]="'jec-' + JEC"
+                  [value]="JEC"
+                  [(ngModel)]="novaColposcopia.jec"
+                  required
+                />
+
+                <span>{{ JECLabel[JEC] }}</span>
+              </label>
+            }
+            
+            @if (!novaColposcopia.jec) {
+              <span class="campo-aviso">
+                Selecione uma junção escamocolunar.
+              </span>
+            }
+          </div>
+        </div>
+      } @else {
+        <p class="campo-label">Junção Escamocolunar</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ JECLabel[colposcopia.jec] }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      @if (modoAtual !== 'visualizar') {
+        <p class="campo-label">Zona de transformação</p>
+
+        <div class="campo-conteudo">
+          <div class="opcoes-radio">
+            @for (ZT of ZTOpcoes; track ZT) {
+              <label
+                class="opcao-radio"
+                [class.selecionado]="novaColposcopia.zt === ZT"
+              >
+                <input
+                  type="radio"
+                  [name]="'zt-' + ZT"
+                  [value]="ZT"
+                  [(ngModel)]="novaColposcopia.zt"
+                  required
+                />
+
+                <span>{{ ZTLabel[ZT] }}</span>
+              </label>
+            }
+         
+            @if (!novaColposcopia.zt) {
+              <span class="campo-aviso">
+                Selecione uma zona de transformação.
+              </span>
+            }
+          </div>
+        </div>
+      } @else {
+        <p class="campo-label">Zona de transformação</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ ZTLabel[colposcopia.zt] }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      @if (modoAtual !== 'visualizar') {
+        <p class="campo-label">Lesão encontrada?</p>
+
+        <div class="campo-conteudo">
+          <div class="opcoes-radio">
+            @for (opcao of [true, false]; track opcao) {
+              <label
+                class="opcao-radio"
+                [class.selecionado]="novaColposcopia.lesao === opcao"
+              >
+                <input
+                  type="radio"
+                  [name]="'lesao-' + opcao"
+                  [value]="opcao"
+                  [(ngModel)]="novaColposcopia.lesao"
+                  required
+                />
+
+                <span>{{ opcao ? 'Sim' : 'Não' }}</span>
+              </label>
+            }
+          </div>
+        </div>
+      } @else {
+        <p class="campo-label">Lesão encontrada?</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ colposcopia.lesao ? 'Sim' : 'Não' }}
+          </p>
+        </div>
+      }
+    </div>
+
+    @if(novaColposcopia.lesao === true){
+      <div class="campo">
+        @if (modoAtual !== 'visualizar') {
+          <p class="campo-label">Grau da lesão</p>
+
+          <div class="campo-conteudo">
+            <div class="opcoes-radio">
+              @for (grau of TipoAchadoOpcoes; track grau) {
+                <label
+                  class="opcao-radio"
+                  [class.selecionado]="novaColposcopia.grauLesao === grau"
+                >
+                  <input
+                    type="radio"
+                    [name]="'grauLesao-' + grau"
+                    [value]="grau"
+                    [(ngModel)]="novaColposcopia.grauLesao"
+                    required
+                  />
+
+                  <span>{{ TipoAchadoLabel[grau] }}</span>
+                </label>
+              }                       
+            </div>
+
+            @if (!novaColposcopia.grauLesao) {
+              <span class="campo-aviso">
+                Selecione um grau de lesão.
+              </span>
+            }
+          </div>
+        } @else {
+          <p class="campo-label">Grau da lesão</p>
+
+          <div class="campo-conteudo">
+            <p class="container-dado">
+              @if (colposcopia.grauLesao != null) {
+                {{ TipoAchadoLabel[colposcopia.grauLesao] }}
+              }
+            </p>
+          </div>
+        }
+      </div>
+
+      <div class="campo">
+        @if (modoAtual !== 'visualizar') {
+          <p class="campo-label">Classificação da lesão</p>
+
+          <div class="campo-conteudo">
+            <div class="opcoes-radio">
+              @for (classificacao of ClassificacaoOpcoes; track classificacao) {
+                <label
+                  class="opcao-radio"
+                  [class.selecionado]="novaColposcopia.classificacao === classificacao"
+                >
+                  <input
+                    type="radio"
+                    [name]="'classificacao-' + classificacao"
+                    [value]="classificacao"
+                    [(ngModel)]="novaColposcopia.classificacao"
+                    required
+                  />
+
+                  <span>{{ ClassificacaoLabel[classificacao] }}</span>
+                </label>
+              }
+            </div>
+
+                        
+            @if (!novaColposcopia.classificacao) {
+              <span class="campo-aviso">
+                Selecione um classificação.
+              </span>
+            }
+          </div>
+        } @else {
+          <p class="campo-label">Classificação</p>
+
+          <div class="campo-conteudo">
+            <p class="container-dado">
+              @if (colposcopia.classificacao != null) {
+                {{ ClassificacaoLabel[colposcopia.classificacao] }}
+              }
+            </p>
+          </div>
+        }
+      </div>
+
+      <div 
+        class="campo"
+        [class.campo-destaque]="novaColposcopia.recidiva === true">
+        @if (modoAtual !== 'visualizar') {
+          <p class="campo-label">Lesão recidiva?</p>
+
+          <div class="campo-conteudo">
+            <div class="opcoes-radio">
+              @for (opcao of [true, false]; track opcao) {
+                <label
+                  class="opcao-destaque"
+                  [class.selecionado]="novaColposcopia.recidiva === opcao"
+                >
+                  <input
+                    type="radio"
+                    [name]="'recidiva-' + opcao"
+                    [value]="opcao"
+                    [(ngModel)]="novaColposcopia.recidiva"
+                    required
+                  />
+
+                  <span>{{ opcao ? 'Sim' : 'Não' }}</span>
+                </label>
+              }
+            </div>
+          </div>
+        } @else {
+          <p class="campo-label">Lesão recidiva?</p>
+
+          <div class="campo-conteudo">
+            <p class="container-dado">
+              {{ colposcopia.recidiva ? 'Sim' : 'Não' }}
+            </p>
+          </div>
+        }
+      </div>
+
+      <div 
+        class="campo"
+        [class.campo-destaque]="novaColposcopia.verETratar === true">
+        @if (modoAtual !== 'visualizar') {
+          <p class="campo-label">Ver e tratar?</p>
+
+          <div class="campo-conteudo">
+            <div class="opcoes-radio">
+              @for (opcao of [true, false]; track opcao) {
+                <label
+                  class="opcao-destaque"
+                  [class.selecionado]="novaColposcopia.verETratar === opcao"
+                >
+                  <input
+                    type="radio"
+                    [name]="'verETratar-' + opcao"
+                    [value]="opcao"
+                    [(ngModel)]="novaColposcopia.verETratar"
+                    required
+                  />
+
+                  <span>{{ opcao ? 'Sim' : 'Não' }}</span>
+                </label>
+              }
+            </div>
+          </div>
+        } @else {
+          <p class="campo-label">Ver e tratar?</p>
+
+          <div class="campo-conteudo">
+            <p class="container-dado">
+              {{ colposcopia.verETratar ? 'Sim' : 'Não' }}
+            </p>
+          </div>
+        }
+      </div>
+
+      @if(novaColposcopia.verETratar === true){
+        <div 
+          class="campo"
+          [class.campo-destaque]="novaColposcopia.verETratar === true">
+          @if (modoAtual !== 'visualizar') {
+            <p class="campo-label">
+              Motivo do ver e tratar
+            </p>
+
+            <div class="campo-conteudo">
+              <textarea
+                class="campo-input"
+                id="motivo"
+                name="motivo"
+                required
+                [(ngModel)]="novaColposcopia.verETratarMotivo"
+                rows="2">
+              </textarea>
+
+              @if (formularioForm.controls['motivo']?.touched &&
+                  formularioForm.controls['motivo']?.hasError('required')) {
+                <p class="campo-erro">O motivo é obrigatório.</p>
+              }
+            </div>
+          } @else {
+            <p class="campo-label">Motivo do ver e tratar</p>
+
+            <div class="campo-conteudo">
+              <p class="container-dado">
+                {{ novaColposcopia.verETratarMotivo }}
+              </p>
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <div class="campo">
+      @if (modoAtual !== 'visualizar') {
+        <label class="campo-label" for="observacoes">
+          Observações
+        </label>
+
+        <div class="campo-conteudo">
+          <textarea
+            class="campo-input"
+            id="observacoes"
+            name="observacoes"
+            required
+            [(ngModel)]="novaColposcopia.observacao"
+            rows="4">
+          </textarea>
+
+          @if (formularioForm.controls['observacoes']?.touched &&
+              formularioForm.controls['observacoes']?.hasError('required')) {
+            <p class="campo-erro">A observação é obrigatória.</p>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Observações</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ novaColposcopia.observacao }}
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="acoes">
+    @if (modoAtual === 'visualizar') {
+      <button
+        class="botao-acao acao-cancelar"
+        type="button"
+        (click)="cancelar()">
+        Fechar
+      </button>
+
+      <button
+        class="botao-acao acao-salvar"
+        type="button"
+        (click)="editar()">
+        Editar
+      </button>
+    } @else {
+      <button
+        class="botao-acao acao-cancelar"
+        type="button"
+        (click)="cancelar()">
+        Cancelar
+      </button>
+
+      <button
+        class="botao-acao acao-salvar"
+        type="button"
+        [disabled]="
+          formularioForm.invalid ||
+           
+          !validarData()"
+        (click)="salvar(formularioForm)">
+        Salvar
+      </button>
+    }
+  </div>
+</form>
