@@ -1,0 +1,192 @@
+<form #formularioForm="ngForm" class="formulario">
+  <div class="cabecalho">
+    <h2 class="cabecalho-titulo">
+      @if (modoAtual === 'adicionar') {
+        Nova citologia
+      } @else if (modoAtual === 'alterar') {
+        Alterar citologia
+      } @else {
+        Citologia
+      }
+    </h2>
+  </div>
+
+  <div class="campos">
+    @if(modoAtual !== 'adicionar'){
+      <div class="campo-cabecalho">
+        <div class="cabecalho-container">
+          <p class="container-titulo">Última alteração</p>
+          <p class="container-dado">{{ citologia.dataEdicao | date:'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+  
+        <div class="cabecalho-container">
+          <p class="container-titulo">Profissional responsável</p>
+          <p class="container-dado">{{ citologia.nomeMedico }}</p>
+        </div>
+      </div>
+    }
+
+    <div class="campo">
+      @if(modoAtual !== 'visualizar') {
+        <label class="campo-label" for="dataExame">
+          Data do exame
+        </label>
+        
+        <div class="campo-conteudo">
+          <input
+            class="campo-input"
+            [class.campo-invalido]="
+              formularioForm.controls['dataExame']?.touched &&
+              novaCitologia.dataRegistro &&
+              !validarData()
+            "
+            type="date"
+            [(ngModel)]="novaCitologia.dataRegistro"
+            id="dataExame"
+            name="dataExame"
+            min="1900-01-01"
+            [max]="dataAtual"
+            required
+          >
+  
+          @if (
+            formularioForm.controls['dataExame']?.touched &&
+            formularioForm.controls['dataExame']?.hasError('required')
+          ) {
+            <span class="campo-erro">
+              Data do exame é obrigatória.
+            </span>
+          }
+  
+          @if (
+            formularioForm.controls['dataExame']?.touched &&
+            novaCitologia.dataRegistro &&
+            !validarData()
+          ) {
+            <span class="campo-erro">
+              A data deve estar entre 01/01/1900 e hoje.
+            </span>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Data do exame</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ citologia.dataRegistro | date:'dd/MM/yyyy' }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">
+      @if(modoAtual !== 'visualizar'){
+        <label class="campo-label" for="resultado">
+          Resultado
+        </label>
+        
+        <div class="campo-conteudo">
+          <select
+            class="campo-select"
+            id="resultado"
+            name="resultado"
+            [(ngModel)]="novaCitologia.resultado"
+            required>
+  
+            <option value="" disabled>
+              Selecione um resultado
+            </option>
+  
+            @for (resultado of resultadoCitologiaOpcoes; track resultado) {
+              <option [value]="resultado">
+                {{ ResultadoCitologiaLabel[resultado] }}
+              </option>
+            }
+          </select>
+  
+          @if (
+            formularioForm.controls['resultado']?.touched &&
+            formularioForm.controls['resultado']?.hasError('required')
+          ) {
+            <span class="campo-erro">
+              Resultado é obrigatório.
+            </span>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Resultado</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ ResultadoCitologiaLabel[citologia.resultado] }}
+          </p>
+        </div>
+      }
+    </div>
+
+    <div class="campo">     
+      @if (modoAtual !== 'visualizar') {
+        <label class="campo-label" for="observacoes">
+          Observações
+        </label>
+
+        <div class="campo-conteudo">
+          <textarea
+            class="campo-input"
+            id="observacoes"
+            name="observacoes"
+            required
+            [(ngModel)]="novaCitologia.observacao"
+            rows="4">
+          </textarea>
+
+          @if (formularioForm.controls['observacoes']?.touched &&
+              formularioForm.controls['observacoes']?.hasError('required')) {
+            <p class="campo-erro">A observação é obrigatória.</p>
+          }
+        </div>
+      } @else {
+        <p class="campo-label">Observações</p>
+
+        <div class="campo-conteudo">
+          <p class="container-dado">
+            {{ citologia.observacao }}
+          </p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="acoes">
+    @if (modoAtual === 'visualizar') {
+      <button
+        class="botao-acao acao-cancelar"
+        type="button"
+        (click)="cancelar()">
+        Fechar
+      </button>
+
+      <button
+        class="botao-acao acao-salvar"
+        type="button"
+        (click)="editar()">
+        Editar
+      </button>
+    } @else {
+      <button
+        class="botao-acao acao-cancelar"
+        type="button"
+        (click)="cancelar()">
+        Cancelar
+      </button>
+
+      <button
+        class="botao-acao acao-salvar"
+        type="button"
+        [disabled]="formularioForm.invalid"
+        (click)="salvar(formularioForm)">
+        Salvar
+      </button>
+    }
+  </div>
+</form>
