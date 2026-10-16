@@ -2,11 +2,11 @@ import { Routes } from '@angular/router';
 
 import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
-import { TipoUsuario } from './shared/models/EnumTipoUsuario';
+import { TipoUsuario } from './shared';
 import { Login } from './features/auth/login/login';
 import { AppLayout } from './layout/app-layout/app-layout';
 
-import { Profissionais, Perfil, Pacientes, NovoPaciente } from './pages';
+import { Profissionais, Perfil, Pacientes, Paciente, NovoPaciente } from './pages';
 
 export const routes: Routes = [
   {
@@ -23,66 +23,56 @@ export const routes: Routes = [
         path: 'dashboard',
         redirectTo: 'pacientes',
         pathMatch: 'full',
-        /*
+        
         data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
-        */
       },
 
       {
         path: 'profissionais',
         component: Profissionais,
-        data: { roles: [TipoUsuario.ADMINISTRADOR] },
-        /*
-        data: {
-          role: ['ADMINISTRADOR']
-        }
-        */
+        data: { 
+          roles: [TipoUsuario.ADMINISTRADOR] 
+        },
       },
       
       {
         path: 'pacientes',
         component: Pacientes,        
-        /*
         data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
-        */
       },
 
-      /*
+      
       { 
         path: 'pacientes/:id', 
         component: Paciente,
-        
         data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
-        
       },
-      */
+      
 
       {
         path: 'novo-paciente',
         component: NovoPaciente,
-        canDeactivate: [(component: NovoPaciente) => !component.formulario.dirty || window.confirm('Descartar os dados ainda não cadastrados?')],
-        data: { roles: [TipoUsuario.ADMINISTRADOR, TipoUsuario.MEDICO, TipoUsuario.RESIDENTE] },
-        /*
-        data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
-        }
-        */
+        canDeactivate: [
+          (component: NovoPaciente) => 
+            !component.formulario.dirty || window.confirm('Descartar os dados ainda não cadastrados?')
+        ],
+        data: { 
+          roles: [TipoUsuario.ADMINISTRADOR, TipoUsuario.MEDICO, TipoUsuario.RESIDENTE] 
+        },
       },
 
       {
         path: 'perfil',
         component: Perfil,
-        /*
         data: {
-          role: ['ADMINISTRADOR, MEDICO, RESIDENTE']
+          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
-        */
       },
 
       {

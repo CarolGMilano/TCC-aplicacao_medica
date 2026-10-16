@@ -112,16 +112,25 @@ export class Profissionais implements OnInit {
           console.error('Erro ao cadastrar profissional:', erro.error);
 
           if (erro.status === 400) {
-            if (erro.error?.messages?.email === 'Formato de e-mail inválido') {
-              dialogRef.componentInstance.marcarEmailInvalido();
+            if (erro.error?.errorCode === 'erro_validacao_campos') {
+              dialogRef.componentInstance.marcarErro(
+                'email',
+                'emailInvalido'
+              );
             }
           } else if (erro.status === 409) {
-            if (erro.error?.message === 'E-mail já cadastrado no sistema.') {
-              dialogRef.componentInstance.marcarEmailConflito();
+            if (erro.error?.message === 'E-mail já cadastrado por outro usuário.') {
+              dialogRef.componentInstance.marcarErro(
+                'email',
+                'emailConflito'
+              );
             }
 
-            if (erro.error?.message === 'CRM já cadastrado no sistema.') {
-              dialogRef.componentInstance.marcarCrmConflito();
+            if (erro.error?.message === 'CRM já cadastrado por outro profissional.') {
+              dialogRef.componentInstance.marcarErro(
+                'numeroCrm',
+                'crmConflito'
+              );
             }
           }
 
@@ -224,16 +233,25 @@ export class Profissionais implements OnInit {
           console.error('Erro ao editar profissional:', erro);
 
           if (erro.status === 400) {
-            if (erro.error?.messages?.email === 'Formato de e-mail inválido') {
-              dialogRef.componentInstance.marcarEmailInvalido();
+            if (erro.error?.errorCode === 'erro_validacao_campos') {
+              dialogRef.componentInstance.marcarErro(
+                'email',
+                'emailInvalido'
+              );
             }
           } else if (erro.status === 409) {
             if (erro.error?.message === 'E-mail já cadastrado por outro usuário.') {
-              dialogRef.componentInstance.marcarEmailConflito();
+              dialogRef.componentInstance.marcarErro(
+                'email',
+                'emailConflito'
+              );
             }
 
             if (erro.error?.message === 'CRM já cadastrado por outro profissional.') {
-              dialogRef.componentInstance.marcarCrmConflito();
+              dialogRef.componentInstance.marcarErro(
+                'numeroCrm',
+                'crmConflito'
+              );
             }
           }
 

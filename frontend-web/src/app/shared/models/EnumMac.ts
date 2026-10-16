@@ -1,0 +1,35 @@
+export enum Mac {
+  ANTICONCEPCIONAL_ORAL_PROGESTAGENIO_ISOLADO = 'ANTICONCEPCIONAL_ORAL_PROGESTAGENIO_ISOLADO',
+  ANTICONCEPCIONAL_ORAL_COMBINADO = 'ANTICONCEPCIONAL_ORAL_COMBINADO',
+  IMPLANTE_ETONOGESTREL = 'IMPLANTE_ETONOGESTREL',
+  DIU_HORMONAL = 'DIU_HORMONAL',
+  DIU_NAO_HORMONAL = 'DIU_NAO_HORMONAL',
+  LAQUEADURA_TUBARIA = 'LAQUEADURA_TUBARIA',
+  ANEL_VAGINAL = 'ANEL_VAGINAL',
+  ADESIVO_TRANSDERMICO = 'ADESIVO_TRANSDERMICO',
+  PRESERVATIVO = 'PRESERVATIVO',
+  NENHUM = 'NENHUM'
+}
+
+export const MacLabel = {
+  [Mac.ANTICONCEPCIONAL_ORAL_PROGESTAGENIO_ISOLADO]:
+    'Anticoncepcional oral — progestagênio isolado',
+  [Mac.ANTICONCEPCIONAL_ORAL_COMBINADO]:
+    'Anticoncepcional oral combinado',
+  [Mac.IMPLANTE_ETONOGESTREL]:
+    'Implante de etonogestrel',
+  [Mac.DIU_HORMONAL]:
+    'DIU hormonal',
+  [Mac.DIU_NAO_HORMONAL]:
+    'DIU não hormonal',
+  [Mac.LAQUEADURA_TUBARIA]:
+    'Laqueadura tubária',
+  [Mac.ANEL_VAGINAL]:
+    'Anel vaginal',
+  [Mac.ADESIVO_TRANSDERMICO]:
+    'Adesivo transdérmico',
+  [Mac.PRESERVATIVO]:
+    'Preservativo',
+  [Mac.NENHUM]:
+    'Nenhum'
+};

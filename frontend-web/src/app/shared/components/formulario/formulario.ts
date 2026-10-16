@@ -25,24 +25,22 @@ export class Formulario implements OnInit {
   @ViewChild('formularioForm') formularioForm!: NgForm;
 
   private dialogRef = inject(MatDialogRef<Formulario>);
-
+  
   data = inject<DadosFormulario>(MAT_DIALOG_DATA);
 
   profissional: IProfissionalRequest = {
     ...this.data.profissional
   };
-
-  TipoUsuario = TipoUsuario;
-
+  
   mostrarSenha = signal(false);
-
+  
   ufs = [
     'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF',
     'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA',
     'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS',
     'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
   ];
-
+  
   //Analisar como vamos colocar esses arrays na versão final
   especialidades = [
     'Ginecologia',
@@ -52,49 +50,24 @@ export class Formulario implements OnInit {
   
   ufCrm = this.ufs[0];;
   numeroCrm: string = '';
-
+  
+  TipoUsuario = TipoUsuario;
   TipoUsuarioLabel = TipoUsuarioLabel;
-
-  tiposUsuario = [
-    TipoUsuario.MEDICO,
-    TipoUsuario.RESIDENTE,
-    TipoUsuario.ADMINISTRADOR
-  ];
+  tipoUsuarioOptions = Object.values(TipoUsuario);
 
   ngOnInit() {
     this.inicializarCrm();
   }
 
-  marcarEmailConflito() {
-    const controleEmail = this.formularioForm.controls['email'];
-    controleEmail.setErrors({
-      ...controleEmail.errors,
-      emailConflito: true
+  marcarErro(campo: string, erro: string) {
+    const controle = this.formularioForm.controls[campo];
+
+    controle.setErrors({
+      ...controle.errors,
+      [erro]: true
     });
 
-    controleEmail.markAsTouched();
-  }
-
-  marcarCrmConflito() {
-    const controleCrm = this.formularioForm.controls['numeroCrm'];
-
-    controleCrm.setErrors({
-      ...controleCrm.errors,
-      crmConflito: true
-    });
-
-    controleCrm.markAsTouched();
-  }
-
-  marcarEmailInvalido() {
-    const controleEmail = this.formularioForm.controls['email'];
-
-    controleEmail.setErrors({
-      ...controleEmail.errors,
-      emailInvalido: true
-    });
-
-    controleEmail.markAsTouched();
+    controle.markAsTouched();
   }
 
   inicializarCrm() {

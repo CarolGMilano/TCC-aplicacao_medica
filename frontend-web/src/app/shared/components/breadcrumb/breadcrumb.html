@@ -1,0 +1,17 @@
+<nav class="breadcrumb">
+  @for (item of breadcrumbs; track item.label; let ultimo = $last) {
+    @if (!$first) {
+      <mat-icon class="separador">chevron_right</mat-icon>
+    }
+
+    @if (item.url) {
+      <a [routerLink]="item.url">
+        {{ item.label }}
+      </a>
+    } @else {
+      <span [class.atual]="ultimo">
+        {{ item.label }}
+      </span>
+    }
+  }
+</nav>

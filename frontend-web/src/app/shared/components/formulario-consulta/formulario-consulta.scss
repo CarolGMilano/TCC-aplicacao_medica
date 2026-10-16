@@ -1,0 +1,271 @@
+.formulario {
+  background-color: var(--cor-fundo-secundario);
+  display: flex;
+  flex-direction: column;
+
+  max-width: 90vh;
+
+  .cabecalho {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 25px 25px 15px 25px;
+
+    background-color: var(--cor-card-detalhe);
+
+    .cabecalho-titulo {
+      margin: 0;
+
+      font-family: var(--fonte-detalhe);
+      font-size: var(--tam-texto-titulo-secao);
+      font-weight: 100;
+
+      color: var(--cor-texto-primario-escuro);
+    }
+  }
+
+  .campos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    overflow-y: scroll;
+
+    .campo {
+      display: flex;
+      align-items: flex-start;
+
+      padding: 5px 25px;
+
+      .campo-label {
+        width: 40%;
+
+        font-family: var(--fonte-secundaria);
+        font-size: var(--tam-texto-label);
+        font-weight: 100;
+        text-transform: uppercase;
+        margin: 0;
+
+        color: var(--cor-texto-primario-escuro);
+      }
+
+      .campo-input,
+      .campo-select {
+        box-sizing: border-box;
+        padding: 10px;
+
+        border: 1px solid var(--cor-borda);
+        border-radius: 10px;
+
+        font-family: var(--fonte-primaria);
+        font-size:var(--tam-texto-auxiliar);
+        font-weight: 300;
+
+        background-color: var(--cor-fundo-secundario);
+        color: var(--cor-texto-primario-escuro);
+      }
+
+      .campo-input {
+        width: 60%;
+      }
+
+      .campo-conteudo {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        width: 60%;
+
+        p {
+          font-family: var(--fonte-primaria);
+          font-weight: 300;
+          font-size: var(--tam-texto-auxiliar);
+          color: var(--cor-texto-primario-escuro);
+          margin: 0;
+        }
+
+        .campo-input,
+        .campo-select {
+          width: 100%;
+        }
+
+        .campo-erro {
+          color: var(--cor-erro);
+
+          font-family: var(--fonte-primaria);
+          font-size: var(--tam-texto-auxiliar);
+        }
+
+        .campo-aviso {
+          color: var(--cor-atencao);
+
+          font-family: var(--fonte-primaria);
+          font-size: var(--tam-texto-auxiliar);
+        }
+
+        &:has(.ng-invalid.ng-touched) {
+          .campo-input,
+          .campo-select {
+            border-color: var(--cor-erro);
+          }
+        }
+      }
+    }
+
+    .campo-paciente {
+      display: flex;
+      justify-content: space-between;
+      padding: 20px 25px;
+      gap: 20px;
+      border-bottom: 1px solid var(--cor-card-detalhe);
+
+      .paciente-elemento {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .paciente-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .container-titulo {
+          font-family: var(--fonte-secundaria);
+          font-size: var(--tam-texto-label);
+          text-transform: uppercase;
+          font-weight: 200;
+          margin: 0;
+          color: var(--cor-texto-primario-escuro);
+        }
+        
+        .container-dado {
+          font-family: var(--fonte-primaria);
+          font-size: var(--tam-texto-auxiliar);
+          margin: 0;
+          color: var(--cor-texto-primario-escuro);
+          font-weight: 300;
+        }
+
+        select {
+          box-sizing: border-box;
+          padding: 8px 10px;
+
+          border: 1px solid var(--cor-borda);
+          border-radius: 10px;
+
+          font-family: var(--fonte-primaria);
+          font-size: var(--tam-texto-auxiliar);
+          font-weight: 300;
+
+          background-color: var(--cor-fundo-secundario);
+          color: var(--cor-texto-primario-escuro);
+        }
+      }
+
+      .paciente-botoes {
+        display: flex;
+        gap: 10px;
+
+        .edicao-salvar {
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          background-color: var(--cor-primaria);
+          color: var(--cor-texto-primario-claro);
+          padding: 5px 8px;
+
+          &:hover:not(:disabled) {
+            background-color: var(--cor-primaria-hover-escura);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      .edicao-botao {
+        width: 30px;
+        height: 30px;
+
+        border-radius: 50px;
+        box-shadow: var(--sombra);
+
+        font-family: var(--fonte-primaria);
+        font-size: var(--tam-texto-botao);
+
+        cursor: pointer;
+   
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid var(--cor-borda);
+        background-color: var(--cor-fundo-secundario);
+
+        &:hover {
+          border-color: var(--cor-primaria);
+        }
+      }
+    }
+  }
+
+  .campo-input::placeholder {
+    color: var(--cor-texto-primario-escuro);
+    opacity: .4;
+  }
+
+  .acoes {
+    display: flex;
+    justify-content: end;
+    gap: 15px;
+
+    margin-top: 10px;
+    padding: 25px;
+
+    background-color: var(--cor-card-detalhe);
+
+    .botao-acao {
+      padding: 8px 20px;
+
+      border-radius: 50px;
+      box-shadow: var(--sombra);
+
+      font-family: var(--fonte-primaria);
+      font-size: var(--tam-texto-botao);
+
+      cursor: pointer;
+    }
+
+    .acao-cancelar {
+      border: 1px solid var(--cor-borda);
+      background-color: var(--cor-fundo-secundario);
+      font-weight: 300;
+      
+      &:hover {
+        border-color: var(--cor-primaria);
+        color: var(--cor-primaria);
+      }
+    }
+
+    .acao-salvar {
+      border: none;
+
+      background-color: var(--cor-primaria);
+      color: var(--cor-texto-primario-claro);
+
+      &:hover:not(:disabled) {
+        background-color: var(--cor-primaria-hover-escura);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+.breadcrumb {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding-left: 40px;
+  
+  .separador {
+    width: var(--tam-texto-padrao);
+    height: var(--tam-texto-padrao);
+    font-size: var(--tam-texto-padrao);
+    color: var(--cor-texto-primario-escuro);
+  }
+  
+  a, span {
+    font-family: var(--fonte-secundaria);
+    text-transform: uppercase;
+    font-size: var(--tam-texto-breadcrumb);
+    color: var(--cor-texto-primario-escuro);
+  }
+
+  a {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

@@ -3,3 +3,5 @@ export * from './perfil/perfil'
 export * from './pacientes/pacientes'
 export * from './novo-paciente/novo-paciente'
 //export * from './paciente/paciente'
+
+export * from './paciente/paciente'

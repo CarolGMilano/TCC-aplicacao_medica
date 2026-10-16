@@ -14,7 +14,7 @@ import {
 
 import { AuthService } from '../../core/auth/auth.service';
 import { PerfilService } from '../../services';
-import { IProfissional, TipoUsuario } from '../../shared';
+import { IProfissional, TipoUsuario, Breadcrumb } from '../../shared';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -28,16 +28,18 @@ import { CommonModule } from '@angular/common';
     MatSidenavModule,
     MatToolbarModule,
     MatIconModule,
-    CommonModule
-  ],
+    CommonModule,
+    Breadcrumb
+],
   templateUrl: './app-layout.html',
   styleUrl: './app-layout.scss',
 })
 export class AppLayout implements OnInit {
   readonly authService = inject(AuthService);
-  readonly TipoUsuario = TipoUsuario;
   private readonly perfilService = inject(PerfilService);
   private readonly router = inject(Router);
+  
+  readonly TipoUsuario = TipoUsuario;
 
   perfil = signal<IProfissional | null>(null);
 

@@ -135,7 +135,8 @@
                   {{ StatusPacienteLabel[paciente.status] }}
                 </div>
               </td>
-              <td>Última consulta</td>
+              
+              <td>{{ (paciente.ultimaConsulta | date:'dd/MM/yyyy HH:mm') || '-' }}</td>
               
               <td class="item-acoes">
                 <div class="acoes-container">

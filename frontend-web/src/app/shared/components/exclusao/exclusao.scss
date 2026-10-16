@@ -15,7 +15,7 @@
       align-items: center;
       gap: 8px;
       font-family: var(--fonte-secundaria);
-      font-size: 10px;
+      font-size: var(--tam-texto-auxiliar);
       font-weight: 100;
       text-transform: uppercase;
       color: var(--cor-texto-primario-escuro);
@@ -30,7 +30,7 @@
 
     .cabecalho-titulo {
       font-family: var(--fonte-detalhe);
-      font-size: 25px;
+      font-size: var(--tam-texto-titulo-secao);
       font-weight: 100;
       color: var(--cor-texto-primario-escuro);
       margin: 0;
@@ -78,7 +78,7 @@
 
       .container-titulo {
         font-family: var(--fonte-secundaria);
-        font-size: 12px;
+        font-size: var(--tam-texto-padrao);
         font-weight: 500;
         text-transform: uppercase;
         color: var(--cor-botao-exclusao);
@@ -87,7 +87,7 @@
 
       .container-texto {
         font-family: var(--fonte-primaria);
-        font-size: 12px;
+        font-size: var(--tam-texto-padrao);
         font-weight: 300;
         color: var(--cor-texto-primario-escuro);
         margin: 0;
@@ -104,7 +104,8 @@
 
     .botao-acao {
       font-family: var(--fonte-primaria);
-      font-size: 10px;
+      font-size: var(--tam-texto-botao);
+      font-weight: 300;
       box-shadow: var(--sombra);
       padding: 8px 20px;
       border-radius: 50px;
@@ -116,6 +117,7 @@
       background-color: var(--cor-fundo-secundario);
 
       &:hover {
+        color: var(--cor-primaria);
         border-color: var(--cor-primaria);
       }
     }

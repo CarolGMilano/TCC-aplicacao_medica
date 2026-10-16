@@ -5,6 +5,7 @@ import { PacientesService } from '../../services';
 import { MatDialog } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-pacientes',
@@ -14,7 +15,8 @@ import { AuthService } from '../../core/auth/auth.service';
     CabecalhoPagina,
     MatIconModule,
     RodapeTabela,
-    RouterLink
+    RouterLink,
+    DatePipe
 ],
   templateUrl: './pacientes.html',
   styleUrl: './pacientes.scss',
