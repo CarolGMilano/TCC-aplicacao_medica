@@ -1,11 +1,12 @@
+import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BottomNav } from "@/components/bottom-nav";
-import { ThemedView } from "@/components/themed-view";
-import { logout } from "@/constants/auth-session";
+import { BottomNav } from "@/components/shared/bottom-nav";
+import { ThemedView } from "@/components/shared/themed-view";
+import { logout } from "@/features/auth/auth-session";
 import { router } from "expo-router";
-import { ThemedText } from "@/components/themed-text";
+import { ThemedText } from "@/components/shared/themed-text";
 import { FontFamilies, Theme, Typography } from "@/constants/theme";
 
 export default function DashboardScreen() {
@@ -50,7 +51,26 @@ export default function DashboardScreen() {
               <ThemedText themeColor="textSecondary">
                 Total na unidade
               </ThemedText>
-              <ThemedText themeColor="primary">VER LISTA →</ThemedText>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Ver lista de pacientes"
+                onPress={() => router.push("/patients")}
+                style={({ pressed }) => [
+                  styles.listLink,
+                  pressed && styles.pressed,
+                ]}
+              >
+                <ThemedText themeColor="primary">VER LISTA</ThemedText>
+                <SymbolView
+                  name={{
+                    ios: "arrow.right",
+                    android: "arrow_forward",
+                    web: "arrow_forward",
+                  }}
+                  tintColor={Theme.primary}
+                  size={16}
+                />
+              </Pressable>
             </View>
           </ThemedView>
 
@@ -60,6 +80,7 @@ export default function DashboardScreen() {
             count="12 PACIENTES  ·  4,8% DAS CADASTRADAS"
             names={["Cláudia Nunes", "Marina Souza"]}
             days={["146 d", "134 d"]}
+            route="/dashboard/without-return"
           />
           <ReturnCard
             title="Pós-procedimento sem retorno"
@@ -67,6 +88,7 @@ export default function DashboardScreen() {
             count="7 PACIENTES  ·  2,8% DAS CADASTRADAS"
             names={["Rita Almeida", "Joana Vilela"]}
             days={["129 d", "112 d"]}
+            route="/dashboard/post-procedure"
           />
         </ScrollView>
         <BottomNav />
@@ -81,44 +103,61 @@ function ReturnCard({
   count,
   names,
   days,
+  route,
 }: {
   title: string;
   description: string;
   count: string;
   names: string[];
   days: string[];
+  route: "/dashboard/without-return" | "/dashboard/post-procedure";
 }) {
   return (
-    <ThemedView style={styles.returnCard} borderColor="border">
-      <View style={styles.returnHeader}>
-        <ThemedView type="secondary" style={styles.line} />
+    <ThemedView
+      type="backgroundElement"
+      style={styles.returnCard}
+      borderColor="border"
+    >
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Abrir lista: ${title}`}
+        onPress={() => router.push(route)}
+        style={({ pressed }) => [styles.returnHeader, pressed && styles.pressed]}
+      >
+        <ThemedView type="tertiary" style={styles.line} />
         <ThemedText style={styles.returnTitle}>{title}</ThemedText>
-      </View>
+      </Pressable>
       <ThemedText style={styles.description} themeColor="textSecondary">
         {description}
       </ThemedText>
-      <ThemedText type="code" themeColor="textSecondary" style={styles.count}>
+      <ThemedText themeColor="textSecondary" style={styles.count}>
         {count}
       </ThemedText>
       {names.map((name, index) => (
         <ThemedView
+          type="backgroundElement"
           key={name}
           style={styles.patientRow}
           borderTopColor="border"
         >
           <View>
             <ThemedText>{name}</ThemedText>
-            <ThemedText type="code" themeColor="muted">
+            <ThemedText type="subtitle" themeColor="muted">
               PRT 10482
             </ThemedText>
           </View>
-          <ThemedText themeColor="secondary" style={styles.days}>
+          <ThemedText themeColor="error" style={styles.days}>
             {days[index]} ›
           </ThemedText>
         </ThemedView>
       ))}
       {names.length > 0 && (
-        <Pressable style={[styles.more]}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Ver todas: ${title}`}
+          onPress={() => router.push(route)}
+          style={({ pressed }) => [styles.more, pressed && styles.pressed]}
+        >
           <ThemedText themeColor="primary">
             VER TODAS ·{" "}
             {names.length === 2 ? (count.startsWith("12") ? "12" : "7") : ""}
@@ -194,7 +233,7 @@ const styles = StyleSheet.create({
   },
 
   cardLabelText: {
-    fontSize: Typography.sizes.micro,
+    fontSize: Typography.sizes.label,
     fontWeight: Typography.weights.semibold,
     letterSpacing: Typography.letterSpacing.wide,
   },
@@ -211,6 +250,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 2,
   },
+
+  listLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+
+  pressed: { opacity: 0.7 },
 
   returnCard: {
     borderWidth: 1,
@@ -236,8 +283,9 @@ const styles = StyleSheet.create({
   },
 
   count: {
-    fontSize: Typography.sizes.tiny,
-    letterSpacing: Typography.letterSpacing.normal,
+    fontSize: Typography.sizes.label,
+    letterSpacing: Typography.letterSpacing.tight,
+    fontFamily: FontFamilies.secondary,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 12,

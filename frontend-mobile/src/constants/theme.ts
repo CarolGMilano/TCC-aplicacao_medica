@@ -76,6 +76,8 @@ export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 export const FontFamilies = {
   primary: 'Poppins',
+  primaryMedium: 'Poppins-Medium',
+  primarySemiBold: 'Poppins-SemiBold',
   secondary: 'JetBrains Mono',
   detail: 'PT Serif',
 } as const;

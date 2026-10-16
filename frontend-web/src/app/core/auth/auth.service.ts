@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { Observable, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { TipoUsuario } from '../../shared/models/EnumTipoUsuario';
 
 interface LoginRequest {
   email: string;
@@ -17,6 +18,7 @@ interface TokenResponse {
 
 interface JwtPayload {
   exp?: number;
+  tipo?: TipoUsuario;
 }
 
 @Injectable({
@@ -50,7 +52,7 @@ export class AuthService {
     try {
       const payload = jwtDecode<JwtPayload>(token);
 
-      if (payload.exp && payload.exp * 1000 <= Date.now()) {
+      if (!payload.exp || payload.exp * 1000 <= Date.now()) {
         this.logout();
         return false;
       }
@@ -64,5 +66,16 @@ export class AuthService {
 
   logout(): void {
     sessionStorage.removeItem(this.tokenKey);
+  }
+
+  getTipoUsuario(): TipoUsuario | null {
+    if (!this.estaAutenticado()) return null;
+    const tipo = jwtDecode<JwtPayload>(this.getToken()!).tipo;
+    return Object.values(TipoUsuario).includes(tipo as TipoUsuario) ? tipo! : null;
+  }
+
+  possuiAlgumaRole(roles: readonly TipoUsuario[]): boolean {
+    const tipo = this.getTipoUsuario();
+    return tipo !== null && roles.includes(tipo);
   }
 }

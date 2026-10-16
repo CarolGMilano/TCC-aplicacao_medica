@@ -1,0 +1,194 @@
+import { useState } from "react";
+import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
+
+import { Spacing, Theme } from "@/constants/theme";
+import { ThemedText } from "@/components/shared/themed-text";
+
+type OptionRowProps = {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: readonly string[];
+  actionLabel?: string;
+};
+
+export function OptionRow({
+  label,
+  value,
+  onChange,
+  options,
+  actionLabel,
+}: OptionRowProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  function selectOption(option: string) {
+    onChange(option);
+    setIsOpen(false);
+  }
+
+  return (
+    <>
+      <View style={styles.optionRow}>
+        <ThemedText type="code" themeColor="textSecondary">
+          {label}
+        </ThemedText>
+
+        {actionLabel ? (
+          <View style={styles.compactValue}>
+            <ThemedText style={styles.statusDot}>●</ThemedText>
+            <ThemedText style={styles.optionValue}>{value}</ThemedText>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`${actionLabel}: ${label}`}
+              style={styles.actionButton}
+              onPress={() => setIsOpen(true)}
+            >
+              <ThemedText type="code" themeColor="textSecondary">
+                {actionLabel}
+              </ThemedText>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${label}: ${value}`}
+            style={styles.optionField}
+            onPress={() => setIsOpen(true)}
+          >
+            <ThemedText style={styles.optionValue}>{value}</ThemedText>
+            <View style={styles.chevron} />
+          </Pressable>
+        )}
+      </View>
+
+      <Modal
+        visible={isOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsOpen(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setIsOpen(false)}>
+          <View style={styles.modalCard}>
+            <ThemedText type="code" themeColor="textSecondary">
+              {label}
+            </ThemedText>
+
+            <ScrollView contentContainerStyle={styles.optionList}>
+              {options.map((option) => {
+                const isSelected = option === value;
+
+                return (
+                  <Pressable
+                    key={option}
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: isSelected }}
+                    onPress={() => selectOption(option)}
+                    style={[styles.option, isSelected && styles.optionSelected]}
+                  >
+                    <ThemedText
+                      themeColor={isSelected ? "textPrimaryLight" : "text"}
+                    >
+                      {option}
+                    </ThemedText>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </Pressable>
+      </Modal>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  optionRow: {
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+    gap: Spacing.two,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.border,
+  },
+
+  optionField: {
+    minHeight: 48,
+    borderWidth: 1,
+    borderRadius: 12,
+    borderColor: Theme.border,
+    backgroundColor: Theme.backgroundElement,
+    paddingHorizontal: Spacing.two,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: Spacing.two,
+  },
+
+  optionValue: {
+    flex: 1,
+  },
+
+  compactValue: {
+    minHeight: 32,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.one,
+  },
+
+  statusDot: {
+    color: Theme.waitingDark,
+    fontSize: 16,
+  },
+
+  actionButton: {
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: Theme.textSecondary,
+    borderRadius: 12,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.one,
+  },
+
+  // Seta para baixo desenhada com duas bordas de um quadrado girado,
+  // centralizada na altura do campo (o caractere "⌄" ficava no canto).
+  chevron: {
+    width: 9,
+    height: 9,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: Theme.textSecondary,
+    transform: [{ rotate: "45deg" }],
+    marginTop: -4,
+    marginRight: Spacing.one,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    padding: Spacing.three,
+    backgroundColor: "rgba(38, 48, 31, 0.28)",
+  },
+
+  modalCard: {
+    maxHeight: "80%",
+    borderWidth: 1,
+    borderRadius: 16,
+    borderColor: Theme.border,
+    backgroundColor: Theme.backgroundElement,
+    padding: Spacing.three,
+    gap: Spacing.two,
+  },
+
+  optionList: {
+    gap: Spacing.one,
+  },
+
+  option: {
+    borderRadius: 10,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.two,
+  },
+
+  optionSelected: {
+    backgroundColor: Theme.primary,
+  },
+});

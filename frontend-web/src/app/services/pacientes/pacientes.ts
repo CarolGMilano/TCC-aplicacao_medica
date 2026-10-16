@@ -1,7 +1,20 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments';
-import { IPaciente, IPacienteResponse, StatusPaciente, IPacienteCompletoResponse, IPacienteEdicaoRequest, IDadosGinecoObstetricosRequest, IDadosGinecoObstetricos, ISaudeSexualRequest, ISaudeSexual, IHistoricoTabagismoRequest, IHistoricoTabagismo } from '../../shared';
+import { 
+  IPaciente, 
+  IPacienteResponse, 
+  IPacienteCompletoRequest,
+  StatusPaciente, 
+  IPacienteCompletoResponse, 
+  IPacienteEdicaoRequest, 
+  IDadosGinecoObstetricosRequest, 
+  IDadosGinecoObstetricos, 
+  ISaudeSexualRequest, 
+  ISaudeSexual, 
+  IHistoricoTabagismoRequest, 
+  IHistoricoTabagismo 
+} from '../../shared';
 import { catchError, map, Observable, throwError } from 'rxjs';
 
 @Injectable({
@@ -16,6 +29,10 @@ export class PacientesService {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
     })
+  }
+
+  cadastrarCompleto(dados: IPacienteCompletoRequest): Observable<IPaciente> {
+    return this._httpClient.post<IPaciente>(`${this.BASE_URL}/completo`, dados);
   }
 
   listar(

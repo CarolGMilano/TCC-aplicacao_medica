@@ -1,0 +1,60 @@
+import type { PatientListItem } from "../types";
+
+export const mockPatients: PatientListItem[] = [
+  {
+    id: 1,
+    name: "Cláudia Nunes",
+    age: 42,
+    record: "10482",
+    status: "Aguardando procedimento",
+    lastVisit: "02/08/2026",
+  },
+  {
+    id: 2,
+    name: "Marina Souza",
+    age: 36,
+    record: "10517",
+    status: "Aguardando procedimento",
+    lastVisit: "14/08/2026",
+  },
+  {
+    id: 3,
+    name: "Rita Almeida",
+    age: 51,
+    record: "09873",
+    status: "Pós-procedimento",
+    lastVisit: "21/07/2026",
+  },
+  {
+    id: 4,
+    name: "Beatriz Lima",
+    age: 29,
+    record: "11284",
+    status: "Em investigação",
+    lastVisit: "28/08/2026",
+  },
+  {
+    id: 5,
+    name: "Helena Barros",
+    age: 45,
+    record: "10039",
+    status: "Acompanhamento preventivo",
+    lastVisit: "30/08/2026",
+  },
+  {
+    id: 6,
+    name: "Joana Vilela",
+    age: 38,
+    record: "10761",
+    status: "Em tratamento",
+    lastVisit: "01/09/2026",
+  },
+  {
+    id: 7,
+    name: "Lúcia Martins",
+    age: 57,
+    record: "09124",
+    status: "Alta",
+    lastVisit: "18/06/2026",
+  },
+];

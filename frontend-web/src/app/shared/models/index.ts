@@ -30,6 +30,7 @@ export * from './IAtualizarNomeRequest'
 export * from './IAtualizarSenhaRequest'
 
 export * from './IPaciente'
+export * from './IPacienteCompletoRequest'
 export * from './IPacienteResponse'
 
 export * from './IPacienteCompletoResponse'
