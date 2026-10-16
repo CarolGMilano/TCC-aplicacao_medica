@@ -23,7 +23,7 @@ export const routes: Routes = [
         path: 'dashboard',
         redirectTo: 'pacientes',
         pathMatch: 'full',
-        /*
+        
         data: {
           /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
         }
@@ -32,11 +32,9 @@ export const routes: Routes = [
       {
         path: 'profissionais',
         component: Profissionais,
-        data: { roles: [TipoUsuario.ADMINISTRADOR] },
-        /*
-        data: {
-          /*role: ['ADMINISTRADOR']*/
-        }
+        data: { 
+          roles: [TipoUsuario.ADMINISTRADOR] 
+        },
       },
       
       {
@@ -60,12 +58,13 @@ export const routes: Routes = [
       {
         path: 'novo-paciente',
         component: NovoPaciente,
-        canDeactivate: [(component: NovoPaciente) => !component.formulario.dirty || window.confirm('Descartar os dados ainda não cadastrados?')],
-        data: { roles: [TipoUsuario.ADMINISTRADOR, TipoUsuario.MEDICO, TipoUsuario.RESIDENTE] },
-        /*
-        data: {
-          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
-        }
+        canDeactivate: [
+          (component: NovoPaciente) => 
+            !component.formulario.dirty || window.confirm('Descartar os dados ainda não cadastrados?')
+        ],
+        data: { 
+          roles: [TipoUsuario.ADMINISTRADOR, TipoUsuario.MEDICO, TipoUsuario.RESIDENTE] 
+        },
       },
 
       {
