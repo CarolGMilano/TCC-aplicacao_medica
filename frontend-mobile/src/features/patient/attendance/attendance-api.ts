@@ -1,12 +1,12 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 // Nome do médico logado, mostrado como responsável pelo novo registro.
 export async function fetchDoctorName() {
   const token = getToken();
   if (!token) return null;
 
-  const response = await fetch(`${API_BASE_URL}/api/perfil`, {
+  const response = await apiFetch("/api/perfil", {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!response.ok) return null;
@@ -24,22 +24,14 @@ export async function postAttendance<Request>(
   const token = getToken();
   if (!token) throw new Error("Sua sessão expirou. Faça login novamente.");
 
-  // Sem isso, uma falha de rede mostraria "Network request failed" em inglês.
-  let response: Response;
-  try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(request),
-    });
-  } catch {
-    throw new Error(
-      "Não foi possível conectar ao servidor. Verifique a conexão e tente novamente.",
-    );
-  }
+  const response = await apiFetch(path, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(request),
+  });
 
   if (response.ok) return response.json();
   if (response.status === 401 || response.status === 403) {

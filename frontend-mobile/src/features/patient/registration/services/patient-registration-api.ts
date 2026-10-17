@@ -1,5 +1,5 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import { contraceptionMap, istMap, smokingMap, statusMap } from "../constants";
 import type { PatientForm } from "../types";
@@ -90,7 +90,7 @@ export async function registerPatient(form: PatientForm): Promise<number> {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/pacientes/completo`, {
+  const response = await apiFetch("/api/pacientes/completo", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

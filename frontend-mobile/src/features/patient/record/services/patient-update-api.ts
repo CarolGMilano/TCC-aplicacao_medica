@@ -1,5 +1,5 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import { toPatientRegistration } from "../../registration/services/patient-registration-api";
 import type { PatientForm } from "../../registration/types";
@@ -23,7 +23,7 @@ async function send(method: string, path: string, body?: object) {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await apiFetch(path, {
     method,
     headers: {
       "Content-Type": "application/json",

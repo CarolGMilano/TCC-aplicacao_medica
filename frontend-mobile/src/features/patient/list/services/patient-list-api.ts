@@ -1,5 +1,5 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import { mockPatients } from "../mocks/patients";
 import { statusMap } from "../../registration/constants";
@@ -80,8 +80,8 @@ export async function fetchPatients(
   });
 
   async function fetchPage(pageNumber: number): Promise<PatientPage> {
-    const response = await fetch(
-      `${API_BASE_URL}/api/pacientes?page=${pageNumber}&${query}`,
+    const response = await apiFetch(
+      `/api/pacientes?page=${pageNumber}&${query}`,
       { headers: { Authorization: `Bearer ${token}` }, signal },
     );
 
