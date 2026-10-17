@@ -11,7 +11,8 @@ import {
   procedureLabels,
   procedureResultLabels,
 } from "../../record/constants";
-import { AttendanceForm, DateInput, LabeledInput } from "../components";
+import { AttendanceForm } from "../attendance-form";
+import { DateInput, LabeledInput } from "../components";
 import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
 import { createProcedure } from "./procedure-api";
 

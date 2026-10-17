@@ -13,7 +13,8 @@ import {
   lesionSizeOptions,
   transformationZoneLabels,
 } from "../../record/constants";
-import { AttendanceForm, DateInput, LabeledInput, styles } from "../components";
+import { AttendanceForm } from "../attendance-form";
+import { DateInput, LabeledInput, styles } from "../components";
 import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
 import { createColposcopy } from "./colposcopy-api";
 

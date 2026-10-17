@@ -3,7 +3,8 @@ import { useState } from "react";
 
 import { ChoiceRow } from "../../registration/components";
 import { hpvTypeLabels, pcrResultLabels } from "../../record/constants";
-import { AttendanceForm, DateInput, LabeledInput } from "../components";
+import { AttendanceForm } from "../attendance-form";
+import { DateInput, LabeledInput } from "../components";
 import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
 import { createPcr } from "./pcr-api";
 
