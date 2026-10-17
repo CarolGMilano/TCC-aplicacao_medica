@@ -22,7 +22,8 @@ export function VisitItem({ visit }: VisitItemProps) {
       <View style={[styles.bar, visit.highlight && styles.barHighlight]} />
 
       <View style={styles.content}>
-        <ThemedText numberOfLines={2}>
+        {/* Na consulta, o título é a observação (sem detalhe): vai inteira. */}
+        <ThemedText numberOfLines={visit.detail ? 2 : undefined}>
           {visit.title}
         </ThemedText>
 
