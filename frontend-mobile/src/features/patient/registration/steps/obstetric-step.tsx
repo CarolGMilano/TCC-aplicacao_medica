@@ -1,7 +1,7 @@
 import { Counter, StepSection, ToggleRow } from "../components";
 import { minAges } from "../constants";
 import type { StepProps } from "../types";
-import { getAge } from "../utils";
+import { getAge, getMenopauseAge } from "../utils";
 
 export function ObstetricStep({ form, update }: StepProps) {
   const age = getAge(form) ?? undefined;
@@ -43,7 +43,11 @@ export function ObstetricStep({ form, update }: StepProps) {
         <ToggleRow
           label="MENOPAUSA"
           value={form.menopause}
-          onChange={(value) => update("menopause", value)}
+          onChange={(value) => {
+            update("menopause", value);
+            // A menarca pode ter mudado desde o último ajuste da faixa.
+            if (value) update("menopauseAge", getMenopauseAge(form));
+          }}
         />
         {form.menopause ? (
           <Counter
