@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
     borderBottomWidth: 1,
     borderBottomColor: Theme.border,
-    backgroundColor: "#E9E6DF",
+    backgroundColor: Theme.backgroundMeta,
   },
   metaCell: { flex: 1, gap: Spacing.one },
   footer: { padding: Spacing.three, gap: Spacing.two, backgroundColor: Theme.background },

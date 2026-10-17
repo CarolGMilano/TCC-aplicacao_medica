@@ -191,9 +191,15 @@ export function SaveButton({
 export const styles = StyleSheet.create({
 
   // Linhas com resposta "Sim" que pedem atenção (ex.: ver e tratar).
+  // Borda sempre presente (transparente) para o texto não pular 3px ao
+  // destacar a linha.
+  alertRow: {
+    borderLeftWidth: 3,
+    borderLeftColor: "transparent",
+  },
+
   highlight: {
     backgroundColor: Theme.backgroundAlert,
-    borderLeftWidth: 3,
     borderLeftColor: Theme.secondary,
   },
 

@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { View } from "react-native";
 
 import { Theme } from "@/constants/theme";
@@ -134,10 +134,17 @@ export function ColposcopyScreen() {
           ? requestError.message
           : "Não foi possível salvar a colposcopia.",
       );
-    } finally {
+      // Só no erro: depois do sucesso a tela fecha e fica travada até sair.
       setSaving(false);
     }
   }
+
+  // Estável entre renderizações: o AttendanceForm registra o voltar do Android
+  // com base nela.
+  const backToFindings = useCallback(() => {
+    setError("");
+    setStep(1);
+  }, []);
 
   return (
     <AttendanceForm
@@ -146,14 +153,7 @@ export function ColposcopyScreen() {
       saving={saving}
       onSave={handleButton}
       step={{ current: step, total: 2 }}
-      onBack={
-        step === 2
-          ? () => {
-              setError("");
-              setStep(1);
-            }
-          : undefined
-      }
+      onBack={step === 2 ? backToFindings : undefined}
       buttonLabel={step === 1 ? "Continuar" : "Salvar registro"}
     >
       {step === 1 ? (
@@ -218,7 +218,7 @@ export function ColposcopyScreen() {
         <StepSection title="CONDUTA · PASSO 2 DE 2">
           {form.lesion ? (
             <>
-              <View style={form.recurrence && styles.highlight}>
+              <View style={[styles.alertRow, form.recurrence && styles.highlight]}>
                 <ToggleRow
                   label="LESÃO RECIDIVA"
                   value={form.recurrence}
@@ -227,7 +227,7 @@ export function ColposcopyScreen() {
                   selectedColor={form.recurrence ? Theme.secondary : undefined}
                 />
               </View>
-              <View style={form.seeAndTreat && styles.highlight}>
+              <View style={[styles.alertRow, form.seeAndTreat && styles.highlight]}>
                 <ToggleRow
                   label="VER E TRATAR"
                   value={form.seeAndTreat}
@@ -236,7 +236,7 @@ export function ColposcopyScreen() {
                 />
               </View>
               {form.seeAndTreat ? (
-                <View style={styles.highlight}>
+                <View style={[styles.alertRow, styles.highlight]}>
                   <LabeledInput
                     label="MOTIVO DO VER E TRATAR · * OBRIGATÓRIO"
                     value={form.seeAndTreatReason}

@@ -1,4 +1,5 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { StackActions } from "expo-router/react-navigation";
 import {
   useCallback,
   useEffect,
@@ -29,9 +30,12 @@ import {
 } from "./components";
 
 // Depois de salvar, volta para a ficha (aba Atend.) já no filtro do tipo
-// salvo. Se a tela foi fechada durante o envio, não navega de novo.
+// salvo. "saved" muda a cada salvamento, para o filtro ser reaplicado mesmo
+// quando o tipo se repete; merge preserva os outros parâmetros da ficha
+// (como "created"). Se a tela foi fechada durante o envio, não navega.
 export function useReturnToVisits(filter: VisitType) {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const navigation = useNavigation();
   const mounted = useRef(true);
 
   useEffect(() => {
@@ -43,8 +47,14 @@ export function useReturnToVisits(filter: VisitType) {
 
   return useCallback(() => {
     if (!mounted.current) return;
-    router.dismissTo({ pathname: "/patients/[id]", params: { id, filter } });
-  }, [id, filter]);
+    navigation.dispatch(
+      StackActions.popTo(
+        "patients/[id]",
+        { id, filter, saved: String(Date.now()) },
+        { merge: true },
+      ),
+    );
+  }, [navigation, id, filter]);
 }
 
 // Estrutura comum das telas de novo registro: cabeçalho, campos e rodapé

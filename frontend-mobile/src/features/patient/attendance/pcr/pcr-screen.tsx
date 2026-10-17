@@ -64,7 +64,7 @@ export function PcrScreen() {
           ? requestError.message
           : "Não foi possível salvar o PCR.",
       );
-    } finally {
+      // Só no erro: depois do sucesso a tela fecha e fica travada até sair.
       setSaving(false);
     }
   }
