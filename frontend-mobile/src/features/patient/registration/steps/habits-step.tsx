@@ -1,7 +1,7 @@
 import { ChoiceRow, Counter, StepSection, SummaryRow } from "../components";
 import { minAges, smokingOptions } from "../constants";
 import type { SmokingStatus, StepProps } from "../types";
-import { getAge, getSmokingLoad } from "../utils";
+import { getAge, getSmokingEnd, getSmokingLoad } from "../utils";
 
 export function HabitsStep({ form, update }: StepProps) {
   const smokes = form.smoking !== "Nunca";
@@ -14,7 +14,11 @@ export function HabitsStep({ form, update }: StepProps) {
         label="TABAGISMO"
         options={smokingOptions}
         selected={form.smoking}
-        onSelect={(value) => update("smoking", value as SmokingStatus)}
+        onSelect={(value) => {
+          update("smoking", value as SmokingStatus);
+          // "Parou aos" começa dentro da faixa: entre o início e a idade atual.
+          if (value === "Parou") update("smokingEnd", getSmokingEnd(form));
+        }}
         inline
       />
       {smokes ? (

@@ -26,7 +26,7 @@ import {
 } from "./steps";
 import { styles } from "./styles";
 import type { PatientForm } from "./types";
-import { validateForm, validateStep } from "./utils";
+import { fitAgesToPatient, validateForm, validateStep } from "./utils";
 
 export function PatientRegistration() {
   const scrollRef = useRef<ScrollView>(null);
@@ -70,8 +70,12 @@ export function PatientRegistration() {
   async function handleContinue() {
     if (step < totalSteps) {
       const stepError = validateStep(step, form);
-      if (stepError) setError(stepError);
-      else goToStep(step + 1);
+      if (stepError) {
+        setError(stepError);
+        return;
+      }
+      if (step === 1) setForm(fitAgesToPatient);
+      goToStep(step + 1);
       return;
     }
 

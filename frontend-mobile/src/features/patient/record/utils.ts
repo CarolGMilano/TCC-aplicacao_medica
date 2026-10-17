@@ -7,6 +7,7 @@ import {
   statusMap,
 } from "../registration/constants";
 import type { SmokingStatus } from "../registration/types";
+import { fitAgesToPatient } from "../registration/utils";
 import type { PatientDetail, PatientRecord } from "./types";
 
 // Os mapas do cadastro vão do texto da tela para o enum do backend;
@@ -30,6 +31,14 @@ export function toPatientRecord(detail: PatientDetail): PatientRecord {
   const sexual = detail.saudeSexual[0];
   const habits = detail.historicoTabagismo[0];
   const ists = detail.historicoIst;
+  // Campos sem dado no backend partem do initialForm, ajustado à idade
+  // (senão a menopausa começaria em 45 numa paciente de 32, por exemplo).
+  const defaults = fitAgesToPatient({
+    ...initialForm,
+    birthDay: day,
+    birthMonth: month,
+    birthYear: year,
+  });
 
   return {
     id: detail.idPaciente,
@@ -48,11 +57,8 @@ export function toPatientRecord(detail: PatientDetail): PatientRecord {
       habits: !habits,
     },
     form: {
-      ...initialForm,
+      ...defaults,
       name: detail.nome,
-      birthDay: day,
-      birthMonth: month,
-      birthYear: year,
       record: detail.prontuario,
       status: statusLabels[detail.status] ?? detail.status,
       ...(obstetric && {
@@ -62,7 +68,7 @@ export function toPatientRecord(detail: PatientDetail): PatientRecord {
         abortions: obstetric.numAborto,
         menarche: obstetric.menarca,
         menopause: obstetric.menopausa !== null,
-        menopauseAge: obstetric.menopausa ?? initialForm.menopauseAge,
+        menopauseAge: obstetric.menopausa ?? defaults.menopauseAge,
       }),
       ...(sexual && {
         sexarche: sexual.sexarca,
@@ -77,8 +83,8 @@ export function toPatientRecord(detail: PatientDetail): PatientRecord {
       hpvWart: ists.some((item) => item.ist === "HPV" && item.condilomaHpv),
       ...(habits && {
         smoking: smokingLabels[habits.fumante] ?? "Nunca",
-        smokingStart: habits.idadeInicio ?? initialForm.smokingStart,
-        smokingEnd: habits.idadeFim ?? initialForm.smokingEnd,
+        smokingStart: habits.idadeInicio ?? defaults.smokingStart,
+        smokingEnd: habits.idadeFim ?? defaults.smokingEnd,
         cigarettesPerDay: habits.cigarrosDia ?? 0,
       }),
     },
