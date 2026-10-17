@@ -110,8 +110,22 @@ export function toggleIst(current: string[], ist: string) {
   return [...current.filter((item) => !exclusiveIsts.includes(item)), ist];
 }
 
-export function validateStep(step: number, form: PatientForm) {
+// Na ficha, saved são os dados já gravados: um valor abaixo do mínimo que
+// veio de lá (o web aceita) não trava a aba, só um valor novo é recusado.
+export function validateStep(
+  step: number,
+  form: PatientForm,
+  saved?: PatientForm,
+) {
   const age = getAge(form);
+  // Com a paciente mais nova que o mínimo, o contador fica travado: o erro
+  // está na data de nascimento.
+  const birthHint = (min: number) =>
+    age !== null && age < min ? " Confira a data de nascimento." : "";
+  const belowMin = (
+    key: "menarche" | "sexarche" | "smokingStart",
+    min: number,
+  ) => form[key] < min && form[key] !== saved?.[key];
 
   switch (step) {
     case 1:
@@ -122,6 +136,8 @@ export function validateStep(step: number, form: PatientForm) {
       if (!form.record.trim()) return "Informe o número do prontuário.";
       return null;
     case 2:
+      if (belowMin("menarche", minAges.menarche))
+        return `A menarca deve ser de pelo menos ${minAges.menarche} anos.${birthHint(minAges.menarche)}`;
       if (age !== null && form.menarche > age)
         return "A menarca não pode ser maior que a idade da paciente.";
       if (form.menopause && form.menopauseAge <= form.menarche)
@@ -130,6 +146,8 @@ export function validateStep(step: number, form: PatientForm) {
         return "A menopausa não pode ser maior que a idade da paciente.";
       return null;
     case 3:
+      if (belowMin("sexarche", minAges.sexarche))
+        return `A sexarca deve ser de pelo menos ${minAges.sexarche} anos.${birthHint(minAges.sexarche)}`;
       if (age !== null && form.sexarche > age)
         return "A sexarca não pode ser maior que a idade da paciente.";
       return null;
@@ -137,6 +155,8 @@ export function validateStep(step: number, form: PatientForm) {
       return form.ists.length ? null : "Selecione ao menos uma opção.";
     case 5:
       if (form.smoking === "Nunca") return null;
+      if (belowMin("smokingStart", minAges.smoking))
+        return `A idade de início deve ser de pelo menos ${minAges.smoking} anos.${birthHint(minAges.smoking)}`;
       if (age !== null && form.smokingStart > age)
         return "A idade de início não pode ser maior que a da paciente.";
       if (form.smoking === "Parou" && form.smokingEnd < form.smokingStart)

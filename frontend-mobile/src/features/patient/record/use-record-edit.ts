@@ -12,8 +12,9 @@ import type { DataTab, PatientRecord } from "./types";
 function validateOtherTabs(record: PatientRecord, form: PatientForm) {
   for (const tab of ["obstetric", "sexual", "habits"] as const) {
     if (record.missing[tab]) continue;
-    const error = validateStep(tabSteps[tab], form);
-    if (error && error !== validateStep(tabSteps[tab], record.form)) {
+    const error = validateStep(tabSteps[tab], form, record.form);
+    const before = validateStep(tabSteps[tab], record.form, record.form);
+    if (error && error !== before) {
       const label = recordTabs.find((item) => item.id === tab)?.label;
       return `Aba ${label}: ${error}`;
     }
@@ -54,8 +55,11 @@ export function useRecordEdit(
   async function save(tab: DataTab) {
     if (!record || !draft) return;
 
+    // Aba ainda sem registro: os valores iniciais não contam como gravados.
+    const saved =
+      tab !== "personal" && record.missing[tab] ? undefined : record.form;
     const stepError =
-      validateStep(tabSteps[tab], draft) ??
+      validateStep(tabSteps[tab], draft, saved) ??
       (tab === "personal" ? validateOtherTabs(record, draft) : null);
     if (stepError) {
       setError(stepError);
