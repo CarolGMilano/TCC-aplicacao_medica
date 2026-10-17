@@ -148,6 +148,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
       <ThemedView style={registrationStyles.screen}>
         <ScrollView
           contentContainerStyle={registrationStyles.content}
+          keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           <RecordHeader
