@@ -10,6 +10,8 @@ type ChoiceRowProps = {
   selected: string | string[];
   onSelect: (value: string) => void;
   inline?: boolean;
+  // Texto de apoio abaixo do rótulo.
+  hint?: string;
 };
 
 export function ChoiceRow({
@@ -18,12 +20,18 @@ export function ChoiceRow({
   selected,
   onSelect,
   inline = false,
+  hint,
 }: ChoiceRowProps) {
   return (
     <View style={[styles.choiceRow, inline && styles.choiceRowInline]}>
       <ThemedText type="code" themeColor="textSecondary">
         {label}
       </ThemedText>
+      {hint ? (
+        <ThemedText type="small" themeColor="textSecondary">
+          {hint}
+        </ThemedText>
+      ) : null}
 
       <View style={[styles.choiceList, inline && styles.choiceListInline]}>
         {options.map((option) => {

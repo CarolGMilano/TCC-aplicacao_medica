@@ -93,6 +93,40 @@ export const lesionLabels: Record<string, string> = {
   INVASAO: "Invasão",
 };
 
+export const pcrResultLabels: Record<string, string> = {
+  POSITIVO: "Positivo",
+  NEGATIVO: "Negativo",
+};
+
+export const hpvTypeLabels: Record<string, string> = {
+  HPV_6: "HPV 6",
+  HPV_11: "HPV 11",
+  HPV_16: "HPV 16",
+  HPV_18: "HPV 18",
+  OUTROS: "Outros",
+};
+
+// Junção escamocolunar: o backend recebe o próprio texto ("-4" a "0").
+export const jecOptions = ["-4", "-3", "-2", "-1", "0"];
+
+export const transformationZoneLabels: Record<string, string> = {
+  ZT_1: "ZT 1",
+  ZT_2: "ZT 2",
+  ZT_3: "ZT 3",
+};
+
+export const lesionSizeLabels: Record<string, string> = {
+  P: "Pequena",
+  M: "Média",
+  G: "Grande",
+};
+
+export const marginLabels: Record<string, string> = {
+  LIVRE: "Livre",
+  COMPROMETIDA: "Comprometida",
+  COINCIDENTE: "Coincidente",
+};
+
 export const procedureLabels: Record<string, string> = {
   BIOPSIA: "Biópsia",
   EZT_1: "EZT 1",

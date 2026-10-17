@@ -1,10 +1,22 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { useEffect, useState, type ReactNode } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { Badge } from "../record/components";
+import { styles as registrationStyles } from "../registration/styles";
+import { fetchDoctorName } from "./attendance-api";
 
 export function AttendanceHeader({ title }: { title: string }) {
   const { name, record } = useLocalSearchParams<{
@@ -137,7 +149,104 @@ export function SaveButton({
   );
 }
 
+// Estrutura comum das telas de novo registro: cabeçalho, campos e rodapé
+// com o erro e o botão de salvar.
+export function AttendanceForm({
+  title,
+  error,
+  saving,
+  onSave,
+  children,
+}: {
+  title: string;
+  error: string;
+  saving: boolean;
+  onSave: () => void;
+  children: ReactNode;
+}) {
+  const [doctor, setDoctor] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetchDoctorName()
+      .then((name) => {
+        if (active) setDoctor(name);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return (
+    <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
+      <KeyboardAvoidingView
+        style={styles.screen}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <AttendanceHeader title={title} />
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.meta}>
+            <View style={styles.metaCell}>
+              <ThemedText type="code" themeColor="textSecondary">
+                ÚLTIMA EDIÇÃO
+              </ThemedText>
+              <ThemedText>—</ThemedText>
+            </View>
+            <View style={styles.metaCell}>
+              <ThemedText type="code" themeColor="textSecondary">
+                MÉDICO RESPONSÁVEL
+              </ThemedText>
+              <ThemedText>{doctor ?? "—"}</ThemedText>
+            </View>
+          </View>
+          {children}
+        </ScrollView>
+        <View style={styles.footer}>
+          {error ? (
+            <ThemedText
+              type="small"
+              themeColor="error"
+              accessibilityLiveRegion="polite"
+              style={registrationStyles.error}
+            >
+              {error}
+            </ThemedText>
+          ) : null}
+          <SaveButton
+            label={saving ? "Salvando..." : "Salvar registro"}
+            onPress={onSave}
+            disabled={saving}
+          />
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
 export const styles = StyleSheet.create({
+  content: { paddingBottom: 120 },
+
+  meta: {
+    flexDirection: "row",
+    gap: Spacing.three,
+    padding: Spacing.three,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.border,
+    backgroundColor: "#E9E6DF",
+  },
+
+  metaCell: { flex: 1, gap: Spacing.one },
+
+  footer: {
+    padding: Spacing.three,
+    gap: Spacing.two,
+    backgroundColor: Theme.background,
+  },
+
   screen: {
     flex: 1,
     backgroundColor: Theme.background,
@@ -168,9 +277,12 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: Spacing.two,
   },
 
+  // Títulos longos ("Novo PCR DNA HPV") quebram linha em vez de encostar no selo.
   title: {
+    flexShrink: 1,
     fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.title,
     lineHeight: Typography.lineHeights.title,
