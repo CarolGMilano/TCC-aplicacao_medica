@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { type Ref, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -12,6 +12,7 @@ import { ThemedText } from "@/components/shared/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
 type FieldProps = TextInputProps & {
+  ref?: Ref<TextInput>;
   label: string;
   error?: string;
   password?: boolean;
