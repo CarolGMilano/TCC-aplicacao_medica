@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   BackHandler,
   Pressable,
   ScrollView,
@@ -33,6 +34,7 @@ export function PatientRegistration() {
   // Hora da última troca de etapa, para ignorar o 2º toque de um toque duplo.
   const stepChangedAt = useRef(0);
   const [step, setStep] = useState(1);
+  const [fromReview, setFromReview] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,25 +47,46 @@ export function PatientRegistration() {
     setForm((current) => ({ ...current, [key]: value }));
   };
 
-  function goToStep(target: number) {
+  function goToStep(target: number, openedFromReview = false) {
     setError("");
     setStep(target);
+    setFromReview(openedFromReview);
     stepChangedAt.current = Date.now();
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
+  // Só a etapa 1 aberta normalmente sai do cadastro. Aberta pela revisão
+  // (ALTERAR), voltar leva de novo à revisão.
+  const leavesOnBack = step === 1 && !fromReview;
+
   function goBack() {
-    if (step === 1) router.back();
-    else goToStep(step - 1);
+    if (leavesOnBack) router.back();
+    else goToStep(step === 1 ? totalSteps : step - 1);
   }
 
-  // Botão voltar do Android volta uma etapa em vez de sair do cadastro.
+  // Botão voltar do Android volta uma etapa em vez de sair do cadastro e, se
+  // já houver dados, pergunta antes de descartar.
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
-        if (step === 1) return false;
-        goToStep(step - 1);
+        if (!leavesOnBack) {
+          goBack();
+          return true;
+        }
+        if (JSON.stringify(form) === JSON.stringify(initialForm)) return false;
+        Alert.alert(
+          "Descartar o cadastro?",
+          "Os dados preenchidos serão perdidos.",
+          [
+            { text: "Continuar editando", style: "cancel" },
+            {
+              text: "Descartar",
+              style: "destructive",
+              onPress: () => router.back(),
+            },
+          ],
+        );
         return true;
       },
     );
@@ -88,7 +111,7 @@ export function PatientRegistration() {
 
     const invalid = validateForm(form);
     if (invalid) {
-      goToStep(invalid.step);
+      goToStep(invalid.step, true);
       setError(invalid.error);
       return;
     }
@@ -133,6 +156,7 @@ export function PatientRegistration() {
             subtitle={
               step === 1 ? "NOVA PACIENTE" : form.name.trim().toUpperCase()
             }
+            cancel={leavesOnBack}
             onBack={goBack}
           />
           {step === 1 && <PersonalStep form={form} update={update} />}
@@ -140,7 +164,12 @@ export function PatientRegistration() {
           {step === 3 && <SexualStep form={form} update={update} />}
           {step === 4 && <IstStep form={form} update={update} />}
           {step === 5 && <HabitsStep form={form} update={update} />}
-          {step === 6 && <ReviewStep form={form} onEdit={goToStep} />}
+          {step === 6 && (
+            <ReviewStep
+              form={form}
+              onEdit={(target) => goToStep(target, true)}
+            />
+          )}
         </ScrollView>
 
         <View style={styles.footer}>
@@ -179,6 +208,7 @@ type RegistrationHeaderProps = {
   step: number;
   title: string;
   subtitle: string;
+  cancel: boolean;
   onBack: () => void;
 };
 
@@ -186,6 +216,7 @@ function RegistrationHeader({
   step,
   title,
   subtitle,
+  cancel,
   onBack,
 }: RegistrationHeaderProps) {
   return (
@@ -195,7 +226,7 @@ function RegistrationHeader({
           <View style={headerStyles.backButton}>
             <SymbolView
               name={
-                step === 1
+                cancel
                   ? {
                       ios: "xmark",
                       android: "close",
@@ -211,7 +242,7 @@ function RegistrationHeader({
               size={19}
             />
             <ThemedText type="code" themeColor="textSecondary">
-              {step === 1 ? "CANCELAR" : "VOLTAR"}
+              {cancel ? "CANCELAR" : "VOLTAR"}
             </ThemedText>
           </View>
         </Pressable>
