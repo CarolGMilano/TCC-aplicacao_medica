@@ -49,7 +49,7 @@ export function AlertListScreen({
             accessibilityRole="button"
             accessibilityLabel="Voltar para o Dashboard"
             hitSlop={8}
-            onPress={() => router.replace("/dashboard")}
+            onPress={() => router.dismissTo("/dashboard")}
             style={styles.backButton}
           >
             <SymbolView

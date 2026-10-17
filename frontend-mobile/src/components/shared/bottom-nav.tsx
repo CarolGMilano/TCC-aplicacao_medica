@@ -53,13 +53,13 @@ export function BottomNav() {
           active={!isPatients}
           label="Dashboard"
           icon={icons.dashboard}
-          onPress={() => router.replace("/dashboard")}
+          onPress={() => router.dismissTo("/dashboard")}
         />
         <NavItem
           active={isPatients}
           label="Pacientes"
           icon={icons.patients}
-          onPress={() => router.push("/patients")}
+          onPress={() => router.navigate("/patients")}
         />
       </View>
       <Pressable
