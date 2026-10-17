@@ -74,9 +74,11 @@ export function AlertListScreen({
               </ThemedText>
             </View>
             <ThemedText style={styles.title}>{title}</ThemedText>
-            <ThemedText type="code" themeColor="textSecondary">
-              {alerts.length} PACIENTES · {percentage}% DAS CADASTRADAS
-            </ThemedText>
+            {!isLoading && !error ? (
+              <ThemedText type="code" themeColor="textSecondary">
+                {alerts.length} PACIENTES · {percentage}% DAS CADASTRADAS
+              </ThemedText>
+            ) : null}
             <ThemedText
               type="small"
               themeColor="textSecondary"
