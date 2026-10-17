@@ -12,7 +12,7 @@ const recordTypes = [
   { label: "Citologia", pathname: "/patients/[id]/cytology" },
   { label: "PCR DNA HPV", pathname: "/patients/[id]/pcr" },
   { label: "Colposcopia", pathname: "/patients/[id]/colposcopy" },
-  { label: "Procedimento", pathname: null },
+  { label: "Procedimento", pathname: "/patients/[id]/procedure" },
 ] as const;
 
 export function NewRecordScreen() {
@@ -50,13 +50,12 @@ export function NewRecordScreen() {
               key={label}
               accessibilityRole="button"
               accessibilityLabel={`Criar registro de ${label}`}
-              onPress={() => {
-                if (!pathname) return;
+              onPress={() =>
                 router.push({
                   pathname,
                   params: { id: String(id), name, record },
-                });
-              }}
+                })
+              }
               style={({ pressed }) => [
                 styles.option,
                 pressed && styles.pressed,
