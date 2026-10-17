@@ -30,6 +30,8 @@ import { fitAgesToPatient, validateForm, validateStep } from "./utils";
 
 export function PatientRegistration() {
   const scrollRef = useRef<ScrollView>(null);
+  // Hora da última troca de etapa, para ignorar o 2º toque de um toque duplo.
+  const stepChangedAt = useRef(0);
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
@@ -46,6 +48,7 @@ export function PatientRegistration() {
   function goToStep(target: number) {
     setError("");
     setStep(target);
+    stepChangedAt.current = Date.now();
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
@@ -68,6 +71,10 @@ export function PatientRegistration() {
   });
 
   async function handleContinue() {
+    // O botão fica no mesmo lugar em todas as etapas: sem isso, o 2º toque
+    // pularia uma etapa ou cadastraria sem passar pela revisão.
+    if (Date.now() - stepChangedAt.current < 400) return;
+
     if (step < totalSteps) {
       const stepError = validateStep(step, form);
       if (stepError) {
