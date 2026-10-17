@@ -9,12 +9,15 @@ import { Badge } from "../record/components";
 
 // Sem onBack, o cabeçalho cancela o registro; com onBack (telas em passos),
 // volta para o passo anterior.
+// disabled trava os dois botões enquanto o registro está sendo salvo.
 export function AttendanceHeader({
   title,
   onBack,
+  disabled,
 }: {
   title: string;
   onBack?: () => void;
+  disabled?: boolean;
 }) {
   const { name, record } = useLocalSearchParams<{
     name: string;
@@ -27,9 +30,11 @@ export function AttendanceHeader({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Voltar ao passo anterior"
+          accessibilityState={{ disabled }}
+          disabled={disabled}
           hitSlop={8}
           onPress={onBack}
-          style={styles.cancel}
+          style={[styles.cancel, disabled && styles.disabled]}
         >
           <SymbolView
             name={{ ios: "arrow.left", android: "arrow_back", web: "arrow_back" }}
@@ -44,9 +49,11 @@ export function AttendanceHeader({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Cancelar e voltar"
+          accessibilityState={{ disabled }}
+          disabled={disabled}
           hitSlop={8}
           onPress={() => router.back()}
-          style={styles.cancel}
+          style={[styles.cancel, disabled && styles.disabled]}
         >
           <ThemedText style={styles.close}>×</ThemedText>
           <ThemedText type="code" themeColor="textSecondary">

@@ -1,5 +1,5 @@
-import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useLocalSearchParams } from "expo-router";
+import { useRef, useState } from "react";
 import { View } from "react-native";
 
 import {
@@ -13,7 +13,7 @@ import {
   lesionSizeOptions,
   transformationZoneLabels,
 } from "../../record/constants";
-import { AttendanceForm } from "../attendance-form";
+import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput, styles } from "../components";
 import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
 import { createColposcopy } from "./colposcopy-api";
@@ -49,11 +49,13 @@ const initialForm = (): ColposcopyForm => ({
 
 // Passo 1: achados. Passo 2: conduta. Um único POST no fim.
 export function ColposcopyScreen() {
+  const returnToVisits = useReturnToVisits("colposcopy");
   const { id } = useLocalSearchParams<{ id: string }>();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(initialForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const conductShownAt = useRef(0);
 
   function update<Key extends keyof ColposcopyForm>(
     key: Key,
@@ -84,10 +86,18 @@ export function ColposcopyScreen() {
   async function handleButton() {
     if (step === 1) {
       const findingsError = validateFindings();
-      if (findingsError) setError(findingsError);
-      else setStep(2);
+      if (findingsError) {
+        setError(findingsError);
+        return;
+      }
+      conductShownAt.current = Date.now();
+      setStep(2);
       return;
     }
+
+    // Um toque duplo em "Continuar" cairia em "Salvar registro" sem que o
+    // passo 2 fosse visto.
+    if (Date.now() - conductShownAt.current < 500) return;
 
     const conductError = validateConduct();
     const dataRegistro = toIsoDate(form.date);
@@ -114,8 +124,8 @@ export function ColposcopyScreen() {
         verETratar: seeAndTreat,
         verETratarMotivo: seeAndTreat ? form.seeAndTreatReason.trim() : "",
       });
-      // Volta para a ficha (aba Atend.), que recarrega a lista ao reaparecer.
-      router.dismiss(2);
+      // Volta para a ficha (aba Atend.) no filtro deste tipo.
+      returnToVisits();
     } catch (requestError) {
       setError(
         requestError instanceof Error

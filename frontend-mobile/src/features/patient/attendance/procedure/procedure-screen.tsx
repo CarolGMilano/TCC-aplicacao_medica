@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
 import {
@@ -11,7 +11,7 @@ import {
   procedureLabels,
   procedureResultLabels,
 } from "../../record/constants";
-import { AttendanceForm } from "../attendance-form";
+import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
 import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
 import { createProcedure } from "./procedure-api";
@@ -20,6 +20,7 @@ const resultPlaceholder = "Selecione um resultado";
 
 // Mesmos campos e regras do formulário de procedimento do web.
 export function ProcedureScreen() {
+  const returnToVisits = useReturnToVisits("procedures");
   const { id } = useLocalSearchParams<{ id: string }>();
   const [date, setDate] = useState<DateParts>(todayParts);
   const [type, setType] = useState("BIOPSIA");
@@ -72,8 +73,8 @@ export function ProcedureScreen() {
         resultado: result,
         observacao: observation.trim(),
       });
-      // Volta para a ficha (aba Atend.), que recarrega a lista ao reaparecer.
-      router.dismiss(2);
+      // Volta para a ficha (aba Atend.) no filtro deste tipo.
+      returnToVisits();
     } catch (requestError) {
       setError(
         requestError instanceof Error

@@ -1,15 +1,16 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
 import { ChoiceRow } from "../../registration/components";
 import { hpvTypeLabels, pcrResultLabels } from "../../record/constants";
-import { AttendanceForm } from "../attendance-form";
+import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
 import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
 import { createPcr } from "./pcr-api";
 
 // Mesmos campos e regras do formulário de PCR do web.
 export function PcrScreen() {
+  const returnToVisits = useReturnToVisits("pcr");
   const { id } = useLocalSearchParams<{ id: string }>();
   const [date, setDate] = useState<DateParts>(todayParts);
   const [result, setResult] = useState("NEGATIVO");
@@ -55,8 +56,8 @@ export function PcrScreen() {
         tiposHpv: positive ? hpvTypes : [],
         observacao: observation.trim(),
       });
-      // Volta para a ficha (aba Atend.), que recarrega a lista ao reaparecer.
-      router.dismiss(2);
+      // Volta para a ficha (aba Atend.) no filtro deste tipo.
+      returnToVisits();
     } catch (requestError) {
       setError(
         requestError instanceof Error

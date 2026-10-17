@@ -1,4 +1,4 @@
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
@@ -23,7 +23,19 @@ export function VisitsTab({
 }: VisitsTabProps) {
   const [visits, setVisits] = useState<VisitLists | null>(null);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState<VisitType>("consultations");
+  // Ao voltar de um novo registro, a ficha recebe o tipo salvo em "filter".
+  const params = useLocalSearchParams<{ filter?: VisitType }>();
+  const [filter, setFilter] = useState<VisitType>(
+    params.filter ?? "consultations",
+  );
+
+  // A ficha já está aberta quando o parâmetro chega: ajusta durante a
+  // renderização, como recomenda o React para estado derivado de props.
+  const [filterParam, setFilterParam] = useState(params.filter);
+  if (params.filter !== filterParam) {
+    setFilterParam(params.filter);
+    if (params.filter) setFilter(params.filter);
+  }
 
   useFocusEffect(
     useCallback(() => {
