@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   BackHandler,
+  KeyboardAvoidingView,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -145,55 +146,64 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
 
   return (
     <SafeAreaView style={registrationStyles.safeArea}>
-      <ThemedView style={registrationStyles.screen}>
-        <ScrollView
-          contentContainerStyle={registrationStyles.content}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <RecordHeader
-            record={record}
-            tab={tab}
-            created={created}
-            editing={edit.editing}
-            onBack={goToPatients}
-            onTabChange={changeTab}
-          />
-          <View>
-            {tab !== "visits" && edit.draft ? (
-              <EditTab tab={tab} form={edit.draft} update={edit.update} />
-            ) : null}
-            {!edit.editing && tab === "personal" && (
-              <PersonalTab record={record} />
-            )}
-            {!edit.editing && tab === "obstetric" && (
-              <ObstetricTab record={record} />
-            )}
-            {!edit.editing && tab === "sexual" && <SexualTab record={record} />}
-            {!edit.editing && tab === "ist" && <IstTab record={record} />}
-            {!edit.editing && tab === "habits" && <HabitsTab record={record} />}
-            {tab === "visits" && (
-              <VisitsTab
-                patientId={record.id}
-                patientName={record.form.name}
-                patientRecord={record.form.record}
-              />
-            )}
-          </View>
-        </ScrollView>
+      {/* Mantém o rodapé acima do teclado, também no Android. */}
+      <KeyboardAvoidingView
+        style={registrationStyles.screen}
+        behavior="padding"
+      >
+        <ThemedView style={registrationStyles.screen}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <RecordHeader
+              record={record}
+              tab={tab}
+              created={created}
+              editing={edit.editing}
+              onBack={goToPatients}
+              onTabChange={changeTab}
+            />
+            <View>
+              {tab !== "visits" && edit.draft ? (
+                <EditTab tab={tab} form={edit.draft} update={edit.update} />
+              ) : null}
+              {!edit.editing && tab === "personal" && (
+                <PersonalTab record={record} />
+              )}
+              {!edit.editing && tab === "obstetric" && (
+                <ObstetricTab record={record} />
+              )}
+              {!edit.editing && tab === "sexual" && (
+                <SexualTab record={record} />
+              )}
+              {!edit.editing && tab === "ist" && <IstTab record={record} />}
+              {!edit.editing && tab === "habits" && (
+                <HabitsTab record={record} />
+              )}
+              {tab === "visits" && (
+                <VisitsTab
+                  patientId={record.id}
+                  patientName={record.form.name}
+                  patientRecord={record.form.record}
+                />
+              )}
+            </View>
+          </ScrollView>
 
-        {tab !== "visits" ? (
-          <RecordFooter
-            editing={edit.editing}
-            loading={loading}
-            saving={edit.saving}
-            error={edit.error}
-            onEdit={edit.start}
-            onCancel={edit.cancel}
-            onSave={() => edit.save(tab)}
-          />
-        ) : null}
-      </ThemedView>
+          {tab !== "visits" ? (
+            <RecordFooter
+              editing={edit.editing}
+              loading={loading}
+              saving={edit.saving}
+              error={edit.error}
+              onEdit={edit.start}
+              onCancel={edit.cancel}
+              onSave={() => edit.save(tab)}
+            />
+          ) : null}
+        </ThemedView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

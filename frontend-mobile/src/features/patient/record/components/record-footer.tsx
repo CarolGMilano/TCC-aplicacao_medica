@@ -26,7 +26,7 @@ export function RecordFooter({
   onSave,
 }: RecordFooterProps) {
   return (
-    <View style={registrationStyles.footer}>
+    <View style={styles.footer}>
       {error ? (
         <ThemedText
           themeColor="error"
@@ -85,6 +85,14 @@ export function RecordFooter({
 }
 
 const styles = StyleSheet.create({
+  // Abaixo da rolagem, e não por cima dela: com o teclado aberto, o campo
+  // em que se digita fica acima dos botões.
+  footer: {
+    padding: Spacing.three,
+    gap: Spacing.two,
+    backgroundColor: Theme.background,
+  },
+
   row: {
     flexDirection: "row",
     gap: Spacing.two,
