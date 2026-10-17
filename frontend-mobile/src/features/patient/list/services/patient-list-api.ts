@@ -14,10 +14,13 @@ type PatientResponse = {
   ultimaConsulta: string | null;
 };
 
+// O backend serializa a página como PagedModel (VIA_DTO): os totais vêm em "page".
 type PatientPage = {
   content: PatientResponse[];
-  totalElements: number;
-  totalPages: number;
+  page: {
+    totalElements: number;
+    totalPages: number;
+  };
 };
 
 const statusLabels = Object.fromEntries(
@@ -53,6 +56,7 @@ export type PatientListResult = {
 export async function fetchPatients(
   search = "",
   status = "Todas",
+  signal?: AbortSignal,
 ): Promise<PatientListResult> {
   if (USE_MOCK_PATIENTS) {
     return {
@@ -78,7 +82,7 @@ export async function fetchPatients(
   async function fetchPage(pageNumber: number): Promise<PatientPage> {
     const response = await fetch(
       `${API_BASE_URL}/api/pacientes?page=${pageNumber}&${query}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      { headers: { Authorization: `Bearer ${token}` }, signal },
     );
 
     if (response.ok) return (await response.json()) as PatientPage;
@@ -92,8 +96,9 @@ export async function fetchPatients(
 
   const firstPage = await fetchPage(0);
   const remainingPages = await Promise.all(
-    Array.from({ length: Math.max(firstPage.totalPages - 1, 0) }, (_, index) =>
-      fetchPage(index + 1),
+    Array.from(
+      { length: Math.max(firstPage.page.totalPages - 1, 0) },
+      (_, index) => fetchPage(index + 1),
     ),
   );
 
@@ -102,6 +107,6 @@ export async function fetchPatients(
 
   return {
     patients: patients.map(toListItem),
-    total: firstPage.totalElements ?? patients.length,
+    total: firstPage.page.totalElements ?? patients.length,
   };
 }

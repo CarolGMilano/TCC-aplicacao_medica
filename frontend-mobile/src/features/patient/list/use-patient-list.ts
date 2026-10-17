@@ -12,11 +12,12 @@ export function usePatientList(status: string, search: string) {
 
   const loadPatients = useCallback(() => {
     let active = true;
+    const controller = new AbortController();
 
     setIsLoading(true);
     setError("");
 
-    fetchPatients(search, status)
+    fetchPatients(search, status, controller.signal)
       .then((result) => {
         if (!active) return;
         setPatients(result.patients);
@@ -36,6 +37,8 @@ export function usePatientList(status: string, search: string) {
 
     return () => {
       active = false;
+      // Para de baixar as páginas da busca anterior (ex.: a cada letra).
+      controller.abort();
     };
   }, [search, status]);
 
