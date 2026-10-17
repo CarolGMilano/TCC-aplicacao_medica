@@ -2,9 +2,24 @@ import { useState } from "react";
 
 import type { PatientForm } from "../registration/types";
 import { validateStep } from "../registration/utils";
-import { tabSteps } from "./constants";
+import { recordTabs, tabSteps } from "./constants";
 import { saveTab } from "./services/patient-update-api";
 import type { DataTab, PatientRecord } from "./types";
+
+// Com outra data de nascimento, a idade muda: confere as idades já salvas
+// nas outras abas com as regras do cadastro. Só barra o erro que a nova data
+// cria; um dado antigo que já falhava com a data salva não trava Pessoais.
+function validateOtherTabs(record: PatientRecord, form: PatientForm) {
+  for (const tab of ["obstetric", "sexual", "habits"] as const) {
+    if (record.missing[tab]) continue;
+    const error = validateStep(tabSteps[tab], form);
+    if (error && error !== validateStep(tabSteps[tab], record.form)) {
+      const label = recordTabs.find((item) => item.id === tab)?.label;
+      return `Aba ${label}: ${error}`;
+    }
+  }
+  return null;
+}
 
 // Estado do modo edição: uma cópia (rascunho) dos dados da aba,
 // descartada no "Cancelar" e enviada ao backend no "Salvar alterações".
@@ -38,7 +53,9 @@ export function useRecordEdit(
   async function save(tab: DataTab) {
     if (!record || !draft) return;
 
-    const stepError = validateStep(tabSteps[tab], draft);
+    const stepError =
+      validateStep(tabSteps[tab], draft) ??
+      (tab === "personal" ? validateOtherTabs(record, draft) : null);
     if (stepError) {
       setError(stepError);
       return;
