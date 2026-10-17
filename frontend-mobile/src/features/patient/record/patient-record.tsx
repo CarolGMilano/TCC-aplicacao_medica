@@ -109,8 +109,17 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
     return () => subscription.remove();
   });
 
-  // Volta para a lista sem empilhar outra tela de pacientes.
-  const goToPatients = () => router.navigate("/patients");
+  // Volta para a lista que já está na pilha, sem abrir outra. Se a ficha veio
+  // de outra tela (ex.: "Ver todas" do Dashboard), a lista entra no lugar dela.
+  // Durante a edição, só cancela, como o voltar do Android; salvando, espera.
+  function goToPatients() {
+    if (edit.saving) return;
+    if (edit.editing) {
+      edit.cancel();
+      return;
+    }
+    router.dismissTo("/patients");
+  }
 
   if (!record) {
     return (
