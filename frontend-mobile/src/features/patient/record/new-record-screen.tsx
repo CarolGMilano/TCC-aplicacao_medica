@@ -11,7 +11,7 @@ const recordTypes = [
   { label: "Consulta", pathname: "/patients/[id]/consultation" },
   { label: "Citologia", pathname: "/patients/[id]/cytology" },
   { label: "PCR DNA HPV", pathname: "/patients/[id]/pcr" },
-  { label: "Colposcopia", pathname: null },
+  { label: "Colposcopia", pathname: "/patients/[id]/colposcopy" },
   { label: "Procedimento", pathname: null },
 ] as const;
 

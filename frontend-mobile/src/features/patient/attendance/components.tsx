@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   KeyboardAvoidingView,
@@ -13,12 +14,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
+import { ThemedView } from "@/components/shared/themed-view";
 
 import { Badge } from "../record/components";
 import { styles as registrationStyles } from "../registration/styles";
 import { fetchDoctorName } from "./attendance-api";
 
-export function AttendanceHeader({ title }: { title: string }) {
+// Sem onBack, o cabeçalho cancela o registro; com onBack (telas em passos),
+// volta para o passo anterior.
+export function AttendanceHeader({
+  title,
+  onBack,
+}: {
+  title: string;
+  onBack?: () => void;
+}) {
   const { name, record } = useLocalSearchParams<{
     name: string;
     record: string;
@@ -26,18 +36,37 @@ export function AttendanceHeader({ title }: { title: string }) {
 
   return (
     <View style={styles.header}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Cancelar e voltar"
-        hitSlop={8}
-        onPress={() => router.back()}
-        style={styles.cancel}
-      >
-        <ThemedText style={styles.close}>×</ThemedText>
-        <ThemedText type="code" themeColor="textSecondary">
-          CANCELAR
-        </ThemedText>
-      </Pressable>
+      {onBack ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Voltar ao passo anterior"
+          hitSlop={8}
+          onPress={onBack}
+          style={styles.cancel}
+        >
+          <SymbolView
+            name={{ ios: "arrow.left", android: "arrow_back", web: "arrow_back" }}
+            tintColor={Theme.textSecondary}
+            size={19}
+          />
+          <ThemedText type="code" themeColor="textSecondary">
+            VOLTAR
+          </ThemedText>
+        </Pressable>
+      ) : (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Cancelar e voltar"
+          hitSlop={8}
+          onPress={() => router.back()}
+          style={styles.cancel}
+        >
+          <ThemedText style={styles.close}>×</ThemedText>
+          <ThemedText type="code" themeColor="textSecondary">
+            CANCELAR
+          </ThemedText>
+        </Pressable>
+      )}
       <View style={styles.titleRow}>
         <ThemedText style={styles.title}>{title}</ThemedText>
         <View>
@@ -150,19 +179,26 @@ export function SaveButton({
 }
 
 // Estrutura comum das telas de novo registro: cabeçalho, campos e rodapé
-// com o erro e o botão de salvar.
+// com o erro e o botão. Telas em passos (colposcopia) passam step, onBack e
+// o rótulo do botão de cada passo.
 export function AttendanceForm({
   title,
   error,
   saving,
   onSave,
   children,
+  step,
+  onBack,
+  buttonLabel = "Salvar registro",
 }: {
   title: string;
   error: string;
   saving: boolean;
   onSave: () => void;
   children: ReactNode;
+  step?: { current: number; total: number };
+  onBack?: () => void;
+  buttonLabel?: string;
 }) {
   const [doctor, setDoctor] = useState<string | null>(null);
 
@@ -184,8 +220,21 @@ export function AttendanceForm({
         style={styles.screen}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <AttendanceHeader title={title} />
+        <AttendanceHeader title={title} onBack={onBack} />
+        {step ? (
+          <View style={[registrationStyles.progress, styles.progress]}>
+            {Array.from({ length: step.total }, (_, index) => (
+              <ThemedView
+                key={index}
+                type={index < step.current ? "primary" : "border"}
+                style={registrationStyles.progressSegment}
+              />
+            ))}
+          </View>
+        ) : null}
         <ScrollView
+          // Cada passo começa do topo.
+          key={step?.current}
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
@@ -217,7 +266,7 @@ export function AttendanceForm({
             </ThemedText>
           ) : null}
           <SaveButton
-            label={saving ? "Salvando..." : "Salvar registro"}
+            label={saving ? "Salvando..." : buttonLabel}
             onPress={onSave}
             disabled={saving}
           />
@@ -229,6 +278,14 @@ export function AttendanceForm({
 
 export const styles = StyleSheet.create({
   content: { paddingBottom: 120 },
+
+  progress: {
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+  },
+
+  // Linhas com resposta "Sim" que pedem atenção (ex.: ver e tratar).
+  highlight: { backgroundColor: "rgba(231, 152, 151, 0.13)" },
 
   meta: {
     flexDirection: "row",
