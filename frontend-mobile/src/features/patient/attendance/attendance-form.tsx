@@ -18,7 +18,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
-import { ThemedView } from "@/components/shared/themed-view";
 
 import type { VisitType } from "../record/types";
 import { styles as registrationStyles } from "../registration/styles";
@@ -105,18 +104,12 @@ export function AttendanceForm({
         style={componentStyles.screen}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <AttendanceHeader title={title} onBack={onBack} disabled={saving} />
-        {step ? (
-          <View style={[registrationStyles.progress, styles.progress]}>
-            {Array.from({ length: step.total }, (_, index) => (
-              <ThemedView
-                key={index}
-                type={index < step.current ? "primary" : "border"}
-                style={registrationStyles.progressSegment}
-              />
-            ))}
-          </View>
-        ) : null}
+        <AttendanceHeader
+          title={title}
+          onBack={onBack}
+          disabled={saving}
+          step={step}
+        />
         <ScrollView
           // Cada passo começa do topo.
           key={step?.current}
@@ -163,11 +156,6 @@ export function AttendanceForm({
 
 const styles = StyleSheet.create({
   content: { paddingBottom: 120 },
-
-  progress: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-  },
 
   meta: {
     flexDirection: "row",

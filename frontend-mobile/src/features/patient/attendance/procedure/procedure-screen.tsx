@@ -112,7 +112,6 @@ export function ProcedureScreen() {
         onSelect={(label) =>
           clearError(setType)(keyOf(procedureLabels, label) ?? type)
         }
-        inline
       />
       <Counter
         label="FRAGMENTOS"

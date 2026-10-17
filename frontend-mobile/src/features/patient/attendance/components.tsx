@@ -4,20 +4,25 @@ import { Pressable, StyleSheet, TextInput, View } from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
+import { ThemedView } from "@/components/shared/themed-view";
 
 import { Badge } from "../record/components";
+import { styles as registrationStyles } from "../registration/styles";
 
 // Sem onBack, o cabeçalho cancela o registro; com onBack (telas em passos),
 // volta para o passo anterior.
-// disabled trava os dois botões enquanto o registro está sendo salvo.
+// disabled trava os dois botões enquanto o registro está sendo salvo; step
+// mostra a barra de passos entre os botões e o título, como no layout.
 export function AttendanceHeader({
   title,
   onBack,
   disabled,
+  step,
 }: {
   title: string;
   onBack?: () => void;
   disabled?: boolean;
+  step?: { current: number; total: number };
 }) {
   const { name, record } = useLocalSearchParams<{
     name: string;
@@ -61,6 +66,17 @@ export function AttendanceHeader({
           </ThemedText>
         </Pressable>
       )}
+      {step ? (
+        <View style={[registrationStyles.progress, styles.progress]}>
+          {Array.from({ length: step.total }, (_, index) => (
+            <ThemedView
+              key={index}
+              type={index < step.current ? "primary" : "border"}
+              style={registrationStyles.progressSegment}
+            />
+          ))}
+        </View>
+      ) : null}
       <View style={styles.titleRow}>
         <ThemedText style={styles.title}>{title}</ThemedText>
         <View>
@@ -175,7 +191,11 @@ export function SaveButton({
 export const styles = StyleSheet.create({
 
   // Linhas com resposta "Sim" que pedem atenção (ex.: ver e tratar).
-  highlight: { backgroundColor: Theme.backgroundAlert },
+  highlight: {
+    backgroundColor: Theme.backgroundAlert,
+    borderLeftWidth: 3,
+    borderLeftColor: Theme.secondary,
+  },
 
   screen: {
     flex: 1,
@@ -196,6 +216,8 @@ export const styles = StyleSheet.create({
     gap: Spacing.one,
     marginBottom: Spacing.three,
   },
+
+  progress: { marginBottom: Spacing.three },
 
   close: {
     color: Theme.textSecondary,

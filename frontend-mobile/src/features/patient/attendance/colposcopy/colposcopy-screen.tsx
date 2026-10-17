@@ -2,6 +2,8 @@ import { useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
 import { View } from "react-native";
 
+import { Theme } from "@/constants/theme";
+
 import {
   ChoiceRow,
   StepSection,
@@ -175,7 +177,6 @@ export function ColposcopyScreen() {
             options={jecOptions}
             selected={form.jec ?? ""}
             onSelect={(value) => update("jec", value)}
-            inline
           />
           <ChoiceRow
             label="ZONA DE TRANSFORMAÇÃO"
@@ -222,6 +223,8 @@ export function ColposcopyScreen() {
                   label="LESÃO RECIDIVA"
                   value={form.recurrence}
                   onChange={(value) => update("recurrence", value)}
+                  // Só o "Sim" fica em coral; o "Não" segue a cor padrão.
+                  selectedColor={form.recurrence ? Theme.secondary : undefined}
                 />
               </View>
               <View style={form.seeAndTreat && styles.highlight}>
@@ -229,6 +232,7 @@ export function ColposcopyScreen() {
                   label="VER E TRATAR"
                   value={form.seeAndTreat}
                   onChange={(value) => update("seeAndTreat", value)}
+                  selectedColor={form.seeAndTreat ? Theme.secondary : undefined}
                 />
               </View>
               {form.seeAndTreat ? (
