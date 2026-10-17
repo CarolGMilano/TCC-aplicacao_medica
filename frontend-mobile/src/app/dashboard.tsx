@@ -35,6 +35,10 @@ export default function DashboardScreen() {
               accessibilityRole="button"
               onPress={() => {
                 logout();
+                // Sem limpar a pilha, o voltar do Android reabre telas da sessão.
+                if (router.canDismiss()) {
+                  router.dismissAll();
+                }
                 router.replace("/");
               }}
               style={styles.exit}
