@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -52,16 +52,22 @@ export function ConsultationScreen() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("Aguardando procedimento");
+  // A carga inicial não sobrescreve um status que o médico já alterou aqui.
+  const statusChanged = useRef(false);
+  const loadedStatus = useRef<string | null>(null);
 
   useEffect(() => {
     let active = true;
 
     fetchPatient(String(id))
       .then((patient) => {
-        if (active) setStatus(statusLabels[patient.status] ?? patient.status);
+        if (!active) return;
+        const label = statusLabels[patient.status] ?? patient.status;
+        loadedStatus.current = label;
+        if (!statusChanged.current) setStatus(label);
       })
       .catch((requestError: unknown) => {
-        if (active) {
+        if (active && !statusChanged.current) {
           setError(
             requestError instanceof Error
               ? requestError.message
@@ -77,11 +83,19 @@ export function ConsultationScreen() {
 
   async function changeStatus(nextStatus: string) {
     const previousStatus = status;
+    const previouslyChanged = statusChanged.current;
+    statusChanged.current = true;
+    setError("");
     setStatus(nextStatus);
     try {
       await updatePatientStatus(Number(id), nextStatus);
     } catch (statusError) {
-      setStatus(previousStatus);
+      statusChanged.current = previouslyChanged;
+      setStatus(
+        !previouslyChanged && loadedStatus.current
+          ? loadedStatus.current
+          : previousStatus,
+      );
       setError(
         statusError instanceof Error
           ? statusError.message
