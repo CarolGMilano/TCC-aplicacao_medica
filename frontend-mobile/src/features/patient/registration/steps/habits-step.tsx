@@ -26,7 +26,7 @@ export function HabitsStep({ form, update }: StepProps) {
           label="COMEÇOU AOS"
           value={form.smokingStart}
           min={minAges.smoking}
-          max={stopped ? form.smokingEnd : age}
+          max={age}
           suffix="ANOS"
           onChange={(value) => update("smokingStart", value)}
         />
