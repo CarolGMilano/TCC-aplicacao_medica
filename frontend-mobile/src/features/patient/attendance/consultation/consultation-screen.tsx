@@ -2,7 +2,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -144,10 +143,9 @@ export function ConsultationScreen() {
 
   return (
     <SafeAreaView style={formStyles.screen} edges={["top", "bottom"]}>
-      <KeyboardAvoidingView
-        style={formStyles.screen}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
+      {/* "padding" também no Android: com o edge-to-edge, a tela não encolhe
+          quando o teclado abre, e o rodapé ficaria atrás dele. */}
+      <KeyboardAvoidingView style={formStyles.screen} behavior="padding">
         <AttendanceHeader title="Nova consulta" />
         <ScrollView contentContainerStyle={styles.content}>
           <OptionRow
