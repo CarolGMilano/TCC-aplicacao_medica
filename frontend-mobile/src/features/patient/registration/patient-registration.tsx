@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   BackHandler,
+  KeyboardAvoidingView,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -143,63 +144,67 @@ export function PatientRegistration() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ThemedView style={styles.screen}>
-        <ScrollView
-          ref={scrollRef}
-          contentContainerStyle={styles.content}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <RegistrationHeader
-            step={step}
-            title={stepTitles[step - 1]}
-            subtitle={
-              step === 1 ? "NOVA PACIENTE" : form.name.trim().toUpperCase()
-            }
-            cancel={leavesOnBack}
-            onBack={goBack}
-          />
-          {step === 1 && <PersonalStep form={form} update={update} />}
-          {step === 2 && <ObstetricStep form={form} update={update} />}
-          {step === 3 && <SexualStep form={form} update={update} />}
-          {step === 4 && <IstStep form={form} update={update} />}
-          {step === 5 && <HabitsStep form={form} update={update} />}
-          {step === 6 && (
-            <ReviewStep
-              form={form}
-              onEdit={(target) => goToStep(target, true)}
-            />
-          )}
-        </ScrollView>
-
-        <View style={styles.footer}>
-          {error ? (
-            <ThemedText
-              themeColor="error"
-              type="small"
-              accessibilityLiveRegion="polite"
-              style={styles.error}
-            >
-              {error}
-            </ThemedText>
-          ) : null}
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ disabled: isSubmitting }}
-            disabled={isSubmitting}
-            onPress={handleContinue}
-            style={({ pressed }) => [
-              styles.continue,
-              pressed && styles.pressed,
-              isSubmitting && styles.disabled,
-            ]}
+      {/* "padding" também no Android: com o edge-to-edge, a tela não encolhe
+          quando o teclado abre, e o rodapé ficaria atrás dele. */}
+      <KeyboardAvoidingView style={styles.screen} behavior="padding">
+        <ThemedView style={styles.screen}>
+          <ScrollView
+            ref={scrollRef}
+            contentContainerStyle={styles.content}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
-            <ThemedText type="button" themeColor="textPrimaryLight">
-              {buttonLabel}
-            </ThemedText>
-          </Pressable>
-        </View>
-      </ThemedView>
+            <RegistrationHeader
+              step={step}
+              title={stepTitles[step - 1]}
+              subtitle={
+                step === 1 ? "NOVA PACIENTE" : form.name.trim().toUpperCase()
+              }
+              cancel={leavesOnBack}
+              onBack={goBack}
+            />
+            {step === 1 && <PersonalStep form={form} update={update} />}
+            {step === 2 && <ObstetricStep form={form} update={update} />}
+            {step === 3 && <SexualStep form={form} update={update} />}
+            {step === 4 && <IstStep form={form} update={update} />}
+            {step === 5 && <HabitsStep form={form} update={update} />}
+            {step === 6 && (
+              <ReviewStep
+                form={form}
+                onEdit={(target) => goToStep(target, true)}
+              />
+            )}
+          </ScrollView>
+
+          <View style={styles.footer}>
+            {error ? (
+              <ThemedText
+                themeColor="error"
+                type="small"
+                accessibilityLiveRegion="polite"
+                style={styles.error}
+              >
+                {error}
+              </ThemedText>
+            ) : null}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: isSubmitting }}
+              disabled={isSubmitting}
+              onPress={handleContinue}
+              style={({ pressed }) => [
+                styles.continue,
+                pressed && styles.pressed,
+                isSubmitting && styles.disabled,
+              ]}
+            >
+              <ThemedText type="button" themeColor="textPrimaryLight">
+                {buttonLabel}
+              </ThemedText>
+            </Pressable>
+          </View>
+        </ThemedView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
