@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BottomNav } from "@/components/shared/bottom-nav";
+import { BottomNav, useBottomNavHeight } from "@/components/shared/bottom-nav";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
@@ -27,6 +27,7 @@ export function PatientList() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("Todas");
   const [filterOpen, setFilterOpen] = useState(false);
+  const bottomNavHeight = useBottomNavHeight();
   const { patients, filteredPatients, total, error, isLoading } = usePatientList(
     status,
     search,
@@ -123,9 +124,10 @@ export function PatientList() {
                 </View>
               }
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={
-                filteredPatients.length === 0 ? styles.emptyList : undefined
-              }
+              contentContainerStyle={[
+                filteredPatients.length === 0 && styles.emptyList,
+                { paddingBottom: bottomNavHeight + Spacing.three },
+              ]}
               keyboardShouldPersistTaps="handled"
             />
           )}
