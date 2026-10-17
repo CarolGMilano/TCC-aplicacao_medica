@@ -27,7 +27,7 @@ export function PatientListItem({ patient }: PatientListItemProps) {
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
       <View style={styles.identity}>
-        <ThemedText style={styles.name} numberOfLines={1}>
+        <ThemedText style={styles.name} numberOfLines={2}>
           {patient.name}
         </ThemedText>
         <ThemedText type="subtitle" themeColor="textSecondary">
@@ -42,7 +42,7 @@ export function PatientListItem({ patient }: PatientListItemProps) {
             </ThemedText>
           </View>
         ) : null}
-        <ThemedText type="small" themeColor="textSecondary">
+        <ThemedText type="small" themeColor="textSecondary" style={styles.date}>
           última consulta em {patient.lastVisit}
         </ThemedText>
       </View>
@@ -73,10 +73,14 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.primaryMedium,
   },
 
+  // maxWidth: a data e o selo quebram a linha e sobra espaço para o nome.
   details: {
+    maxWidth: "45%",
     alignItems: "flex-end",
     gap: 4,
   },
+
+  date: { textAlign: "right" },
 
   badge: {
     borderRadius: 6,
@@ -89,6 +93,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.small,
     lineHeight: Typography.lineHeights.compact,
     letterSpacing: Typography.letterSpacing.tight,
+    textAlign: "center",
   },
 
   pressed: { opacity: 0.7 },
