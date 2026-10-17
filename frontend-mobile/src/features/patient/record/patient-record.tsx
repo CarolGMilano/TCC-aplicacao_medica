@@ -81,7 +81,14 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
     loadRecord();
   }
 
-  const edit = useRecordEdit(record, reload);
+  // Atualiza a ficha sem a tela de carregando; se falhar, mantém a atual.
+  async function refresh() {
+    try {
+      setRecord(toPatientRecord(await fetchPatient(id)));
+    } catch {}
+  }
+
+  const edit = useRecordEdit(record, reload, refresh);
 
   // Trocar de aba descarta a edição em andamento, como no layout.
   function changeTab(next: RecordTab) {

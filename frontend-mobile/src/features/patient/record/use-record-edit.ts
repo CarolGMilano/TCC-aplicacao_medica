@@ -26,6 +26,7 @@ function validateOtherTabs(record: PatientRecord, form: PatientForm) {
 export function useRecordEdit(
   record: PatientRecord | null,
   onSaved: () => void,
+  refresh: () => Promise<void>,
 ) {
   const [draft, setDraft] = useState<PatientForm | null>(null);
   const [saving, setSaving] = useState(false);
@@ -72,6 +73,9 @@ export function useRecordEdit(
           ? requestError.message
           : "Não foi possível salvar as alterações.",
       );
+      // Parte do que foi enviado pode ter sido gravada: atualiza a ficha
+      // (e os ids dos históricos) antes de liberar uma nova tentativa.
+      await refresh();
     } finally {
       setSaving(false);
     }
