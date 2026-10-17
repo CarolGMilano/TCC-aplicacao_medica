@@ -7,6 +7,7 @@ import type { PatientListItem } from "./types";
 export function usePatientList(status: string, search: string) {
   const [patients, setPatients] = useState<PatientListItem[]>([]);
   const [total, setTotal] = useState(0);
+  const [unitTotal, setUnitTotal] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -24,6 +25,8 @@ export function usePatientList(status: string, search: string) {
         setPatients(result.patients);
         setTotal(result.total);
         setHasLoaded(true);
+        // Sem busca e sem filtro, o total é o da unidade.
+        if (!search.trim() && status === "Todas") setUnitTotal(result.total);
       })
       .catch((requestError: unknown) => {
         if (!active) return;
@@ -70,6 +73,7 @@ export function usePatientList(status: string, search: string) {
     patients,
     filteredPatients,
     total,
+    unitTotal,
     error,
     isLoading: isLoading && !hasLoaded,
     isRefreshing: isLoading && hasLoaded,
