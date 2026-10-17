@@ -9,6 +9,7 @@ export function usePatientList(status: string, search: string) {
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   const loadPatients = useCallback(() => {
     let active = true;
@@ -22,6 +23,7 @@ export function usePatientList(status: string, search: string) {
         if (!active) return;
         setPatients(result.patients);
         setTotal(result.total);
+        setHasLoaded(true);
       })
       .catch((requestError: unknown) => {
         if (!active) return;
@@ -62,5 +64,14 @@ export function usePatientList(status: string, search: string) {
     });
   }, [patients, search, status]);
 
-  return { patients, filteredPatients, total, error, isLoading };
+  // O carregando só aparece na primeira carga. Nas recargas (ao voltar da
+  // ficha), a lista continua montada e mantém a rolagem.
+  return {
+    patients,
+    filteredPatients,
+    total,
+    error,
+    isLoading: isLoading && !hasLoaded,
+    isRefreshing: isLoading && hasLoaded,
+  };
 }

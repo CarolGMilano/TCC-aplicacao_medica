@@ -28,10 +28,8 @@ export function PatientList() {
   const [status, setStatus] = useState("Todas");
   const [filterOpen, setFilterOpen] = useState(false);
   const bottomNavHeight = useBottomNavHeight();
-  const { patients, filteredPatients, total, error, isLoading } = usePatientList(
-    status,
-    search,
-  );
+  const { patients, filteredPatients, total, error, isLoading, isRefreshing } =
+    usePatientList(status, search);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -58,6 +56,10 @@ export function PatientList() {
                 DASHBOARD
               </ThemedText>
             </Pressable>
+            <ActivityIndicator
+              animating={isRefreshing && filteredPatients.length > 0}
+              color={Theme.primary}
+            />
           </View>
           <View style={styles.titleRow}>
             <ThemedText style={styles.title}>Pacientes</ThemedText>
@@ -120,7 +122,14 @@ export function PatientList() {
               renderItem={({ item }) => <PatientListItem patient={item} />}
               ListEmptyComponent={
                 <View style={styles.centered}>
-                  <ThemedText>Nenhuma paciente encontrada.</ThemedText>
+                  {isRefreshing ? (
+                    <ActivityIndicator
+                      accessibilityLabel="Carregando pacientes"
+                      color={Theme.primary}
+                    />
+                  ) : (
+                    <ThemedText>Nenhuma paciente encontrada.</ThemedText>
+                  )}
                 </View>
               }
               showsVerticalScrollIndicator={false}
