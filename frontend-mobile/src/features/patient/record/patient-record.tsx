@@ -1,6 +1,6 @@
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   BackHandler,
@@ -40,13 +40,14 @@ type PatientRecordScreenProps = {
 export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
   const [record, setRecord] = useState<PatientRecord | null>(null);
   const [error, setError] = useState("");
+  // Busca em andamento: "Editar dados" espera, para o rascunho não partir
+  // da ficha antiga (ex.: com o status de antes da consulta).
+  const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<RecordTab>(created ? "visits" : "personal");
 
-  // Mudar a chave dispara uma nova busca (botão "Tentar de novo").
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
+  const loadRecord = useCallback(() => {
     let active = true;
+    setLoading(true);
 
     fetchPatient(id)
       .then((detail) => {
@@ -59,17 +60,24 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
             ? requestError.message
             : "Não foi possível carregar a ficha da paciente.",
         );
+      })
+      .finally(() => {
+        if (active) setLoading(false);
       });
 
-    // Ignora a resposta se a tela fechar antes de ela chegar.
+    // Ignora a resposta se a tela sair de foco antes de ela chegar.
     return () => {
       active = false;
     };
-  }, [id, attempt]);
+  }, [id]);
+
+  // Busca de novo sempre que a ficha volta a aparecer (ex.: depois de uma
+  // consulta que trocou o status). A ficha atual fica na tela enquanto isso.
+  useFocusEffect(loadRecord);
 
   function reload() {
     setError("");
-    setAttempt((current) => current + 1);
+    loadRecord();
   }
 
   const edit = useRecordEdit(record, reload);
@@ -176,6 +184,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
         {tab !== "visits" ? (
           <RecordFooter
             editing={edit.editing}
+            loading={loading}
             saving={edit.saving}
             error={edit.error}
             onEdit={edit.start}
