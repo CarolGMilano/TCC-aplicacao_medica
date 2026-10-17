@@ -41,6 +41,11 @@ export async function login(
     body: JSON.stringify({ email, senha }),
   });
 
+  // 400 vem da validação do LoginRequestDTO (@Email): e-mail fora do formato.
+  if (response.status === 400) {
+    throw new Error('Confira o e-mail digitado.');
+  }
+
   if (!response.ok) {
     throw new Error(
       response.status === 401

@@ -9,20 +9,30 @@ import { FontFamilies, Typography } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import { login } from "./services/auth-api";
 
+const emailPattern = /^[^\s@]+@[^\s@]+$/;
+
 export default function LoginScreen() {
   const theme = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleLogin() {
-    if (!email.trim() || !password) {
+    setError("");
+    setEmailError("");
+
+    if (!email.trim() || !password.trim()) {
       setError("Informe seu e-mail e sua senha.");
       return;
     }
 
-    setError("");
+    if (!emailPattern.test(email.trim())) {
+      setEmailError("Informe um e-mail válido.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -63,6 +73,7 @@ export default function LoginScreen() {
             autoCapitalize="none"
             autoComplete="email"
             placeholder="seu.email@exemplo.com"
+            error={emailError}
           />
           <Field
             label="SENHA"
