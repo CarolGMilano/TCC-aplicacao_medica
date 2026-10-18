@@ -111,10 +111,6 @@ export const styles = StyleSheet.create({
     backgroundColor: Theme.primary,
   },
 
-  continueText: {
-    fontWeight: Typography.weights.bold,
-  },
-
   pressed: {
     backgroundColor: Theme.primaryHoverDark,
   },

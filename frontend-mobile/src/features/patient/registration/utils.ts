@@ -1,4 +1,4 @@
-import { exclusiveIsts, totalSteps } from "./constants";
+import { exclusiveIsts, minAges, totalSteps } from "./constants";
 import type { PatientForm } from "./types";
 
 export function getBirthDate(form: PatientForm) {
@@ -53,7 +53,43 @@ export function getAge(form: PatientForm) {
   return birthdayPending ? age - 1 : age;
 }
 
-// Anos-maço = (cigarros por dia / 20) x anos fumando.
+// Coloca o valor dentro da faixa do contador. Se a faixa for impossível
+// (min > max), fica no máximo e a validação da etapa avisa.
+export function clamp(value: number, min: number, max?: number) {
+  const atLeastMin = Math.max(value, min);
+  return max === undefined ? atLeastMin : Math.min(atLeastMin, max);
+}
+
+export function getMenopauseAge(form: PatientForm) {
+  const min = Math.max(minAges.menopause, form.menarche + 1);
+  return clamp(form.menopauseAge, min, getAge(form) ?? undefined);
+}
+
+export function getSmokingEnd(form: PatientForm) {
+  const min = Math.max(minAges.smoking, form.smokingStart);
+  return clamp(form.smokingEnd, min, getAge(form) ?? undefined);
+}
+
+// Os valores iniciais (menopausa 45, sexarca 17, tabagismo 18) podem passar da
+// idade da paciente, e aí o "+" do contador já começa travado. Chamado quando a
+// idade passa a valer (ou muda), põe cada contador de idade na sua faixa.
+export function fitAgesToPatient(form: PatientForm): PatientForm {
+  const age = getAge(form);
+  if (age === null) return form;
+
+  const menarche = clamp(form.menarche, minAges.menarche, age);
+  const smokingStart = clamp(form.smokingStart, minAges.smoking, age);
+  const fitted = { ...form, menarche, smokingStart };
+
+  return {
+    ...fitted,
+    menopauseAge: getMenopauseAge(fitted),
+    sexarche: clamp(form.sexarche, minAges.sexarche, age),
+    smokingEnd: getSmokingEnd(fitted),
+  };
+}
+
+// Anos-maço =(cigarros por dia / 20) x anos fumando.
 export function getSmokingLoad(form: PatientForm) {
   if (form.smoking === "Nunca") return "—";
 

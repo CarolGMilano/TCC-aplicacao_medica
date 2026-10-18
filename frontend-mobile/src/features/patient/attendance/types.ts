@@ -6,6 +6,7 @@ export type AttendancePatient = {
 
 export type ConsultationForm = {
   date: string;
+  time: string;
   observation: string;
 };
 

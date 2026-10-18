@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import {
@@ -21,6 +22,8 @@ import { createConsultation } from "./consultation-api";
 import type { ConsultationForm } from "../types";
 import { OptionRow } from "../../registration/components";
 import { statusMap, statusOptions } from "../../registration/constants";
+import { styles as registrationStyles } from "../../registration/styles";
+import { statusColors } from "../../record/constants";
 import {
   fetchPatient,
   updatePatientStatus,
@@ -32,8 +35,12 @@ const statusLabels = Object.fromEntries(
 
 export function ConsultationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const now = new Date();
   const [form, setForm] = useState<ConsultationForm>({
-    date: new Date().toLocaleDateString("pt-BR"),
+    date: now.toLocaleDateString("pt-BR"),
+    time: `${String(now.getHours()).padStart(2, "0")}:${String(
+      now.getMinutes(),
+    ).padStart(2, "0")}`,
     observation: "",
   });
   const [error, setError] = useState("");
@@ -82,12 +89,16 @@ export function ConsultationScreen() {
       setError("Informe a observação da consulta.");
       return;
     }
+    if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(form.time)) {
+      setError("Informe um horário válido no formato HH:MM.");
+      return;
+    }
     setSaving(true);
     try {
       const [day, month, year] = form.date.split("/");
       await createConsultation({
         idPaciente: Number(id),
-        dataHora: `${year}-${month}-${day}T00:00:00`,
+        dataHora: `${year}-${month}-${day}T${form.time}:00`,
         observacao: form.observation.trim(),
       });
       router.back();
@@ -115,12 +126,19 @@ export function ConsultationScreen() {
             value={status}
             options={statusOptions}
             actionLabel="ALTERAR"
+            dotColor={statusColors[status]?.text}
             onChange={changeStatus}
           />
           <LabeledInput
             label="DATA DO REGISTRO"
             value={form.date}
             onChangeText={(date) => setForm({ ...form, date })}
+          />
+          <LabeledInput
+            label="HORÁRIO"
+            value={form.time}
+            onChangeText={(time) => setForm({ ...form, time })}
+            placeholder="HH:MM"
           />
           <LabeledInput
             label="OBSERVAÇÃO"
@@ -132,7 +150,11 @@ export function ConsultationScreen() {
         </ScrollView>
         <View style={styles.footer}>
           {error ? (
-            <ThemedText type="small" themeColor="error" style={styles.error}>
+            <ThemedText
+              type="small"
+              themeColor="error"
+              style={registrationStyles.error}
+            >
               {error}
             </ThemedText>
           ) : null}
@@ -150,7 +172,9 @@ export function ConsultationScreen() {
 const styles = StyleSheet.create({
   content: { paddingBottom: 120 },
 
-  footer: { padding: 16, backgroundColor: "#F2F0EF" },
-
-  error: { backgroundColor: "#F7DCDB", borderRadius: 12, padding: 12 },
+  footer: {
+    padding: Spacing.three,
+    gap: Spacing.two,
+    backgroundColor: Theme.background,
+  },
 });

@@ -7,7 +7,7 @@ import { ThemedView } from "@/components/shared/themed-view";
 import { logout } from "@/features/auth/auth-session";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/shared/themed-text";
-import { FontFamilies, Theme, Typography } from "@/constants/theme";
+import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 
 export default function DashboardScreen() {
   return (
@@ -19,9 +19,17 @@ export default function DashboardScreen() {
         >
           <View style={styles.header}>
             <View>
-              <ThemedText style={styles.date}>QUI, 04 SET</ThemedText>
+              <ThemedText type="code" themeColor="textSecondary">
+                QUI, 04 SET
+              </ThemedText>
               <ThemedText style={styles.greeting}>Ana Ribeiro</ThemedText>
-              <ThemedText style={styles.crm}>CRM 118 402</ThemedText>
+              <ThemedText
+                type="small"
+                themeColor="textSecondary"
+                style={styles.crm}
+              >
+                CRM 118 402
+              </ThemedText>
             </View>
             <Pressable
               accessibilityRole="button"
@@ -31,7 +39,9 @@ export default function DashboardScreen() {
               }}
               style={styles.exit}
             >
-              <ThemedText style={styles.exitText}>SAIR</ThemedText>
+              <ThemedText type="code" themeColor="textSecondary">
+                SAIR
+              </ThemedText>
             </Pressable>
           </View>
 
@@ -42,13 +52,13 @@ export default function DashboardScreen() {
           >
             <View style={styles.cardLabel}>
               <ThemedView type="tertiary" style={styles.line} />
-              <ThemedText style={styles.cardLabelText}>
+              <ThemedText type="code" themeColor="textSecondary">
                 PACIENTES CADASTRADAS
               </ThemedText>
             </View>
             <ThemedText style={styles.total}>248</ThemedText>
             <View style={styles.cardFooter}>
-              <ThemedText themeColor="textSecondary">
+              <ThemedText type="small" themeColor="textSecondary">
                 Total na unidade
               </ThemedText>
               <Pressable
@@ -60,7 +70,9 @@ export default function DashboardScreen() {
                   pressed && styles.pressed,
                 ]}
               >
-                <ThemedText themeColor="primary">VER LISTA</ThemedText>
+                <ThemedText type="code" themeColor="textSecondary">
+                  VER LISTA
+                </ThemedText>
                 <SymbolView
                   name={{
                     ios: "arrow.right",
@@ -77,7 +89,7 @@ export default function DashboardScreen() {
           <ReturnCard
             title="Ver e tratar sem retorno"
             description="Indicação de ver e tratar há mais de 2 meses sem nova consulta registrada."
-            count="12 PACIENTES  ·  4,8% DAS CADASTRADAS"
+            count="12 PACIENTES · 4,8% DAS CADASTRADAS"
             names={["Cláudia Nunes", "Marina Souza"]}
             days={["146 d", "134 d"]}
             route="/dashboard/without-return"
@@ -85,7 +97,7 @@ export default function DashboardScreen() {
           <ReturnCard
             title="Pós-procedimento sem retorno"
             description="EZT ou biópsia realizada há mais de 3 meses sem consulta de acompanhamento."
-            count="7 PACIENTES  ·  2,8% DAS CADASTRADAS"
+            count="7 PACIENTES · 2,8% DAS CADASTRADAS"
             names={["Rita Almeida", "Joana Vilela"]}
             days={["129 d", "112 d"]}
             route="/dashboard/post-procedure"
@@ -127,10 +139,14 @@ function ReturnCard({
         <ThemedView type="tertiary" style={styles.line} />
         <ThemedText style={styles.returnTitle}>{title}</ThemedText>
       </Pressable>
-      <ThemedText style={styles.description} themeColor="textSecondary">
+      <ThemedText
+        type="small"
+        style={styles.description}
+        themeColor="textSecondary"
+      >
         {description}
       </ThemedText>
-      <ThemedText themeColor="textSecondary" style={styles.count}>
+      <ThemedText type="code" themeColor="textSecondary" style={styles.count}>
         {count}
       </ThemedText>
       {names.map((name, index) => (
@@ -146,9 +162,20 @@ function ReturnCard({
               PRT 10482
             </ThemedText>
           </View>
-          <ThemedText themeColor="error" style={styles.days}>
-            {days[index]} ›
-          </ThemedText>
+          <View style={styles.daysRow}>
+            <ThemedText themeColor="error" style={styles.days}>
+              {days[index]}
+            </ThemedText>
+            <SymbolView
+              name={{
+                ios: "chevron.right",
+                android: "chevron_right",
+                web: "chevron_right",
+              }}
+              tintColor={Theme.textSecondary}
+              size={16}
+            />
+          </View>
         </ThemedView>
       ))}
       {names.length > 0 && (
@@ -158,7 +185,7 @@ function ReturnCard({
           onPress={() => router.push(route)}
           style={({ pressed }) => [styles.more, pressed && styles.pressed]}
         >
-          <ThemedText themeColor="primary">
+          <ThemedText type="code" themeColor="textSecondary">
             VER TODAS ·{" "}
             {names.length === 2 ? (count.startsWith("12") ? "12" : "7") : ""}
           </ThemedText>
@@ -186,23 +213,14 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
 
-  date: {
-    letterSpacing: Typography.letterSpacing.expanded,
-    fontSize: Typography.sizes.micro,
-  },
-
   greeting: {
-    fontFamily: FontFamilies.primary,
+    fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.greeting,
     lineHeight: Typography.lineHeights.greeting,
     marginTop: 6,
   },
 
-  crm: {
-    fontSize: Typography.sizes.micro,
-    letterSpacing: Typography.letterSpacing.normal,
-    marginTop: 3,
-  },
+  crm: { marginTop: 3 },
 
   exit: {
     borderWidth: 1,
@@ -211,8 +229,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderColor: Theme.border,
   },
-
-  exitText: { fontSize: Typography.sizes.micro },
 
   totalCard: {
     borderWidth: 1,
@@ -232,14 +248,8 @@ const styles = StyleSheet.create({
     height: 3,
   },
 
-  cardLabelText: {
-    fontSize: Typography.sizes.label,
-    fontWeight: Typography.weights.semibold,
-    letterSpacing: Typography.letterSpacing.wide,
-  },
-
   total: {
-    fontFamily: FontFamilies.primary,
+    fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.metric,
     lineHeight: Typography.lineHeights.metric,
   },
@@ -273,19 +283,16 @@ const styles = StyleSheet.create({
     paddingTop: 15,
   },
 
-  returnTitle: { fontWeight: Typography.weights.semibold },
+  // flexShrink: em seminegrito o título longo quebra a linha em vez de ser
+  // cortado.
+  returnTitle: { fontFamily: FontFamilies.primarySemiBold, flexShrink: 1 },
 
   description: {
-    fontSize: Typography.sizes.small,
-    lineHeight: Typography.lineHeights.compact,
     paddingHorizontal: 16,
     paddingTop: 7,
   },
 
   count: {
-    fontSize: Typography.sizes.label,
-    letterSpacing: Typography.letterSpacing.tight,
-    fontFamily: FontFamilies.secondary,
     paddingHorizontal: 16,
     paddingTop: 8,
     paddingBottom: 12,
@@ -298,6 +305,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+
+  daysRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.one,
   },
 
   days: {

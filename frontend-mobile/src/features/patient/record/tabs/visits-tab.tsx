@@ -1,5 +1,5 @@
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
 import { Spacing, Theme } from "@/constants/theme";
@@ -25,26 +25,29 @@ export function VisitsTab({
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<VisitType>("consultations");
 
-  useEffect(() => {
-    let active = true;
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      setError("");
 
-    fetchVisits(patientId)
-      .then((lists) => {
-        if (active) setVisits(lists);
-      })
-      .catch((requestError: unknown) => {
-        if (!active) return;
-        setError(
-          requestError instanceof Error
-            ? requestError.message
-            : "Não foi possível carregar os atendimentos.",
-        );
-      });
+      fetchVisits(patientId)
+        .then((lists) => {
+          if (active) setVisits(lists);
+        })
+        .catch((requestError: unknown) => {
+          if (!active) return;
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : "Não foi possível carregar os atendimentos.",
+          );
+        });
 
-    return () => {
-      active = false;
-    };
-  }, [patientId]);
+      return () => {
+        active = false;
+      };
+    }, [patientId]),
+  );
 
   if (error) return <EmptyState title={error} />;
 
@@ -68,7 +71,7 @@ export function VisitsTab({
       }
       style={({ pressed }) => [styles.newRecord, pressed && styles.pressed]}
     >
-      <ThemedText type="small" themeColor="textPrimaryLight">
+      <ThemedText type="button" themeColor="textPrimaryLight">
         + Novo registro
       </ThemedText>
     </Pressable>

@@ -97,8 +97,8 @@ function NavItem({
         size={19}
       />
       <ThemedText
-        style={styles.itemLabel}
-        themeColor={active ? "primary" : "textSecondary"}
+        style={[styles.itemLabel, active && styles.itemLabelActive]}
+        themeColor="textSecondary"
       >
         {label}
       </ThemedText>
@@ -135,8 +135,10 @@ const styles = StyleSheet.create({
   },
   itemLabel: {
     fontFamily: FontFamilies.primary,
-    fontSize: Typography.sizes.caption,
+    fontSize: Typography.sizes.notice,
+    lineHeight: Typography.lineHeights.caption,
   },
+  itemLabelActive: { fontFamily: FontFamilies.primaryMedium },
   add: {
     width: 56,
     height: 56,

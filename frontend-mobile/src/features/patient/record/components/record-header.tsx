@@ -1,7 +1,7 @@
 import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { Spacing, Theme, Typography } from "@/constants/theme";
+import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { styles as registrationStyles } from "../../registration/styles";
@@ -35,7 +35,7 @@ export function RecordHeader({
 
   return (
     <View style={registrationStyles.header}>
-      <View style={registrationStyles.headerTop}>
+      <View style={[registrationStyles.headerTop, styles.headerTop]}>
         <Pressable onPress={onBack} accessibilityRole="button" hitSlop={8}>
           <View style={styles.backButton}>
             <SymbolView
@@ -63,8 +63,8 @@ export function RecordHeader({
 
       <View style={styles.identity}>
         <ThemedText style={registrationStyles.title}>{form.name}</ThemedText>
-        <ThemedText type="code" themeColor="textSecondary">
-          {record.age} ANOS · {formatBirthDate(record)} · PRT {form.record}
+        <ThemedText type="small" themeColor="textSecondary">
+          {record.age} anos · {formatBirthDate(record)} · PRT {form.record}
         </ThemedText>
       </View>
 
@@ -102,7 +102,7 @@ export function RecordHeader({
               <ThemedText
                 type="small"
                 numberOfLines={1}
-                style={styles.tabLabel}
+                style={[styles.tabLabel, active && styles.tabLabelActive]}
                 themeColor={active ? "text" : "textSecondary"}
               >
                 {item.label}
@@ -116,6 +116,10 @@ export function RecordHeader({
 }
 
 const styles = StyleSheet.create({
+  headerTop: {
+    alignItems: "center",
+  },
+
   backButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -149,7 +153,12 @@ const styles = StyleSheet.create({
 
   // Menor que o corpo para os seis rótulos caberem sem cortar.
   tabLabel: {
+    fontFamily: FontFamilies.primaryMedium,
     fontSize: Typography.sizes.notice,
+  },
+
+  tabLabelActive: {
+    fontFamily: FontFamilies.primarySemiBold,
   },
 
   tabActive: {

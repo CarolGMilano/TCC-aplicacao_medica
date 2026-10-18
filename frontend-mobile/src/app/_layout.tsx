@@ -1,5 +1,4 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
-import { JetBrainsMono_400Regular } from "@expo-google-fonts/jetbrains-mono";
 import {
   Poppins_400Regular,
   Poppins_500Medium,
@@ -22,7 +21,6 @@ export default function RootLayout() {
     // escolhe o arquivo certo de uma fonte customizada.
     "Poppins-Medium": Poppins_500Medium,
     "Poppins-SemiBold": Poppins_600SemiBold,
-    "JetBrains Mono": JetBrainsMono_400Regular,
     "PT Serif": PTSerif_400Regular,
   });
 

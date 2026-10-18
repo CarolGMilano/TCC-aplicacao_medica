@@ -53,7 +53,7 @@ export function InputField({
           onChangeText={onChangeText}
           keyboardType={keyboardType}
           maxLength={maxLength}
-          placeholderTextColor={Theme.muted}
+          placeholderTextColor={Theme.placeholder}
           style={[styles.textInput, prefix && styles.textInputWithPrefix, inputStyle]}
         />
       </View>

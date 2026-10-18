@@ -10,6 +10,7 @@ type OptionRowProps = {
   onChange: (value: string) => void;
   options: readonly string[];
   actionLabel?: string;
+  dotColor?: string;
 };
 
 export function OptionRow({
@@ -18,6 +19,7 @@ export function OptionRow({
   onChange,
   options,
   actionLabel,
+  dotColor,
 }: OptionRowProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -35,7 +37,12 @@ export function OptionRow({
 
         {actionLabel ? (
           <View style={styles.compactValue}>
-            <ThemedText style={styles.statusDot}>●</ThemedText>
+            <View
+              style={[
+                styles.statusDot,
+                { backgroundColor: dotColor ?? Theme.textSecondary },
+              ]}
+            />
             <ThemedText style={styles.optionValue}>{value}</ThemedText>
             <Pressable
               accessibilityRole="button"
@@ -117,6 +124,7 @@ const styles = StyleSheet.create({
     borderColor: Theme.border,
     backgroundColor: Theme.backgroundElement,
     paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.two,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -135,8 +143,9 @@ const styles = StyleSheet.create({
   },
 
   statusDot: {
-    color: Theme.waitingDark,
-    fontSize: 16,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 
   actionButton: {
