@@ -24,6 +24,10 @@ const palette = {
   backgroundSecondary: '#FFFFFF',
   backgroundSelected: '#F7F6F1',
   cardDetail: '#F7F6F1',
+  // Faixa "Última edição / Médico responsável" dos novos registros.
+  backgroundMeta: '#E9E6DF',
+  // Fundo das linhas que pedem atenção (secondary com transparência).
+  backgroundAlert: 'rgba(231, 152, 151, 0.13)',
   tableRowHover: '#f7f6f16e',
 
   textSecondary: '#3F4D42',

@@ -10,6 +10,10 @@ type ChoiceRowProps = {
   selected: string | string[];
   onSelect: (value: string) => void;
   inline?: boolean;
+  // Texto de apoio abaixo do rótulo.
+  hint?: string;
+  // Cor da opção marcada, quando não é a primária (ex.: coral nos alertas).
+  selectedColor?: string;
 };
 
 export function ChoiceRow({
@@ -18,12 +22,19 @@ export function ChoiceRow({
   selected,
   onSelect,
   inline = false,
+  hint,
+  selectedColor,
 }: ChoiceRowProps) {
   return (
     <View style={[styles.choiceRow, inline && styles.choiceRowInline]}>
       <ThemedText type="code" themeColor="textSecondary">
         {label}
       </ThemedText>
+      {hint ? (
+        <ThemedText type="small" themeColor="textSecondary">
+          {hint}
+        </ThemedText>
+      ) : null}
 
       <View style={[styles.choiceList, inline && styles.choiceListInline]}>
         {options.map((option) => {
@@ -37,7 +48,15 @@ export function ChoiceRow({
               onPress={() => onSelect(option)}
               accessibilityRole={Array.isArray(selected) ? "checkbox" : "radio"}
               accessibilityState={{ checked: isSelected }}
-              style={[styles.choice, isSelected && styles.choiceSelected]}
+              style={[
+                styles.choice,
+                isSelected && styles.choiceSelected,
+                isSelected &&
+                  selectedColor && {
+                    backgroundColor: selectedColor,
+                    borderColor: selectedColor,
+                  },
+              ]}
             >
               <ThemedText
                 themeColor={isSelected ? "textPrimaryLight" : "textSecondary"}

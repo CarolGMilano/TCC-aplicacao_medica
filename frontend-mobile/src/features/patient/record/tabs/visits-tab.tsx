@@ -1,5 +1,5 @@
-import { router, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
 import { Spacing, Theme } from "@/constants/theme";
@@ -9,6 +9,11 @@ import { EmptyState, VisitItem } from "../components";
 import { visitFilters } from "../constants";
 import { fetchVisits } from "../services/visits-api";
 import type { VisitLists, VisitType } from "../types";
+
+// Só aceita um filtro conhecido; outro texto quebraria visits[filter].
+function isVisitType(value: string | undefined): value is VisitType {
+  return visitFilters.some((item) => item.id === value);
+}
 
 type VisitsTabProps = {
   patientId: number;
@@ -23,7 +28,26 @@ export function VisitsTab({
 }: VisitsTabProps) {
   const [visits, setVisits] = useState<VisitLists | null>(null);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState<VisitType>("consultations");
+  // Ao voltar de um novo registro, a ficha recebe o tipo salvo em "filter"
+  // e um "saved" diferente a cada salvamento.
+  const params = useLocalSearchParams<{ filter?: string; saved?: string }>();
+  const [filter, setFilter] = useState<VisitType>(
+    isVisitType(params.filter) ? params.filter : "consultations",
+  );
+
+  // A ficha já está aberta quando o parâmetro chega: ajusta durante a
+  // renderização, como recomenda o React para estado derivado de props.
+  const [handledSave, setHandledSave] = useState(params.saved);
+  if (params.saved !== handledSave) {
+    setHandledSave(params.saved);
+    if (params.saved && isVisitType(params.filter)) setFilter(params.filter);
+  }
+
+  // Limpa os parâmetros depois de usá-los, para a aba voltar a abrir em
+  // "Consultas" quando for montada de novo.
+  useEffect(() => {
+    if (params.saved) router.setParams({ filter: undefined, saved: undefined });
+  }, [params.saved]);
 
   useFocusEffect(
     useCallback(() => {

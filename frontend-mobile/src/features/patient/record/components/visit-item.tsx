@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   },
 
   highlight: {
-    backgroundColor: "rgba(231, 152, 151, 0.13)",
+    backgroundColor: Theme.backgroundAlert,
   },
 
   bar: {

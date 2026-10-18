@@ -8,12 +8,12 @@ import { ThemedView } from "@/components/shared/themed-view";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 
 const recordTypes = [
-  "Consulta",
-  "Citologia",
-  "PCR DNA HPV",
-  "Colposcopia",
-  "Procedimento",
-];
+  { label: "Consulta", pathname: "/patients/[id]/consultation" },
+  { label: "Citologia", pathname: "/patients/[id]/cytology" },
+  { label: "PCR DNA HPV", pathname: "/patients/[id]/pcr" },
+  { label: "Colposcopia", pathname: "/patients/[id]/colposcopy" },
+  { label: "Procedimento", pathname: "/patients/[id]/procedure" },
+] as const;
 
 export function NewRecordScreen() {
   const { id, name, record } = useLocalSearchParams<{
@@ -45,30 +45,23 @@ export function NewRecordScreen() {
         </View>
 
         <View style={styles.options}>
-          {recordTypes.map((type) => (
+          {recordTypes.map(({ label, pathname }) => (
             <Pressable
-              key={type}
+              key={label}
               accessibilityRole="button"
-              accessibilityLabel={`Criar registro de ${type}`}
-              onPress={() => {
-                if (type === "Consulta") {
-                  router.push({
-                    pathname: "/patients/[id]/consultation",
-                    params: { id: String(id), name, record },
-                  });
-                } else if (type === "Citologia") {
-                  router.push({
-                    pathname: "/patients/[id]/cytology",
-                    params: { id: String(id), name, record },
-                  });
-                }
-              }}
+              accessibilityLabel={`Criar registro de ${label}`}
+              onPress={() =>
+                router.push({
+                  pathname,
+                  params: { id: String(id), name, record },
+                })
+              }
               style={({ pressed }) => [
                 styles.option,
                 pressed && styles.pressed,
               ]}
             >
-              <ThemedText>{type}</ThemedText>
+              <ThemedText>{label}</ThemedText>
               <SymbolView
                 name={{
                   ios: "chevron.right",

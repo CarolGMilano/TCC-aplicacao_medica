@@ -1,12 +1,29 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
+import { ThemedView } from "@/components/shared/themed-view";
 
 import { Badge } from "../record/components";
+import { styles as registrationStyles } from "../registration/styles";
 
-export function AttendanceHeader({ title }: { title: string }) {
+// Sem onBack, o cabeçalho cancela o registro; com onBack (telas em passos),
+// volta para o passo anterior.
+// disabled trava os dois botões enquanto o registro está sendo salvo; step
+// mostra a barra de passos entre os botões e o título, como no layout.
+export function AttendanceHeader({
+  title,
+  onBack,
+  disabled,
+  step,
+}: {
+  title: string;
+  onBack?: () => void;
+  disabled?: boolean;
+  step?: { current: number; total: number };
+}) {
   const { name, record } = useLocalSearchParams<{
     name: string;
     record: string;
@@ -14,18 +31,52 @@ export function AttendanceHeader({ title }: { title: string }) {
 
   return (
     <View style={styles.header}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Cancelar e voltar"
-        hitSlop={8}
-        onPress={() => router.back()}
-        style={styles.cancel}
-      >
-        <ThemedText style={styles.close}>×</ThemedText>
-        <ThemedText type="code" themeColor="textSecondary">
-          CANCELAR
-        </ThemedText>
-      </Pressable>
+      {onBack ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Voltar ao passo anterior"
+          accessibilityState={{ disabled }}
+          disabled={disabled}
+          hitSlop={8}
+          onPress={onBack}
+          style={[styles.cancel, disabled && styles.disabled]}
+        >
+          <SymbolView
+            name={{ ios: "arrow.left", android: "arrow_back", web: "arrow_back" }}
+            tintColor={Theme.textSecondary}
+            size={19}
+          />
+          <ThemedText type="code" themeColor="textSecondary">
+            VOLTAR
+          </ThemedText>
+        </Pressable>
+      ) : (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Cancelar e voltar"
+          accessibilityState={{ disabled }}
+          disabled={disabled}
+          hitSlop={8}
+          onPress={() => router.back()}
+          style={[styles.cancel, disabled && styles.disabled]}
+        >
+          <ThemedText style={styles.close}>×</ThemedText>
+          <ThemedText type="code" themeColor="textSecondary">
+            CANCELAR
+          </ThemedText>
+        </Pressable>
+      )}
+      {step ? (
+        <View style={[registrationStyles.progress, styles.progress]}>
+          {Array.from({ length: step.total }, (_, index) => (
+            <ThemedView
+              key={index}
+              type={index < step.current ? "primary" : "border"}
+              style={registrationStyles.progressSegment}
+            />
+          ))}
+        </View>
+      ) : null}
       <View style={styles.titleRow}>
         <ThemedText style={styles.title}>{title}</ThemedText>
         <View>
@@ -138,6 +189,20 @@ export function SaveButton({
 }
 
 export const styles = StyleSheet.create({
+
+  // Linhas com resposta "Sim" que pedem atenção (ex.: ver e tratar).
+  // Borda sempre presente (transparente) para o texto não pular 3px ao
+  // destacar a linha.
+  alertRow: {
+    borderLeftWidth: 3,
+    borderLeftColor: "transparent",
+  },
+
+  highlight: {
+    backgroundColor: Theme.backgroundAlert,
+    borderLeftColor: Theme.secondary,
+  },
+
   screen: {
     flex: 1,
     backgroundColor: Theme.background,
@@ -158,6 +223,8 @@ export const styles = StyleSheet.create({
     marginBottom: Spacing.three,
   },
 
+  progress: { marginBottom: Spacing.three },
+
   close: {
     color: Theme.textSecondary,
     fontSize: 26,
@@ -168,9 +235,12 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    gap: Spacing.two,
   },
 
+  // Títulos longos ("Novo PCR DNA HPV") quebram linha em vez de encostar no selo.
   title: {
+    flexShrink: 1,
     fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.title,
     lineHeight: Typography.lineHeights.title,

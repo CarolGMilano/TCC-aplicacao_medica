@@ -3,6 +3,7 @@ import { API_BASE_URL } from "@/features/auth/services/auth-api";
 
 import {
   cytologyLabels,
+  hpvTypeLabels,
   lesionLabels,
   procedureLabels,
   procedureResultLabels,
@@ -123,7 +124,7 @@ export async function fetchVisits(id: number): Promise<VisitLists> {
         ...base(item, item.dataRegistro),
         id: item.idExame,
         title: positive
-          ? item.tiposHpv.map((type) => type.replace("_", " ")).join(" · ") ||
+          ? item.tiposHpv.map((type) => hpvTypeLabels[type] ?? type).join(" · ") ||
             "Positivo"
           : "Negativo",
         tags: positive ? ["Positivo"] : [],
