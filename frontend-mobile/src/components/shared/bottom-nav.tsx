@@ -19,16 +19,27 @@ const icons = {
   },
 } satisfies Record<string, SymbolViewProps["name"]>;
 
+const pillHeight = 58;
+
+function useBottomPadding() {
+  const insets = useSafeAreaInsets();
+  return Math.max(insets.bottom, 12);
+}
+
+// A barra flutua sobre a tela: listas usam esta altura como espaço no fim
+// para o último item não ficar escondido atrás dela.
+export function useBottomNavHeight() {
+  return pillHeight + useBottomPadding();
+}
+
 export function BottomNav() {
   const theme = useTheme();
   const pathname = usePathname();
-  const insets = useSafeAreaInsets();
+  const bottomPadding = useBottomPadding();
   const isPatients = pathname.includes("patients");
 
   return (
-    <View
-      style={[styles.container, { paddingBottom: Math.max(insets.bottom, 12) }]}
-    >
+    <View style={[styles.container, { paddingBottom: bottomPadding }]}>
       <View
         style={[
           styles.pill,
@@ -42,13 +53,13 @@ export function BottomNav() {
           active={!isPatients}
           label="Dashboard"
           icon={icons.dashboard}
-          onPress={() => router.replace("/dashboard")}
+          onPress={() => router.dismissTo("/dashboard")}
         />
         <NavItem
           active={isPatients}
           label="Pacientes"
           icon={icons.patients}
-          onPress={() => router.push("/patients")}
+          onPress={() => router.navigate("/patients")}
         />
       </View>
       <Pressable
@@ -119,7 +130,7 @@ const styles = StyleSheet.create({
   },
   pill: {
     flex: 1,
-    height: 58,
+    height: pillHeight,
     borderRadius: 30,
     borderWidth: 1,
     flexDirection: "row",

@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import { mockPostProcedureAlerts } from "../post-procedure/mocks";
 import type { PostProcedureAlert } from "../post-procedure/types";
@@ -12,9 +12,7 @@ export async function fetchWithoutReturnAlerts(): Promise<WithoutReturnAlert[]> 
     return mockWithoutReturnAlerts.map((alert) => ({ ...alert }));
   }
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/dashboard/alertas/ver-e-tratar`,
-  );
+  const response = await apiFetch("/api/dashboard/alertas/ver-e-tratar");
   if (!response.ok) {
     throw new Error("Não foi possível carregar as pacientes sem retorno.");
   }
@@ -28,9 +26,7 @@ export async function fetchPostProcedureAlerts(): Promise<
     return mockPostProcedureAlerts.map((alert) => ({ ...alert }));
   }
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/dashboard/alertas/pos-procedimento`,
-  );
+  const response = await apiFetch("/api/dashboard/alertas/pos-procedimento");
   if (!response.ok) {
     throw new Error("Não foi possível carregar as pacientes pós-procedimento.");
   }

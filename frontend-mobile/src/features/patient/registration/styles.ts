@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
   },
 
   content: {
-    paddingBottom: 140,
+    paddingBottom: Spacing.three,
   },
 
   header: {
@@ -88,11 +88,10 @@ export const styles = StyleSheet.create({
     marginTop: Spacing.three,
   },
 
+  // Rodapé no fluxo, abaixo da lista: com o teclado aberto, o campo focado
+  // não fica atrás do botão.
   footer: {
-    position: "absolute",
-    bottom: Spacing.three,
-    left: Spacing.three,
-    right: Spacing.three,
+    padding: Spacing.three,
     gap: Spacing.two,
   },
 

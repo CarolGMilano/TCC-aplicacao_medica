@@ -48,7 +48,6 @@ export function toPatientRecord(detail: PatientDetail): PatientRecord {
       obstetric: obstetric?.idDados,
       sexual: sexual?.idDados,
       habits: habits?.idHistorico,
-      ists,
     },
     missing: {
       obstetric: !obstetric,

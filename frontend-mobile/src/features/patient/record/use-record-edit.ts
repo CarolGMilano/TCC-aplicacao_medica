@@ -2,15 +2,32 @@ import { useState } from "react";
 
 import type { PatientForm } from "../registration/types";
 import { validateStep } from "../registration/utils";
-import { tabSteps } from "./constants";
+import { recordTabs, tabSteps } from "./constants";
 import { saveTab } from "./services/patient-update-api";
 import type { DataTab, PatientRecord } from "./types";
+
+// Com outra data de nascimento, a idade muda: confere as idades já salvas
+// nas outras abas com as regras do cadastro. Só barra o erro que a nova data
+// cria; um dado antigo que já falhava com a data salva não trava Pessoais.
+function validateOtherTabs(record: PatientRecord, form: PatientForm) {
+  for (const tab of ["obstetric", "sexual", "habits"] as const) {
+    if (record.missing[tab]) continue;
+    const error = validateStep(tabSteps[tab], form, record.form);
+    const before = validateStep(tabSteps[tab], record.form, record.form);
+    if (error && error !== before) {
+      const label = recordTabs.find((item) => item.id === tab)?.label;
+      return `Aba ${label}: ${error}`;
+    }
+  }
+  return null;
+}
 
 // Estado do modo edição: uma cópia (rascunho) dos dados da aba,
 // descartada no "Cancelar" e enviada ao backend no "Salvar alterações".
 export function useRecordEdit(
   record: PatientRecord | null,
   onSaved: () => void,
+  refresh: () => Promise<void>,
 ) {
   const [draft, setDraft] = useState<PatientForm | null>(null);
   const [saving, setSaving] = useState(false);
@@ -38,7 +55,12 @@ export function useRecordEdit(
   async function save(tab: DataTab) {
     if (!record || !draft) return;
 
-    const stepError = validateStep(tabSteps[tab], draft);
+    // Aba ainda sem registro: os valores iniciais não contam como gravados.
+    const saved =
+      tab !== "personal" && record.missing[tab] ? undefined : record.form;
+    const stepError =
+      validateStep(tabSteps[tab], draft, saved) ??
+      (tab === "personal" ? validateOtherTabs(record, draft) : null);
     if (stepError) {
       setError(stepError);
       return;
@@ -55,6 +77,9 @@ export function useRecordEdit(
           ? requestError.message
           : "Não foi possível salvar as alterações.",
       );
+      // Parte do que foi enviado pode ter sido gravada: atualiza a ficha
+      // (e os ids dos históricos) antes de liberar uma nova tentativa.
+      await refresh();
     } finally {
       setSaving(false);
     }

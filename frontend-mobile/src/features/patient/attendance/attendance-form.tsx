@@ -10,7 +10,6 @@ import {
 import {
   BackHandler,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -110,10 +109,9 @@ export function AttendanceForm({
 
   return (
     <SafeAreaView style={componentStyles.screen} edges={["top", "bottom"]}>
-      <KeyboardAvoidingView
-        style={componentStyles.screen}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
+      {/* "padding" também no Android: com o edge-to-edge, a tela não encolhe
+          quando o teclado abre, e o rodapé ficaria atrás dele. */}
+      <KeyboardAvoidingView style={componentStyles.screen} behavior="padding">
         <AttendanceHeader
           title={title}
           onBack={onBack}

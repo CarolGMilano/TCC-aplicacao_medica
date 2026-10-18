@@ -142,8 +142,10 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.border,
   },
 
+  // Largura pelo rótulo (não seis partes iguais): "Pessoais" cabe em 360dp.
   tab: {
-    flex: 1,
+    flexGrow: 1,
+    flexShrink: 1,
     alignItems: "center",
     paddingBottom: Spacing.two,
     borderBottomWidth: 2,

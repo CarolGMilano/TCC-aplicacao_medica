@@ -51,13 +51,12 @@ export type MissingSections = {
   habits: boolean;
 };
 
-// Ids dos registros de histórico no backend, usados para editar (PUT)
-// ou remover (DELETE). Sem id, a aba ainda não tem registro e é criada (POST).
+// Ids dos registros de histórico no backend, usados para editar (PUT).
+// Sem id, a aba ainda não tem registro e é criada (POST).
 export type RecordIds = {
   obstetric?: number;
   sexual?: number;
   habits?: number;
-  ists: PatientDetail["historicoIst"];
 };
 
 export type PatientRecord = {

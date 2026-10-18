@@ -1,3 +1,5 @@
+import type { DateParts } from "./utils";
+
 export type AttendancePatient = {
   id: number;
   name: string;
@@ -5,7 +7,7 @@ export type AttendancePatient = {
 };
 
 export type ConsultationForm = {
-  date: string;
+  date: DateParts;
   time: string;
   observation: string;
 };

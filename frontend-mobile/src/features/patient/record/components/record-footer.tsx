@@ -7,6 +7,7 @@ import { styles as registrationStyles } from "../../registration/styles";
 
 type RecordFooterProps = {
   editing: boolean;
+  loading: boolean;
   saving: boolean;
   error: string;
   onEdit: () => void;
@@ -17,6 +18,7 @@ type RecordFooterProps = {
 // Rodapé das abas de dados: "Editar dados", ou "Cancelar" e "Salvar alterações".
 export function RecordFooter({
   editing,
+  loading,
   saving,
   error,
   onEdit,
@@ -24,7 +26,7 @@ export function RecordFooter({
   onSave,
 }: RecordFooterProps) {
   return (
-    <View style={registrationStyles.footer}>
+    <View style={styles.footer}>
       {error ? (
         <ThemedText
           themeColor="error"
@@ -66,8 +68,14 @@ export function RecordFooter({
       ) : (
         <Pressable
           accessibilityRole="button"
+          accessibilityState={{ disabled: loading }}
+          disabled={loading}
           onPress={onEdit}
-          style={[styles.button, styles.outline]}
+          style={[
+            styles.button,
+            styles.outline,
+            loading && registrationStyles.disabled,
+          ]}
         >
           <ThemedText type="button">Editar dados</ThemedText>
         </Pressable>
@@ -77,6 +85,14 @@ export function RecordFooter({
 }
 
 const styles = StyleSheet.create({
+  // Abaixo da rolagem, e não por cima dela: com o teclado aberto, o campo
+  // em que se digita fica acima dos botões.
+  footer: {
+    padding: Spacing.three,
+    gap: Spacing.two,
+    backgroundColor: Theme.background,
+  },
+
   row: {
     flexDirection: "row",
     gap: Spacing.two,

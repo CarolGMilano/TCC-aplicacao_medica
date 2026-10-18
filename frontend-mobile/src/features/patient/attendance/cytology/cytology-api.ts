@@ -1,5 +1,5 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import { saveMockCytology } from "../mocks";
 import type { CytologyRequest } from "../types";
@@ -12,7 +12,7 @@ export async function createCytology(request: CytologyRequest) {
   const token = getToken();
   if (!token) throw new Error("Sua sessão expirou. Faça login novamente.");
 
-  const response = await fetch(`${API_BASE_URL}/api/citologias`, {
+  const response = await apiFetch("/api/citologias", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { BottomNav } from "@/components/shared/bottom-nav";
+import { BottomNav, useBottomNavHeight } from "@/components/shared/bottom-nav";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
@@ -27,10 +27,17 @@ export function PatientList() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("Todas");
   const [filterOpen, setFilterOpen] = useState(false);
-  const { patients, filteredPatients, total, error, isLoading } = usePatientList(
-    status,
-    search,
-  );
+  const bottomNavHeight = useBottomNavHeight();
+  const {
+    patients,
+    filteredPatients,
+    total,
+    unitTotal,
+    error,
+    isLoading,
+    isRefreshing,
+  } = usePatientList(status, search);
+  const unitCount = isLoading ? "—" : (unitTotal ?? (total || patients.length));
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -41,7 +48,7 @@ export function PatientList() {
               accessibilityRole="button"
               accessibilityLabel="Voltar para o Dashboard"
               hitSlop={8}
-              onPress={() => router.replace("/dashboard")}
+              onPress={() => router.dismissTo("/dashboard")}
               style={styles.backButton}
             >
               <SymbolView
@@ -57,11 +64,15 @@ export function PatientList() {
                 DASHBOARD
               </ThemedText>
             </Pressable>
+            <ActivityIndicator
+              animating={isRefreshing && filteredPatients.length > 0}
+              color={Theme.primary}
+            />
           </View>
           <View style={styles.titleRow}>
             <ThemedText style={styles.title}>Pacientes</ThemedText>
             <ThemedText type="code" themeColor="textSecondary">
-              {isLoading ? "—" : total || patients.length} NA UNIDADE
+              {unitCount} NA UNIDADE
             </ThemedText>
           </View>
           <View style={styles.searchBox}>
@@ -119,13 +130,21 @@ export function PatientList() {
               renderItem={({ item }) => <PatientListItem patient={item} />}
               ListEmptyComponent={
                 <View style={styles.centered}>
-                  <ThemedText>Nenhuma paciente encontrada.</ThemedText>
+                  {isRefreshing ? (
+                    <ActivityIndicator
+                      accessibilityLabel="Carregando pacientes"
+                      color={Theme.primary}
+                    />
+                  ) : (
+                    <ThemedText>Nenhuma paciente encontrada.</ThemedText>
+                  )}
                 </View>
               }
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={
-                filteredPatients.length === 0 ? styles.emptyList : undefined
-              }
+              contentContainerStyle={[
+                filteredPatients.length === 0 && styles.emptyList,
+                { paddingBottom: bottomNavHeight + Spacing.three },
+              ]}
               keyboardShouldPersistTaps="handled"
             />
           )}

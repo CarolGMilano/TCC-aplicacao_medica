@@ -1,5 +1,5 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import {
   cytologyLabels,
@@ -47,7 +47,7 @@ async function get<T>(path: string): Promise<T> {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await apiFetch(path, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
