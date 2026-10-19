@@ -4,6 +4,7 @@ import br.com.cervicare.dashboard.dto.DistribuicaoEtariaDTO;
 import br.com.cervicare.dashboard.dto.DistribuicaoIstDTO;
 import br.com.cervicare.dashboard.dto.HistoricoIndicadoresDTO;
 import br.com.cervicare.dashboard.dto.KpiResponseDTO;
+import br.com.cervicare.dashboard.dto.PacienteResumoDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class DashboardMetricsService {
     private final JdbcTemplate jdbcTemplate;
 
     public KpiResponseDTO obterKpisGerais() {
-        Long pacientes = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM paciente", Long.class);
+        Long pacientes = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM paciente WHERE ativo = true", Long.class);
         Long profissionais = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM medico", Long.class);
         
         String sqlRegistros = """
@@ -39,7 +40,9 @@ public class DashboardMetricsService {
     public List<DistribuicaoIstDTO> obterDistribuicaoIst() {
         String sql = """
                 SELECT ist, COUNT(*) as quantidade 
-                FROM historico_ist 
+                FROM historico_ist i
+                JOIN paciente p ON p.id_paciente = i.id_paciente
+                WHERE p.ativo = true
                 GROUP BY ist 
                 ORDER BY quantidade DESC
                 """;
@@ -62,7 +65,7 @@ public class DashboardMetricsService {
                     SUM(CASE WHEN TIMESTAMPDIFF(YEAR, data_nasc, CURDATE()) BETWEEN 60 AND 64 THEN 1 ELSE 0 END) as de_60_64,
                     SUM(CASE WHEN TIMESTAMPDIFF(YEAR, data_nasc, CURDATE()) BETWEEN 65 AND 69 THEN 1 ELSE 0 END) as de_65_69,
                     SUM(CASE WHEN TIMESTAMPDIFF(YEAR, data_nasc, CURDATE()) >= 70 THEN 1 ELSE 0 END) as acima_70
-                FROM paciente
+                FROM paciente WHERE ativo = true
                 """;
 
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> List.of(
@@ -102,5 +105,70 @@ public class DashboardMetricsService {
                 .pacientesSemRecidiva(pacientesSemRecidiva)
                 .percentualRecidiva(Math.round(percentualRecidiva * 10.0) / 10.0)
                 .build();
+    }
+
+    // ==========================================
+    // NOVOS MÉTODOS DE DRILL-DOWN PARA O FRONT
+    // ==========================================
+
+    public List<PacienteResumoDTO> buscarPacientesPorFaixaEtaria(Integer min, Integer max) {
+        String sql = """
+            SELECT id_paciente, nome, prontuario
+            FROM paciente
+            WHERE ativo = true
+              AND TIMESTAMPDIFF(YEAR, data_nasc, CURDATE()) BETWEEN ? AND ?
+            ORDER BY nome
+        """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new PacienteResumoDTO(
+                rs.getInt("id_paciente"),
+                rs.getString("nome"),
+                rs.getString("prontuario")
+        ), min, max);
+    }
+
+    public List<PacienteResumoDTO> buscarPacientesPorIst(String tipoIst) {
+        String sql = """
+            SELECT p.id_paciente, p.nome, p.prontuario
+            FROM paciente p
+            JOIN historico_ist i ON p.id_paciente = i.id_paciente
+            WHERE p.ativo = true AND i.ist = ?
+            ORDER BY p.nome
+        """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new PacienteResumoDTO(
+                rs.getInt("id_paciente"),
+                rs.getString("nome"),
+                rs.getString("prontuario")
+        ), tipoIst);
+    }
+
+    public List<PacienteResumoDTO> buscarPacientesPorRecidiva(boolean status) {
+        return buscarColposcopiaRecenteFiltro("recidiva", status);
+    }
+
+    public List<PacienteResumoDTO> buscarPacientesPorVerETratar(boolean status) {
+        return buscarColposcopiaRecenteFiltro("ver_e_tratar", status);
+    }
+
+    private List<PacienteResumoDTO> buscarColposcopiaRecenteFiltro(String colunaFiltro, boolean status) {
+        String sql = """
+            WITH UltimaColposcopia AS (
+                SELECT id_paciente, recidiva, ver_e_tratar,
+                       ROW_NUMBER() OVER(PARTITION BY id_paciente ORDER BY data_registro DESC, id_colposcopia DESC) as rn
+                FROM colposcopia
+            )
+            SELECT p.id_paciente, p.nome, p.prontuario
+            FROM paciente p
+            JOIN UltimaColposcopia c ON p.id_paciente = c.id_paciente
+            WHERE p.ativo = true
+              AND c.rn = 1
+              AND c.%s = ?
+            ORDER BY p.nome
+        """.formatted(colunaFiltro);
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new PacienteResumoDTO(
+                rs.getInt("id_paciente"),
+                rs.getString("nome"),
+                rs.getString("prontuario")
+        ), status ? 1 : 0);
     }
 }

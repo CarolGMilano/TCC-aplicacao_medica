@@ -67,6 +67,47 @@ public class HistoricoIstService {
         istRepository.deleteById(idHistorico);
     }
 
+    @Transactional
+    public void sincronizarIsts(Integer idPaciente, List<HistoricoIstRequestDTO> novasIsts) {
+        Paciente paciente = pacienteRepository.findById(idPaciente)
+                .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada para o ID: " + idPaciente));
+
+        List<HistoricoIst> atuais = istRepository.findByPaciente_IdPacienteOrderByIdHistoricoDesc(idPaciente);
+
+        // Se a lista vier vazia ou nula, o usuário desmarcou tudo no front: apagamos todas as ISTs do banco
+        if (novasIsts == null || novasIsts.isEmpty()) {
+            istRepository.deleteAll(atuais);
+            return;
+        }
+
+        // 1. Remover as ISTs antigas que não vieram na nova lista (foram desmarcadas)
+        List<HistoricoIst> paraRemover = atuais.stream()
+                .filter(istAtual -> novasIsts.stream().noneMatch(novo -> novo.ist().equals(istAtual.getIst())))
+                .toList();
+        istRepository.deleteAll(paraRemover);
+
+        // 2. Adicionar as novas ISTs ou atualizar o status do condiloma das existentes
+        for (HistoricoIstRequestDTO dto : novasIsts) {
+            HistoricoIst existente = atuais.stream()
+                    .filter(istAtual -> istAtual.getIst().equals(dto.ist()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (existente != null) {
+                // Se já existe, apenas atualiza caso a opção de condiloma tenha mudado
+                existente.setCondilomaHpv(dto.condilomaHpv());
+                istRepository.save(existente);
+            } else {
+                // Se não existe, cria um novo registro
+                HistoricoIst novaIst = new HistoricoIst();
+                novaIst.setPaciente(paciente);
+                novaIst.setIst(dto.ist());
+                novaIst.setCondilomaHpv(dto.condilomaHpv());
+                istRepository.save(novaIst);
+            }
+        }
+    }
+
     private HistoricoIstResponseDTO converterParaDTO(HistoricoIst historico) {
         return HistoricoIstResponseDTO.builder()
                 .idHistorico(historico.getIdHistorico())

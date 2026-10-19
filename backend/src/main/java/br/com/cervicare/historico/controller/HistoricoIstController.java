@@ -34,6 +34,15 @@ public class HistoricoIstController {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
+    @PutMapping("/paciente/{idPaciente}/sincronizar")
+    public ResponseEntity<Void> sincronizarHistoricoIst(
+            @PathVariable Integer idPaciente,
+            @RequestBody @Valid List<HistoricoIstRequestDTO> dtos
+    ) {
+        service.sincronizarIsts(idPaciente, dtos);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         service.deletar(id);
