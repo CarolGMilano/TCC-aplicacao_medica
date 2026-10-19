@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
 import { OptionRow } from "../../registration/components";
@@ -8,7 +8,7 @@ import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
 import { SavedVisit } from "../saved-visit";
 import type { CytologyForm } from "../types";
-import { fromIsoDate, todayParts } from "../utils";
+import { fromIsoDate, toIsoDate, todayParts } from "../utils";
 import { CytologyDetails } from "../visit-details";
 import { saveCytology } from "./cytology-api";
 
@@ -54,21 +54,26 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       setError("Preencha a data e o resultado.");
       return;
     }
+    // Completa o dia e o mês com zero ("5" vira "05"), senão o backend recusa.
+    const dataRegistro = toIsoDate([form.day, form.month, form.year]);
+    if (!dataRegistro) {
+      setError("Informe uma data válida, entre 01/01/1900 e hoje.");
+      return;
+    }
     setSaving(true);
     try {
       await saveCytology(
         {
           idPaciente: Number(id),
-          dataRegistro: `${form.year}-${form.month}-${form.day}`,
+          dataRegistro,
           resultado: form.result,
           observacao: form.observation.trim() || "",
         },
         saved?.idExame,
       );
-      // A edição volta para a ficha (aba Atend.) no filtro de citologia, como
-      // os outros registros; a nova citologia segue voltando uma tela.
-      if (saved) returnToVisits();
-      else router.back();
+      // Volta para a ficha (aba Atend.) no filtro de citologia, como os outros
+      // registros.
+      returnToVisits();
     } catch (requestError) {
       setError(
         requestError instanceof Error
