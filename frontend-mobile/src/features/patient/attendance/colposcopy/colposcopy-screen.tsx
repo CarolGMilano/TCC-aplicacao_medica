@@ -15,12 +15,19 @@ import {
   lesionSizeOptions,
   transformationZoneLabels,
 } from "../../record/constants";
+import type { Colposcopy } from "../../record/services/visits-api";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput, styles } from "../components";
 import { SavedVisit } from "../saved-visit";
-import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
+import {
+  fromIsoDate,
+  keyOf,
+  toIsoDate,
+  todayParts,
+  type DateParts,
+} from "../utils";
 import { ColposcopyDetails } from "../visit-details";
-import { createColposcopy } from "./colposcopy-api";
+import { saveColposcopy } from "./colposcopy-api";
 
 type ColposcopyForm = {
   date: DateParts;
@@ -36,19 +43,20 @@ type ColposcopyForm = {
   observation: string;
 };
 
-// Valores iniciais iguais aos do formulário do web.
-const initialForm = (): ColposcopyForm => ({
-  date: todayParts(),
-  estrogenization: false,
-  jec: null,
-  zone: null,
-  lesion: false,
-  lesionGrade: null,
-  classification: null,
-  recurrence: false,
-  seeAndTreat: false,
-  seeAndTreatReason: "",
-  observation: "",
+// Valores iniciais iguais aos do formulário do web: os da colposcopia salva,
+// quando é edição, ou os padrões de uma nova.
+const initialForm = (saved: Colposcopy | null): ColposcopyForm => ({
+  date: saved ? fromIsoDate(saved.dataRegistro) : todayParts(),
+  estrogenization: saved?.estrogenizacao ?? false,
+  jec: saved?.jec ?? null,
+  zone: saved?.zt ?? null,
+  lesion: saved?.lesao ?? false,
+  lesionGrade: saved?.grauLesao ?? null,
+  classification: saved?.classificacao ?? null,
+  recurrence: saved?.recidiva ?? false,
+  seeAndTreat: saved?.verETratar ?? false,
+  seeAndTreatReason: saved?.verETratarMotivo ?? "",
+  observation: saved?.observacao ?? "",
 });
 
 export function ColposcopyScreen() {
@@ -57,18 +65,20 @@ export function ColposcopyScreen() {
       type="colposcopy"
       title="Colposcopia"
       details={(item) => <ColposcopyDetails item={item} />}
+      editable
     >
-      {() => <ColposcopyRecord />}
+      {(saved) => <ColposcopyRecord saved={saved} />}
     </SavedVisit>
   );
 }
 
-// Passo 1: achados. Passo 2: conduta. Um único POST no fim.
-function ColposcopyRecord() {
+// Passo 1: achados. Passo 2: conduta. Um único envio no fim (POST na nova,
+// PUT na edição da colposcopia salva).
+function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
   const returnToVisits = useReturnToVisits("colposcopy");
   const { id } = useLocalSearchParams<{ id: string }>();
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState(() => initialForm(saved));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const conductShownAt = useRef(0);
@@ -126,20 +136,23 @@ function ColposcopyRecord() {
     const seeAndTreat = form.lesion && form.seeAndTreat;
     setSaving(true);
     try {
-      await createColposcopy({
-        idPaciente: Number(id),
-        dataRegistro,
-        estrogenizacao: form.estrogenization,
-        jec: form.jec,
-        zt: form.zone,
-        lesao: form.lesion,
-        recidiva: form.lesion && form.recurrence,
-        grauLesao: form.lesion ? form.lesionGrade : null,
-        classificacao: form.lesion ? form.classification : null,
-        observacao: form.observation.trim(),
-        verETratar: seeAndTreat,
-        verETratarMotivo: seeAndTreat ? form.seeAndTreatReason.trim() : "",
-      });
+      await saveColposcopy(
+        {
+          idPaciente: Number(id),
+          dataRegistro,
+          estrogenizacao: form.estrogenization,
+          jec: form.jec,
+          zt: form.zone,
+          lesao: form.lesion,
+          recidiva: form.lesion && form.recurrence,
+          grauLesao: form.lesion ? form.lesionGrade : null,
+          classificacao: form.lesion ? form.classification : null,
+          observacao: form.observation.trim(),
+          verETratar: seeAndTreat,
+          verETratarMotivo: seeAndTreat ? form.seeAndTreatReason.trim() : "",
+        },
+        saved?.idColposcopia,
+      );
       // Volta para a ficha (aba Atend.) no filtro deste tipo.
       returnToVisits();
     } catch (requestError) {
@@ -162,13 +175,21 @@ function ColposcopyRecord() {
 
   return (
     <AttendanceForm
-      title="Nova colposcopia"
+      title={saved ? "Alterar colposcopia" : "Nova colposcopia"}
+      mode={saved ? "edit" : "new"}
+      saved={saved ?? undefined}
       error={error}
       saving={saving}
       onSave={handleButton}
       step={{ current: step, total: 2 }}
       onBack={step === 2 ? backToFindings : undefined}
-      buttonLabel={step === 1 ? "Continuar" : "Salvar registro"}
+      buttonLabel={
+        step === 1
+          ? "Continuar"
+          : saved
+            ? "Salvar alterações"
+            : "Salvar registro"
+      }
     >
       {step === 1 ? (
         <StepSection title="ACHADOS · PASSO 1 DE 2">
