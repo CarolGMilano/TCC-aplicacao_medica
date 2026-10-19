@@ -1,6 +1,12 @@
-import { postAttendance } from "../attendance-api";
+import { saveAttendance } from "../attendance-api";
 import type { PcrRequest } from "../types";
 
-export function createPcr(request: PcrRequest) {
-  return postAttendance("/api/pcr", request, "Não foi possível salvar o PCR.");
+// Sem id, cria o PCR; com id, altera o PCR salvo.
+export function savePcr(request: PcrRequest, id?: number) {
+  return saveAttendance(
+    "/api/pcr",
+    request,
+    "Não foi possível salvar o PCR.",
+    id,
+  );
 }

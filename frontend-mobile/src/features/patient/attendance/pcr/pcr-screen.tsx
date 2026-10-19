@@ -3,19 +3,44 @@ import { useState } from "react";
 
 import { ChoiceRow } from "../../registration/components";
 import { hpvTypeLabels, pcrResultLabels } from "../../record/constants";
+import type { Pcr } from "../../record/services/visits-api";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
-import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
-import { createPcr } from "./pcr-api";
+import { SavedVisit } from "../saved-visit";
+import {
+  fromIsoDate,
+  keyOf,
+  toIsoDate,
+  todayParts,
+  type DateParts,
+} from "../utils";
+import { PcrDetails } from "../visit-details";
+import { savePcr } from "./pcr-api";
 
-// Mesmos campos e regras do formulário de PCR do web.
 export function PcrScreen() {
+  return (
+    <SavedVisit
+      type="pcr"
+      title="PCR DNA HPV"
+      details={(item) => <PcrDetails item={item} />}
+      editable
+    >
+      {(saved) => <PcrRecord saved={saved} />}
+    </SavedVisit>
+  );
+}
+
+// Mesmos campos e regras do formulário de PCR do web. Com saved, edita o
+// PCR salvo, começando com os valores dele.
+function PcrRecord({ saved }: { saved: Pcr | null }) {
   const returnToVisits = useReturnToVisits("pcr");
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [date, setDate] = useState<DateParts>(todayParts);
-  const [result, setResult] = useState("NEGATIVO");
-  const [hpvTypes, setHpvTypes] = useState<string[]>([]);
-  const [observation, setObservation] = useState("");
+  const [date, setDate] = useState<DateParts>(() =>
+    saved ? fromIsoDate(saved.dataRegistro) : todayParts(),
+  );
+  const [result, setResult] = useState(saved?.resultado ?? "NEGATIVO");
+  const [hpvTypes, setHpvTypes] = useState<string[]>(saved?.tiposHpv ?? []);
+  const [observation, setObservation] = useState(saved?.observacao ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -49,13 +74,16 @@ export function PcrScreen() {
 
     setSaving(true);
     try {
-      await createPcr({
-        idPaciente: Number(id),
-        dataRegistro,
-        resultado: result,
-        tiposHpv: positive ? hpvTypes : [],
-        observacao: observation.trim(),
-      });
+      await savePcr(
+        {
+          idPaciente: Number(id),
+          dataRegistro,
+          resultado: result,
+          tiposHpv: positive ? hpvTypes : [],
+          observacao: observation.trim(),
+        },
+        saved?.idExame,
+      );
       // Volta para a ficha (aba Atend.) no filtro deste tipo.
       returnToVisits();
     } catch (requestError) {
@@ -71,7 +99,10 @@ export function PcrScreen() {
 
   return (
     <AttendanceForm
-      title="Novo PCR DNA HPV"
+      title={saved ? "Alterar PCR DNA HPV" : "Novo PCR DNA HPV"}
+      mode={saved ? "edit" : "new"}
+      saved={saved ?? undefined}
+      buttonLabel={saved ? "Salvar alterações" : undefined}
       error={error}
       saving={saving}
       onSave={save}

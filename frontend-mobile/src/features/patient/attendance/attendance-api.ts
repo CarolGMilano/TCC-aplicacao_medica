@@ -15,17 +15,19 @@ export async function fetchDoctorName() {
   return profile.nome ?? null;
 }
 
-// POST comum dos registros de atendimento (PCR, colposcopia, procedimento).
-export async function postAttendance<Request>(
+// Envio comum dos registros de atendimento: POST cria o registro; com id,
+// PUT em path/id altera o registro salvo.
+export async function saveAttendance<Request>(
   path: string,
   request: Request,
   errorMessage: string,
+  id?: number,
 ) {
   const token = getToken();
   if (!token) throw new Error("Sua sessão expirou. Faça login novamente.");
 
-  const response = await apiFetch(path, {
-    method: "POST",
+  const response = await apiFetch(id === undefined ? path : `${path}/${id}`, {
+    method: id === undefined ? "POST" : "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,

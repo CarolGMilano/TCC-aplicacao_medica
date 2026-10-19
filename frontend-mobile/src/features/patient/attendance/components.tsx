@@ -9,8 +9,12 @@ import { ThemedView } from "@/components/shared/themed-view";
 import { Badge } from "../record/components";
 import { styles as registrationStyles } from "../registration/styles";
 
+// Novo registro, registro salvo aberto para ver, ou em edição.
+export type AttendanceMode = "new" | "view" | "edit";
+
 // Sem onBack, o cabeçalho cancela o registro; com onBack (telas em passos),
-// volta para o passo anterior.
+// volta para o passo anterior. Vendo um registro salvo, volta para os
+// atendimentos, como no layout.
 // disabled trava os dois botões enquanto o registro está sendo salvo; step
 // mostra a barra de passos entre os botões e o título, como no layout.
 export function AttendanceHeader({
@@ -18,11 +22,13 @@ export function AttendanceHeader({
   onBack,
   disabled,
   step,
+  mode = "new",
 }: {
   title: string;
   onBack?: () => void;
   disabled?: boolean;
   step?: { current: number; total: number };
+  mode?: AttendanceMode;
 }) {
   const { name, record } = useLocalSearchParams<{
     name: string;
@@ -31,14 +37,16 @@ export function AttendanceHeader({
 
   return (
     <View style={styles.header}>
-      {onBack ? (
+      {onBack || mode === "view" ? (
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Voltar ao passo anterior"
+          accessibilityLabel={
+            onBack ? "Voltar ao passo anterior" : "Voltar para os atendimentos"
+          }
           accessibilityState={{ disabled }}
           disabled={disabled}
           hitSlop={8}
-          onPress={onBack}
+          onPress={onBack ?? (() => router.back())}
           style={[styles.cancel, disabled && styles.disabled]}
         >
           <SymbolView
@@ -47,7 +55,7 @@ export function AttendanceHeader({
             size={19}
           />
           <ThemedText type="code" themeColor="textSecondary">
-            VOLTAR
+            {onBack ? "VOLTAR" : "ATENDIMENTOS"}
           </ThemedText>
         </Pressable>
       ) : (
@@ -79,13 +87,15 @@ export function AttendanceHeader({
       ) : null}
       <View style={styles.titleRow}>
         <ThemedText style={styles.title}>{title}</ThemedText>
-        <View>
-          <Badge
-            label="Nova"
-            color={Theme.textPrimaryLight}
-            background={Theme.primary}
-          />
-        </View>
+        {mode !== "view" ? (
+          <View>
+            <Badge
+              label={mode === "edit" ? "Editando" : "Nova"}
+              color={Theme.textPrimaryLight}
+              background={Theme.primary}
+            />
+          </View>
+        ) : null}
       </View>
       <ThemedText type="code" themeColor="textSecondary">
         PACIENTE {name?.toUpperCase()} · PRT {record}
@@ -121,6 +131,18 @@ export function LabeledInput({
         textAlignVertical={multiline ? "top" : "center"}
         style={[styles.input, multiline && styles.textarea]}
       />
+    </View>
+  );
+}
+
+// Texto longo de um registro salvo (ex.: observação), abaixo do rótulo.
+export function TextBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.field}>
+      <ThemedText type="code" themeColor="textSecondary" style={styles.label}>
+        {label}
+      </ThemedText>
+      <ThemedText>{value}</ThemedText>
     </View>
   );
 }
@@ -161,14 +183,17 @@ export function DateInput({
   );
 }
 
+// outline: botão com contorno, como o "Editar registro" do layout.
 export function SaveButton({
   label,
   onPress,
   disabled,
+  outline,
 }: {
   label: string;
   onPress: () => void;
   disabled?: boolean;
+  outline?: boolean;
 }) {
   return (
     <Pressable
@@ -177,11 +202,16 @@ export function SaveButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.save,
-        pressed && styles.pressed,
+        outline && styles.outline,
+        pressed && !outline && styles.pressed,
+        pressed && outline && styles.outlinePressed,
         disabled && styles.disabled,
       ]}
     >
-      <ThemedText type="button" themeColor="textPrimaryLight">
+      <ThemedText
+        type="button"
+        themeColor={outline ? "text" : "textPrimaryLight"}
+      >
         {label}
       </ThemedText>
     </Pressable>
@@ -294,6 +324,14 @@ export const styles = StyleSheet.create({
   },
 
   pressed: { backgroundColor: Theme.primaryHoverDark },
+
+  outline: {
+    borderWidth: 1,
+    borderColor: Theme.border,
+    backgroundColor: Theme.backgroundElement,
+  },
+
+  outlinePressed: { backgroundColor: Theme.backgroundSelected },
 
   disabled: { opacity: 0.6 },
 });

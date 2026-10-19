@@ -19,6 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
+import { formatDate } from "../record/services/visits-api";
 import type { VisitType } from "../record/types";
 import { styles as registrationStyles } from "../registration/styles";
 import { fetchDoctorName } from "./attendance-api";
@@ -26,6 +27,7 @@ import {
   AttendanceHeader,
   SaveButton,
   styles as componentStyles,
+  type AttendanceMode,
 } from "./components";
 
 // Depois de salvar, volta para a ficha (aba Atend.) já no filtro do tipo
@@ -56,31 +58,39 @@ export function useReturnToVisits(filter: VisitType) {
   }, [navigation, id, filter]);
 }
 
-// Estrutura comum das telas de novo registro: cabeçalho, campos e rodapé
-// com o erro e o botão. Telas em passos (colposcopia) passam step, onBack e
-// o rótulo do botão de cada passo.
+// Estrutura comum das telas de registro: cabeçalho, campos e rodapé com o
+// erro e o botão. Telas em passos (colposcopia) passam step, onBack e o
+// rótulo do botão de cada passo. Num registro salvo (saved), a faixa do topo
+// mostra a última edição e o médico do registro; sem onSave, não há botão.
 export function AttendanceForm({
   title,
-  error,
-  saving,
+  error = "",
+  saving = false,
   onSave,
   children,
   step,
   onBack,
   buttonLabel = "Salvar registro",
+  mode = "new",
+  saved,
 }: {
   title: string;
-  error: string;
-  saving: boolean;
-  onSave: () => void;
+  error?: string;
+  saving?: boolean;
+  onSave?: () => void;
   children: ReactNode;
   step?: { current: number; total: number };
   onBack?: () => void;
   buttonLabel?: string;
+  mode?: AttendanceMode;
+  saved?: { nomeMedico: string; dataEdicao?: string | null };
 }) {
   const [doctor, setDoctor] = useState<string | null>(null);
+  const isSaved = Boolean(saved);
 
+  // O médico logado só é o responsável num registro novo.
   useEffect(() => {
+    if (isSaved) return;
     let active = true;
     fetchDoctorName()
       .then((name) => {
@@ -90,7 +100,7 @@ export function AttendanceForm({
     return () => {
       active = false;
     };
-  }, []);
+  }, [isSaved]);
 
   // Voltar do Android: travado enquanto salva; nas telas em passos, volta um
   // passo em vez de fechar (mesmo padrão do cadastro de paciente).
@@ -117,6 +127,7 @@ export function AttendanceForm({
           onBack={onBack}
           disabled={saving}
           step={step}
+          mode={mode}
         />
         <ScrollView
           // Cada passo começa do topo.
@@ -129,34 +140,42 @@ export function AttendanceForm({
               <ThemedText type="code" themeColor="textSecondary">
                 ÚLTIMA EDIÇÃO
               </ThemedText>
-              <ThemedText>—</ThemedText>
+              <ThemedText>
+                {saved?.dataEdicao ? formatDate(saved.dataEdicao) : "—"}
+              </ThemedText>
             </View>
             <View style={styles.metaCell}>
               <ThemedText type="code" themeColor="textSecondary">
                 MÉDICO RESPONSÁVEL
               </ThemedText>
-              <ThemedText>{doctor ?? "—"}</ThemedText>
+              <ThemedText>{(saved?.nomeMedico ?? doctor) || "—"}</ThemedText>
             </View>
           </View>
           {children}
         </ScrollView>
-        <View style={styles.footer}>
-          {error ? (
-            <ThemedText
-              type="small"
-              themeColor="error"
-              accessibilityLiveRegion="polite"
-              style={registrationStyles.error}
-            >
-              {error}
-            </ThemedText>
-          ) : null}
-          <SaveButton
-            label={saving ? "Salvando..." : buttonLabel}
-            onPress={onSave}
-            disabled={saving}
-          />
-        </View>
+        {/* Consulta salva: só leitura, sem rodapé. */}
+        {onSave || error ? (
+          <View style={styles.footer}>
+            {error ? (
+              <ThemedText
+                type="small"
+                themeColor="error"
+                accessibilityLiveRegion="polite"
+                style={registrationStyles.error}
+              >
+                {error}
+              </ThemedText>
+            ) : null}
+            {onSave ? (
+              <SaveButton
+                label={saving ? "Salvando..." : buttonLabel}
+                onPress={onSave}
+                disabled={saving}
+                outline={mode === "view"}
+              />
+            ) : null}
+          </View>
+        ) : null}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

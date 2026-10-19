@@ -9,6 +9,12 @@ export function todayParts(): DateParts {
   ];
 }
 
+// "2026-06-14" (backend) → ["14", "06", "2026"], para os campos de data.
+export function fromIsoDate(value: string): DateParts {
+  const [year = "", month = "", day = ""] = value.split("T")[0].split("-");
+  return [day, month, year];
+}
+
 // Data no formato do backend (AAAA-MM-DD), ou null se não existir ou estiver
 // fora do intervalo aceito no web (01/01/1900 até hoje).
 export function toIsoDate([day, month, year]: DateParts) {
