@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
@@ -8,17 +8,28 @@ import { Badge } from "./badge";
 
 type VisitItemProps = {
   visit: Visit;
+  onPress: () => void;
 };
 
 // Linha da lista de atendimentos: barra lateral, resultado, observação,
-// selos e "data · médico". Destaque em coral quando pede atenção.
-export function VisitItem({ visit }: VisitItemProps) {
+// selos e "data · médico". Destaque em coral quando pede atenção. O toque
+// abre o registro salvo.
+export function VisitItem({ visit, onPress }: VisitItemProps) {
   const tagColors = visit.highlight
     ? { color: Theme.administratorDark, background: Theme.administratorLight }
     : { color: Theme.textSecondary, background: Theme.backgroundSelected };
 
   return (
-    <View style={[styles.item, visit.highlight && styles.highlight]}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityHint="Abre o registro"
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.item,
+        visit.highlight && styles.highlight,
+        pressed && styles.pressed,
+      ]}
+    >
       <View style={[styles.bar, visit.highlight && styles.barHighlight]} />
 
       <View style={styles.content}>
@@ -45,7 +56,7 @@ export function VisitItem({ visit }: VisitItemProps) {
           {visit.date} · {visit.doctor}
         </ThemedText>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -69,6 +80,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: Theme.tertiary,
   },
+
+  pressed: { opacity: 0.7 },
 
   barHighlight: {
     backgroundColor: Theme.secondary,

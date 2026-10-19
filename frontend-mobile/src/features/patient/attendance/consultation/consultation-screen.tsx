@@ -19,6 +19,8 @@ import {
   styles as formStyles,
 } from "../components";
 import { createConsultation } from "./consultation-api";
+import { SavedVisit } from "../saved-visit";
+import { ConsultationDetails } from "../visit-details";
 import type { ConsultationForm } from "../types";
 import { toIsoDate, todayParts, type DateParts } from "../utils";
 import { OptionRow } from "../../registration/components";
@@ -41,7 +43,20 @@ function currentTime() {
   ).padStart(2, "0")}`;
 }
 
+// Consulta salva só pode ser vista: o backend não tem edição de consulta.
 export function ConsultationScreen() {
+  return (
+    <SavedVisit
+      type="consultations"
+      title="Consulta"
+      details={(item) => <ConsultationDetails item={item} />}
+    >
+      {() => <NewConsultation />}
+    </SavedVisit>
+  );
+}
+
+function NewConsultation() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [form, setForm] = useState<ConsultationForm>(() => ({
     date: todayParts(),

@@ -5,11 +5,25 @@ import { ChoiceRow } from "../../registration/components";
 import { hpvTypeLabels, pcrResultLabels } from "../../record/constants";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
+import { SavedVisit } from "../saved-visit";
 import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
+import { PcrDetails } from "../visit-details";
 import { createPcr } from "./pcr-api";
 
-// Mesmos campos e regras do formulário de PCR do web.
 export function PcrScreen() {
+  return (
+    <SavedVisit
+      type="pcr"
+      title="PCR DNA HPV"
+      details={(item) => <PcrDetails item={item} />}
+    >
+      {() => <PcrRecord />}
+    </SavedVisit>
+  );
+}
+
+// Mesmos campos e regras do formulário de PCR do web.
+function PcrRecord() {
   const returnToVisits = useReturnToVisits("pcr");
   const { id } = useLocalSearchParams<{ id: string }>();
   const [date, setDate] = useState<DateParts>(todayParts);

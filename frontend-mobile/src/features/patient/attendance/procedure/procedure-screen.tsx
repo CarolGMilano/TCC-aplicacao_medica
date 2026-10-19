@@ -13,13 +13,27 @@ import {
 } from "../../record/constants";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
+import { SavedVisit } from "../saved-visit";
 import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
+import { ProcedureDetails } from "../visit-details";
 import { createProcedure } from "./procedure-api";
 
 const resultPlaceholder = "Selecione um resultado";
 
-// Mesmos campos e regras do formulário de procedimento do web.
 export function ProcedureScreen() {
+  return (
+    <SavedVisit
+      type="procedures"
+      title="Procedimento"
+      details={(item) => <ProcedureDetails item={item} />}
+    >
+      {() => <ProcedureRecord />}
+    </SavedVisit>
+  );
+}
+
+// Mesmos campos e regras do formulário de procedimento do web.
+function ProcedureRecord() {
   const returnToVisits = useReturnToVisits("procedures");
   const { id } = useLocalSearchParams<{ id: string }>();
   const [date, setDate] = useState<DateParts>(todayParts);

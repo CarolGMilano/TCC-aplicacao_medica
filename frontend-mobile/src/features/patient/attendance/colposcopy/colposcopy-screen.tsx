@@ -17,7 +17,9 @@ import {
 } from "../../record/constants";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput, styles } from "../components";
+import { SavedVisit } from "../saved-visit";
 import { keyOf, toIsoDate, todayParts, type DateParts } from "../utils";
+import { ColposcopyDetails } from "../visit-details";
 import { createColposcopy } from "./colposcopy-api";
 
 type ColposcopyForm = {
@@ -49,8 +51,20 @@ const initialForm = (): ColposcopyForm => ({
   observation: "",
 });
 
-// Passo 1: achados. Passo 2: conduta. Um único POST no fim.
 export function ColposcopyScreen() {
+  return (
+    <SavedVisit
+      type="colposcopy"
+      title="Colposcopia"
+      details={(item) => <ColposcopyDetails item={item} />}
+    >
+      {() => <ColposcopyRecord />}
+    </SavedVisit>
+  );
+}
+
+// Passo 1: achados. Passo 2: conduta. Um único POST no fim.
+function ColposcopyRecord() {
   const returnToVisits = useReturnToVisits("colposcopy");
   const { id } = useLocalSearchParams<{ id: string }>();
   const [step, setStep] = useState(1);

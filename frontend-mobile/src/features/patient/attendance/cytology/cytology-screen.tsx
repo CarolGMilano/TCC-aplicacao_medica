@@ -5,13 +5,27 @@ import { OptionRow } from "../../registration/components";
 import { cytologyLabels } from "../../record/constants";
 import { AttendanceForm } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
+import { SavedVisit } from "../saved-visit";
 import type { CytologyForm } from "../types";
 import { todayParts } from "../utils";
+import { CytologyDetails } from "../visit-details";
 import { createCytology } from "./cytology-api";
 
 const results = Object.keys(cytologyLabels);
 
 export function CytologyScreen() {
+  return (
+    <SavedVisit
+      type="cytology"
+      title="Citologia"
+      details={(item) => <CytologyDetails item={item} />}
+    >
+      {() => <CytologyRecord />}
+    </SavedVisit>
+  );
+}
+
+function CytologyRecord() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [form, setForm] = useState<CytologyForm>(() => {
     const [day, month, year] = todayParts();

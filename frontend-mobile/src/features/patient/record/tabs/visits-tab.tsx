@@ -10,6 +10,15 @@ import { visitFilters } from "../constants";
 import { fetchVisits } from "../services/visits-api";
 import type { VisitLists, VisitType } from "../types";
 
+// Tela de cada tipo de registro, que abre o registro salvo com recordId.
+const visitRoutes = {
+  consultations: "/patients/[id]/consultation",
+  cytology: "/patients/[id]/cytology",
+  pcr: "/patients/[id]/pcr",
+  colposcopy: "/patients/[id]/colposcopy",
+  procedures: "/patients/[id]/procedure",
+} as const;
+
 // Só aceita um filtro conhecido; outro texto quebraria visits[filter].
 function isVisitType(value: string | undefined): value is VisitType {
   return visitFilters.some((item) => item.id === value);
@@ -146,7 +155,23 @@ export function VisitsTab({
       </ThemedText>
 
       {list.length ? (
-        list.map((visit) => <VisitItem key={visit.id} visit={visit} />)
+        list.map((visit) => (
+          <VisitItem
+            key={visit.id}
+            visit={visit}
+            onPress={() =>
+              router.push({
+                pathname: visitRoutes[filter],
+                params: {
+                  id: String(patientId),
+                  name: patientName,
+                  record: patientRecord,
+                  recordId: String(visit.id),
+                },
+              })
+            }
+          />
+        ))
       ) : (
         <EmptyState title="Nenhum registro nesta aba" />
       )}
