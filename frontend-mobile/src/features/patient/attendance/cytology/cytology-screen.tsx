@@ -3,13 +3,14 @@ import { useState } from "react";
 
 import { OptionRow } from "../../registration/components";
 import { cytologyLabels } from "../../record/constants";
-import { AttendanceForm } from "../attendance-form";
+import type { Cytology } from "../../record/services/visits-api";
+import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
 import { SavedVisit } from "../saved-visit";
 import type { CytologyForm } from "../types";
-import { todayParts } from "../utils";
+import { fromIsoDate, todayParts } from "../utils";
 import { CytologyDetails } from "../visit-details";
-import { createCytology } from "./cytology-api";
+import { saveCytology } from "./cytology-api";
 
 const results = Object.keys(cytologyLabels);
 
@@ -19,15 +20,29 @@ export function CytologyScreen() {
       type="cytology"
       title="Citologia"
       details={(item) => <CytologyDetails item={item} />}
+      editable
     >
-      {() => <CytologyRecord />}
+      {(saved) => <CytologyRecord saved={saved} />}
     </SavedVisit>
   );
 }
 
-function CytologyRecord() {
+// Sem saved, nova citologia; com saved, edita a citologia salva, com os
+// mesmos campos e regras.
+function CytologyRecord({ saved }: { saved: Cytology | null }) {
+  const returnToVisits = useReturnToVisits("cytology");
   const { id } = useLocalSearchParams<{ id: string }>();
   const [form, setForm] = useState<CytologyForm>(() => {
+    if (saved) {
+      const [day, month, year] = fromIsoDate(saved.dataRegistro);
+      return {
+        day,
+        month,
+        year,
+        result: saved.resultado,
+        observation: saved.observacao ?? "",
+      };
+    }
     const [day, month, year] = todayParts();
     return { day, month, year, result: "ADENOCARCINOMA_SOE", observation: "" };
   });
@@ -41,13 +56,19 @@ function CytologyRecord() {
     }
     setSaving(true);
     try {
-      await createCytology({
-        idPaciente: Number(id),
-        dataRegistro: `${form.year}-${form.month}-${form.day}`,
-        resultado: form.result,
-        observacao: form.observation.trim() || "",
-      });
-      router.back();
+      await saveCytology(
+        {
+          idPaciente: Number(id),
+          dataRegistro: `${form.year}-${form.month}-${form.day}`,
+          resultado: form.result,
+          observacao: form.observation.trim() || "",
+        },
+        saved?.idExame,
+      );
+      // A edição volta para a ficha (aba Atend.) no filtro de citologia, como
+      // os outros registros; a nova citologia segue voltando uma tela.
+      if (saved) returnToVisits();
+      else router.back();
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -61,7 +82,10 @@ function CytologyRecord() {
 
   return (
     <AttendanceForm
-      title="Nova citologia"
+      title={saved ? "Alterar citologia" : "Nova citologia"}
+      mode={saved ? "edit" : "new"}
+      saved={saved ?? undefined}
+      buttonLabel={saved ? "Salvar alterações" : undefined}
       error={error}
       saving={saving}
       onSave={save}
