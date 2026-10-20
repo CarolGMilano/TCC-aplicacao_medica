@@ -1,5 +1,4 @@
 import { router, useFocusEffect } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -13,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Spacing, Theme } from "@/constants/theme";
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 
@@ -131,26 +131,9 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
                 {error}
               </ThemedText>
               <Pressable onPress={reload} accessibilityRole="button">
-                <ThemedText type="code">TENTAR DE NOVO</ThemedText>
+                <ThemedText type="code">Tentar de novo</ThemedText>
               </Pressable>
-              <Pressable
-                onPress={goToPatients}
-                accessibilityRole="button"
-                style={styles.backButton}
-              >
-                <SymbolView
-                  name={{
-                    ios: "arrow.left",
-                    android: "arrow_back",
-                    web: "arrow_back",
-                  }}
-                  tintColor={Theme.textSecondary}
-                  size={19}
-                />
-                <ThemedText type="code" themeColor="textSecondary">
-                  PACIENTES
-                </ThemedText>
-              </Pressable>
+              <PillButton label="Pacientes" onPress={goToPatients} />
             </>
           ) : (
             <ActivityIndicator color={Theme.primary} />
@@ -237,9 +220,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
-  },
 });

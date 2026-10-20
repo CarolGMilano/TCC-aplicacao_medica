@@ -4,7 +4,7 @@ import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import type { Visit } from "../types";
-import { Badge } from "./badge";
+import { Chip } from "@/components/shared/chip";
 
 type VisitItemProps = {
   visit: Visit;
@@ -47,7 +47,7 @@ export function VisitItem({ visit, onPress }: VisitItemProps) {
         {visit.tags.length > 0 ? (
           <View style={styles.tags}>
             {visit.tags.map((tag) => (
-              <Badge key={tag} label={tag} {...tagColors} />
+              <Chip key={tag} label={tag} {...tagColors} />
             ))}
           </View>
         ) : null}

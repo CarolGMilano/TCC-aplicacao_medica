@@ -1,11 +1,11 @@
 import { router } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Field } from "@/components/shared/field";
-import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
+import { PillButton } from "@/components/shared/pill-button";
+import { FontFamilies, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -19,24 +19,11 @@ export default function ForgotPasswordScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
     >
       <View style={styles.content}>
-        <Pressable
-          accessibilityRole="button"
+        <PillButton
+          label="Voltar"
+          icon="back"
           onPress={() => router.back()}
-          style={styles.back}
-        >
-          <SymbolView
-            name={{
-              ios: "arrow.left",
-              android: "arrow_back",
-              web: "arrow_back",
-            }}
-            tintColor={Theme.textSecondary}
-            size={18}
-          />
-          <ThemedText type="code" themeColor="textSecondary">
-            VOLTAR
-          </ThemedText>
-        </Pressable>
+        />
 
         <View style={styles.heading}>
           <ThemedText style={styles.title}>Esqueci a senha</ThemedText>
@@ -46,7 +33,7 @@ export default function ForgotPasswordScreen() {
         </View>
 
         <Field
-          label="E-MAIL"
+          label="E-mail"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -76,12 +63,6 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { flex: 1, paddingHorizontal: 25, paddingTop: 28, gap: 28 },
-  back: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
-    alignSelf: "flex-start",
-  },
   heading: { marginTop: 34, gap: 12 },
   title: {
     fontFamily: FontFamilies.detail,

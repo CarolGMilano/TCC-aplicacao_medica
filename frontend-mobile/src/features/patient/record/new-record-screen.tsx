@@ -3,6 +3,7 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
@@ -26,18 +27,13 @@ export function NewRecordScreen() {
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <ThemedView style={styles.screen}>
         <View style={styles.header}>
-          <Pressable
-            accessibilityRole="button"
+          <PillButton
+            label="Cancelar"
+            icon="close"
             accessibilityLabel="Cancelar e voltar para atendimentos"
-            hitSlop={8}
             onPress={() => router.back()}
             style={styles.cancel}
-          >
-            <ThemedText style={styles.close}>×</ThemedText>
-            <ThemedText type="code" themeColor="textSecondary">
-              CANCELAR
-            </ThemedText>
-          </Pressable>
+          />
           <ThemedText style={styles.title}>Novo registro</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
             {name} · PRT {record}
@@ -90,18 +86,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.border,
   },
 
-  cancel: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
-    marginBottom: Spacing.four,
-  },
-
-  close: {
-    color: Theme.textSecondary,
-    fontSize: 26,
-    lineHeight: 20,
-  },
+  cancel: { marginBottom: Spacing.four },
 
   title: {
     fontFamily: FontFamilies.detail,

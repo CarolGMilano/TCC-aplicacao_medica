@@ -1,14 +1,14 @@
-import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { styles as registrationStyles } from "../../registration/styles";
 import { priorityColors, recordTabs, statusColors } from "../constants";
 import type { PatientRecord, RecordTab } from "../types";
 import { formatBirthDate } from "../utils";
-import { Badge } from "./badge";
+import { Chip } from "@/components/shared/chip";
 
 type RecordHeaderProps = {
   record: PatientRecord;
@@ -36,40 +36,26 @@ export function RecordHeader({
   return (
     <View style={registrationStyles.header}>
       <View style={[registrationStyles.headerTop, styles.headerTop]}>
-        <Pressable onPress={onBack} accessibilityRole="button" hitSlop={8}>
-          <View style={styles.backButton}>
-            <SymbolView
-              name={{
-                ios: "arrow.left",
-                android: "arrow_back",
-                web: "arrow_back",
-              }}
-              tintColor={Theme.textSecondary}
-              size={19}
-            />
-            <ThemedText type="code" themeColor="textSecondary">
-              PACIENTES
-            </ThemedText>
-          </View>
-        </Pressable>
+        <PillButton label="Pacientes" onPress={onBack} />
         {editing || created ? (
-          <Badge
+          <Chip
             label={editing ? "Editando" : "Cadastrada"}
             color={Theme.textPrimaryLight}
             background={Theme.primary}
+            large
           />
         ) : null}
       </View>
 
       <View style={styles.identity}>
         <ThemedText style={registrationStyles.title}>{form.name}</ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">
+        <ThemedText themeColor="textSecondary" style={styles.subtitle}>
           {record.age} anos · {formatBirthDate(record)} · PRT {form.record}
         </ThemedText>
       </View>
 
       <View style={styles.badges}>
-        <Badge
+        <Chip
           label={
             record.priorityGroup
               ? "Grupo prioritário"
@@ -79,7 +65,7 @@ export function RecordHeader({
           background={priority.background}
         />
         {status ? (
-          <Badge
+          <Chip
             label={form.status}
             color={status.text}
             background={status.background}
@@ -116,14 +102,13 @@ export function RecordHeader({
 }
 
 const styles = StyleSheet.create({
-  headerTop: {
-    alignItems: "center",
+  subtitle: {
+    fontSize: Typography.sizes.action,
+    lineHeight: Typography.lineHeights.input,
   },
 
-  backButton: {
-    flexDirection: "row",
+  headerTop: {
     alignItems: "center",
-    gap: Spacing.one,
   },
 
   identity: {
