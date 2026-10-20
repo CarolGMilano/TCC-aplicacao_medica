@@ -85,12 +85,12 @@ export default function LoginScreen() {
           <View style={styles.heading}>
             <ThemedText style={styles.logo}>CerviCare</ThemedText>
             <ThemedText type="code" themeColor="textSecondary">
-              SAÚDE DA MULHER · RASTREIO E TRATAMENTO
+              Saúde da mulher · rastreio e tratamento
             </ThemedText>
           </View>
           <View style={styles.form}>
             <Field
-              label="E-MAIL"
+              label="E-mail"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -104,7 +104,7 @@ export default function LoginScreen() {
             />
             <Field
               ref={passwordRef}
-              label="SENHA"
+              label="Senha"
               value={password}
               onChangeText={setPassword}
               password
@@ -138,7 +138,7 @@ export default function LoginScreen() {
               style={styles.forgot}
             >
               <ThemedText type="code" themeColor="textSecondary">
-                ESQUECI A SENHA
+                Esqueci a senha
               </ThemedText>
             </Pressable>
           </View>

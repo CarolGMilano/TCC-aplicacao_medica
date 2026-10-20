@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 
-import { Spacing, Theme } from "@/constants/theme";
+import { Spacing, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 type SummaryRowProps = {
@@ -21,20 +21,14 @@ export function SummaryRow({ label, value }: SummaryRowProps) {
 }
 
 const styles = StyleSheet.create({
+  // Rótulo em cima, valor embaixo: cabe em colunas (FieldRow).
   summaryRow: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
-    gap: Spacing.three,
+    gap: Spacing.one,
   },
 
-  // Valores longos (ex.: MAC) quebram linha em vez de sair da tela.
   value: {
     flexShrink: 1,
-    textAlign: "right",
+    fontSize: Typography.sizes.body,
+    lineHeight: Typography.lineHeights.body,
   },
 });

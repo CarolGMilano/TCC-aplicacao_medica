@@ -143,7 +143,7 @@ export function VisitsTab({
                 type="code"
                 themeColor={active ? "textPrimaryLight" : "textSecondary"}
               >
-                {item.label.toUpperCase()}
+                {item.label}
               </ThemedText>
             </Pressable>
           );

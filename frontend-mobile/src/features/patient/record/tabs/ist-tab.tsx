@@ -11,10 +11,10 @@ export function IstTab({ record }: TabProps) {
   }
 
   return (
-    <StepSection title="HISTÓRICO DE IST">
-      <SummaryRow label="ISTS" value={form.ists.join(" · ")} />
+    <StepSection title="Histórico de IST">
+      <SummaryRow label="ISTs" value={form.ists.join(" · ")} />
       {form.ists.includes("HPV") ? (
-        <SummaryRow label="CONDILOMA HPV" value={yesNo(form.hpvWart)} />
+        <SummaryRow label="Condiloma HPV" value={yesNo(form.hpvWart)} />
       ) : null}
     </StepSection>
   );

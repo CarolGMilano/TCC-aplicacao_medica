@@ -22,8 +22,12 @@ import { createConsultation } from "./consultation-api";
 import { SavedVisit } from "../saved-visit";
 import { ConsultationDetails } from "../visit-details";
 import type { ConsultationForm } from "../types";
-import { toIsoDate, todayParts, type DateParts } from "../utils";
-import { OptionRow } from "../../registration/components";
+import { toIsoDate, todayParts } from "../utils";
+import {
+  FieldRow,
+  FormFields,
+  OptionRow,
+} from "../../registration/components";
 import { statusMap, statusOptions } from "../../registration/constants";
 import { styles as registrationStyles } from "../../registration/styles";
 import { statusColors } from "../../record/constants";
@@ -163,36 +167,38 @@ function NewConsultation() {
       <KeyboardAvoidingView style={formStyles.screen} behavior="padding">
         <AttendanceHeader title="Nova consulta" />
         <ScrollView contentContainerStyle={styles.content}>
-          <OptionRow
-            label="STATUS DA PACIENTE"
-            value={status}
-            options={statusOptions}
-            actionLabel="ALTERAR"
-            dotColor={statusColors[status]?.text}
-            onChange={changeStatus}
-          />
-          <DateInput
-            label="DATA DO REGISTRO"
-            values={form.date}
-            onChange={(index, value) => {
-              const date = [...form.date] as DateParts;
-              date[index] = value;
-              setForm({ ...form, date });
-            }}
-          />
-          <LabeledInput
-            label="HORÁRIO"
-            value={form.time}
-            onChangeText={(time) => setForm({ ...form, time })}
-            placeholder="HH:MM"
-          />
-          <LabeledInput
-            label="OBSERVAÇÃO"
-            value={form.observation}
-            onChangeText={(observation) => setForm({ ...form, observation })}
-            multiline
-            placeholder="Descreva a consulta..."
-          />
+          <FormFields>
+            <OptionRow
+              label="Status da paciente"
+              value={status}
+              options={statusOptions}
+              actionLabel="Alterar"
+              dotColor={statusColors[status]?.text}
+              onChange={changeStatus}
+            />
+            <FieldRow>
+              <DateInput
+                label="Data do registro"
+                values={form.date}
+                onChange={(date) => setForm({ ...form, date })}
+              />
+              <LabeledInput
+                label="Horário"
+                value={form.time}
+                onChangeText={(time) => setForm({ ...form, time })}
+                placeholder="HH:MM"
+              />
+            </FieldRow>
+            <LabeledInput
+              label="Observação"
+              value={form.observation}
+              onChangeText={(observation) =>
+                setForm({ ...form, observation })
+              }
+              multiline
+              placeholder="Descreva a consulta..."
+            />
+          </FormFields>
         </ScrollView>
         <View style={styles.footer}>
           {error ? (

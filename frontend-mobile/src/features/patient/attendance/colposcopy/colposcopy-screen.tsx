@@ -6,6 +6,7 @@ import { Theme } from "@/constants/theme";
 
 import {
   ChoiceRow,
+  FieldRow,
   StepSection,
   ToggleRow,
 } from "../../registration/components";
@@ -182,6 +183,7 @@ function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
       saving={saving}
       onSave={handleButton}
       step={{ current: step, total: 2 }}
+      sectioned
       onBack={step === 2 ? backToFindings : undefined}
       buttonLabel={
         step === 1
@@ -192,21 +194,24 @@ function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
       }
     >
       {step === 1 ? (
-        <StepSection title="ACHADOS · PASSO 1 DE 2">
+        <StepSection title="Achados · passo 1 de 2">
           <DateInput
-            label="DATA DO REGISTRO"
+            label="Data do registro"
             values={form.date}
-            onChange={(index, value) => {
-              const date = [...form.date] as DateParts;
-              date[index] = value;
-              update("date", date);
-            }}
+            onChange={(date) => update("date", date)}
           />
-          <ToggleRow
-            label="ESTROGENIZAÇÃO"
-            value={form.estrogenization}
-            onChange={(value) => update("estrogenization", value)}
-          />
+          <FieldRow>
+            <ToggleRow
+              label="Estrogenização"
+              value={form.estrogenization}
+              onChange={(value) => update("estrogenization", value)}
+            />
+            <ToggleRow
+              label="Lesão"
+              value={form.lesion}
+              onChange={(value) => update("lesion", value)}
+            />
+          </FieldRow>
           <ChoiceRow
             label="JEC"
             options={jecOptions}
@@ -214,23 +219,17 @@ function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
             onSelect={(value) => update("jec", value)}
           />
           <ChoiceRow
-            label="ZONA DE TRANSFORMAÇÃO"
+            label="Zona de transformação"
             options={Object.values(transformationZoneLabels)}
             selected={form.zone ? transformationZoneLabels[form.zone] : ""}
             onSelect={(label) =>
               update("zone", keyOf(transformationZoneLabels, label))
             }
-            inline
-          />
-          <ToggleRow
-            label="LESÃO"
-            value={form.lesion}
-            onChange={(value) => update("lesion", value)}
           />
           {form.lesion ? (
             <>
               <ChoiceRow
-                label="GRAU DA LESÃO"
+                label="Grau da lesão"
                 options={Object.values(lesionLabels)}
                 selected={
                   form.lesionGrade ? lesionLabels[form.lesionGrade] : ""
@@ -240,40 +239,41 @@ function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
                 }
               />
               <ChoiceRow
-                label="CLASSIFICAÇÃO"
+                label="Classificação"
                 options={lesionSizeOptions}
                 selected={form.classification ?? ""}
                 onSelect={(value) => update("classification", value)}
-                inline
               />
             </>
           ) : null}
         </StepSection>
       ) : (
-        <StepSection title="CONDUTA · PASSO 2 DE 2">
+        <StepSection title="Conduta · passo 2 de 2">
           {form.lesion ? (
             <>
-              <View style={[styles.alertRow, form.recurrence && styles.highlight]}>
-                <ToggleRow
-                  label="LESÃO RECIDIVA"
-                  value={form.recurrence}
-                  onChange={(value) => update("recurrence", value)}
-                  // Só o "Sim" fica em coral; o "Não" segue a cor padrão.
-                  selectedColor={form.recurrence ? Theme.secondary : undefined}
-                />
-              </View>
-              <View style={[styles.alertRow, form.seeAndTreat && styles.highlight]}>
-                <ToggleRow
-                  label="VER E TRATAR"
-                  value={form.seeAndTreat}
-                  onChange={(value) => update("seeAndTreat", value)}
-                  selectedColor={form.seeAndTreat ? Theme.secondary : undefined}
-                />
-              </View>
+              <FieldRow>
+                <View style={[styles.alertRow, form.recurrence && styles.highlight]}>
+                  <ToggleRow
+                    label="Lesão recidiva"
+                    value={form.recurrence}
+                    onChange={(value) => update("recurrence", value)}
+                    // Só o "Sim" fica em coral; o "Não" segue a cor padrão.
+                    selectedColor={form.recurrence ? Theme.secondary : undefined}
+                  />
+                </View>
+                <View style={[styles.alertRow, form.seeAndTreat && styles.highlight]}>
+                  <ToggleRow
+                    label="Ver e tratar"
+                    value={form.seeAndTreat}
+                    onChange={(value) => update("seeAndTreat", value)}
+                    selectedColor={form.seeAndTreat ? Theme.secondary : undefined}
+                  />
+                </View>
+              </FieldRow>
               {form.seeAndTreat ? (
                 <View style={[styles.alertRow, styles.highlight]}>
                   <LabeledInput
-                    label="MOTIVO DO VER E TRATAR · * OBRIGATÓRIO"
+                    label="Motivo do ver e tratar · * obrigatório"
                     value={form.seeAndTreatReason}
                     onChangeText={(value) => update("seeAndTreatReason", value)}
                     multiline
@@ -284,7 +284,7 @@ function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
             </>
           ) : null}
           <LabeledInput
-            label="OBSERVAÇÃO"
+            label="Observação"
             value={form.observation}
             onChangeText={(value) => update("observation", value)}
             multiline
