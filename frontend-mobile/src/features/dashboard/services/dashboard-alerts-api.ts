@@ -1,15 +1,15 @@
 import { getToken } from "@/features/auth/auth-session";
 import { apiFetch } from "@/features/auth/services/auth-api";
 
-// O backend exige o JWT em todas as rotas do dashboard.
-function authHeaders() {
-  return { headers: { Authorization: `Bearer ${getToken()}` } };
-}
-
 import { mockPostProcedureAlerts } from "../post-procedure/mocks";
 import type { PostProcedureAlert } from "../post-procedure/types";
 import { mockWithoutReturnAlerts } from "../without-return/mocks";
 import type { WithoutReturnAlert } from "../without-return/types";
+
+// O backend exige o JWT em todas as rotas do dashboard.
+function authHeaders() {
+  return { headers: { Authorization: `Bearer ${getToken()}` } };
+}
 
 export const USE_MOCK_DASHBOARD_ALERTS = false;
 
