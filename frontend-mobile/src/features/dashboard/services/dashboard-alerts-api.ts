@@ -5,7 +5,7 @@ import type { PostProcedureAlert } from "../post-procedure/types";
 import { mockWithoutReturnAlerts } from "../without-return/mocks";
 import type { WithoutReturnAlert } from "../without-return/types";
 
-export const USE_MOCK_DASHBOARD_ALERTS = true;
+export const USE_MOCK_DASHBOARD_ALERTS = false;
 
 export async function fetchWithoutReturnAlerts(): Promise<WithoutReturnAlert[]> {
   if (USE_MOCK_DASHBOARD_ALERTS) {
