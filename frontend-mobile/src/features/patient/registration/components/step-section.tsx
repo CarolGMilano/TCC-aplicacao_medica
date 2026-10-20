@@ -48,7 +48,9 @@ const styles = StyleSheet.create({
 
   titleText: {
     color: Theme.text,
+    // Maior que os dados (17) para marcar bem o início de cada seção.
     fontFamily: FontFamilies.primarySemiBold,
-    fontSize: Typography.sizes.bodySmall,
+    fontSize: Typography.sizes.section,
+    lineHeight: Typography.lineHeights.body,
   },
 });
