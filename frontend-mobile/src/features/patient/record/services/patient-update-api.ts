@@ -1,9 +1,9 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import { toPatientRegistration } from "../../registration/services/patient-registration-api";
 import type { PatientForm } from "../../registration/types";
-import type { DataTab, PatientRecord } from "../types";
+import type { DataTab, PatientDetail, PatientRecord } from "../types";
 import {
   USE_MOCK_PATIENT_RECORD,
   updateMockPatientStatus,
@@ -23,7 +23,7 @@ async function send(method: string, path: string, body?: object) {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await apiFetch(path, {
     method,
     headers: {
       "Content-Type": "application/json",
@@ -32,7 +32,7 @@ async function send(method: string, path: string, body?: object) {
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  if (response.ok) return;
+  if (response.ok) return response;
 
   if (response.status === 401 || response.status === 403) {
     throw new Error("Sua sessão expirou. Faça login novamente.");
@@ -50,20 +50,19 @@ function saveHistory(path: string, id: number | undefined, body: object) {
   return id ? send("PUT", `${path}/${id}`, body) : send("POST", path, body);
 }
 
-// As ISTs são uma lista: o que foi desmarcado é removido, o que foi
-// marcado é criado e o HPV é atualizado se o condiloma mudou.
+// As ISTs são uma lista: o que foi marcado é criado, o HPV é atualizado se o
+// condiloma mudou e o que foi desmarcado é removido por último, para uma
+// falha no meio não deixar a paciente sem IST. A lista atual vem do backend,
+// para uma nova tentativa não criar de novo o que já foi gravado.
 async function saveIsts(
-  record: PatientRecord,
+  idPaciente: number,
   next: { ist: string; condilomaHpv: boolean }[],
 ) {
-  const idPaciente = record.id;
-  const current = record.ids.ists;
-
-  for (const item of current) {
-    if (!next.some((ist) => ist.ist === item.ist)) {
-      await send("DELETE", `${historyPaths.ist}/${item.idHistorico}`);
-    }
-  }
+  const response = await send(
+    "GET",
+    `${historyPaths.ist}/paciente/${idPaciente}`,
+  );
+  const current = (await response.json()) as PatientDetail["historicoIst"];
 
   for (const item of next) {
     const existing = current.find((ist) => ist.ist === item.ist);
@@ -75,6 +74,12 @@ async function saveIsts(
         idPaciente,
         ...item,
       });
+    }
+  }
+
+  for (const item of current) {
+    if (!next.some((ist) => ist.ist === item.ist)) {
+      await send("DELETE", `${historyPaths.ist}/${item.idHistorico}`);
     }
   }
 }
@@ -111,6 +116,6 @@ export function saveTab(
         ...payload.historicoTabagismo,
       });
     case "ist":
-      return saveIsts(record, payload.historicoIst);
+      return saveIsts(idPaciente, payload.historicoIst);
   }
 }

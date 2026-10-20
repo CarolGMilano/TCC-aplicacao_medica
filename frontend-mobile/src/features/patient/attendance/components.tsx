@@ -1,45 +1,102 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
+import { ThemedView } from "@/components/shared/themed-view";
+import { Chip } from "@/components/shared/chip";
+import { PatientCard } from "@/components/shared/patient-card";
+import { ScreenHeader } from "@/components/shared/screen-header";
+import { inputStyles } from "@/components/shared/input-styles";
 
-import { Badge } from "../record/components";
+import {
+  DateField,
+  type DateValue,
+} from "../registration/components/date-field";
+import { styles as registrationStyles } from "../registration/styles";
 
-export function AttendanceHeader({ title }: { title: string }) {
+// Novo registro, registro salvo aberto para ver, ou em edição.
+export type AttendanceMode = "new" | "view" | "edit";
+
+// Sem onBack, o cabeçalho cancela o registro; com onBack (telas em passos),
+// volta para o passo anterior. Vendo um registro salvo, volta para os
+// atendimentos, como no layout.
+// disabled trava os dois botões enquanto o registro está sendo salvo; step
+// mostra a barra de passos entre os botões e o título, como no layout.
+export function AttendanceHeader({
+  title,
+  onBack,
+  disabled,
+  step,
+  mode = "new",
+  doctor,
+}: {
+  title: string;
+  onBack?: () => void;
+  disabled?: boolean;
+  step?: { current: number; total: number };
+  mode?: AttendanceMode;
+  doctor?: string | null;
+}) {
   const { name, record } = useLocalSearchParams<{
     name: string;
     record: string;
   }>();
 
   return (
-    <View style={styles.header}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Cancelar e voltar"
-        hitSlop={8}
-        onPress={() => router.back()}
-        style={styles.cancel}
-      >
-        <ThemedText style={styles.close}>×</ThemedText>
-        <ThemedText type="code" themeColor="textSecondary">
-          CANCELAR
-        </ThemedText>
-      </Pressable>
-      <View style={styles.titleRow}>
-        <ThemedText style={styles.title}>{title}</ThemedText>
-        <View>
-          <Badge
-            label="Nova"
+    <ScreenHeader
+      style={styles.header}
+      title={title}
+      back={
+        onBack || mode === "view"
+          ? {
+              label: onBack ? "Voltar" : "Atendimentos",
+              icon: "back",
+              accessibilityLabel: onBack
+                ? "Voltar ao passo anterior"
+                : "Voltar para os atendimentos",
+              disabled,
+              onPress: onBack ?? (() => router.back()),
+            }
+          : {
+              label: "Cancelar",
+              icon: "close",
+              accessibilityLabel: "Cancelar e voltar",
+              disabled,
+              onPress: () => router.back(),
+            }
+      }
+      // "Nova" já está no título; o selo só marca a edição.
+      chip={
+        mode === "edit" ? (
+          <Chip
+            label="Editando"
             color={Theme.textPrimaryLight}
             background={Theme.primary}
+            large
           />
+        ) : null
+      }
+    >
+      {step ? (
+        <View style={registrationStyles.progress}>
+          {Array.from({ length: step.total }, (_, index) => (
+            <ThemedView
+              key={index}
+              type={index < step.current ? "primary" : "border"}
+              style={registrationStyles.progressSegment}
+            />
+          ))}
         </View>
-      </View>
-      <ThemedText type="code" themeColor="textSecondary">
-        PACIENTE {name?.toUpperCase()} · PRT {record}
-      </ThemedText>
-    </View>
+      ) : null}
+      {/* De quem é o registro: o que mais importa depois do título. */}
+      <PatientCard
+        name={name}
+        record={record}
+        detail={doctor ? `Médico responsável: ${doctor}` : null}
+      />
+    </ScreenHeader>
   );
 }
 
@@ -56,6 +113,8 @@ export function LabeledInput({
   placeholder?: string;
   multiline?: boolean;
 }) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <View style={styles.field}>
       <ThemedText type="code" themeColor="textSecondary" style={styles.label}>
@@ -68,8 +127,26 @@ export function LabeledInput({
         placeholderTextColor={Theme.placeholder}
         multiline={multiline}
         textAlignVertical={multiline ? "top" : "center"}
-        style={[styles.input, multiline && styles.textarea]}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={[
+          styles.input,
+          multiline && styles.textarea,
+          focused && inputStyles.focused,
+        ]}
       />
+    </View>
+  );
+}
+
+// Texto longo de um registro salvo (ex.: observação), abaixo do rótulo.
+export function TextBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.field}>
+      <ThemedText type="code" themeColor="textSecondary" style={styles.label}>
+        {label}
+      </ThemedText>
+      <ThemedText>{value}</ThemedText>
     </View>
   );
 }
@@ -80,44 +157,23 @@ export function DateInput({
   onChange,
 }: {
   label: string;
-  values: [string, string, string];
-  onChange: (index: number, value: string) => void;
+  values: DateValue;
+  onChange: (value: DateValue) => void;
 }) {
-  return (
-    <View style={styles.field}>
-      <ThemedText type="code" themeColor="textSecondary" style={styles.label}>
-        {label}
-      </ThemedText>
-      <View style={styles.dateRow}>
-        {values.map((value, index) => (
-          <TextInput
-            key={index}
-            value={value}
-            onChangeText={(next) => onChange(index, next.replace(/\D/g, ""))}
-            keyboardType="number-pad"
-            maxLength={index === 2 ? 4 : 2}
-            placeholder={index === 0 ? "DD" : index === 1 ? "MM" : "AAAA"}
-            placeholderTextColor={Theme.placeholder}
-            style={[
-              styles.input,
-              styles.dateInput,
-              index === 2 && styles.yearInput,
-            ]}
-          />
-        ))}
-      </View>
-    </View>
-  );
+  return <DateField label={label} value={values} onChange={onChange} />;
 }
 
+// outline: botão com contorno, como o "Editar registro" do layout.
 export function SaveButton({
   label,
   onPress,
   disabled,
+  outline,
 }: {
   label: string;
   onPress: () => void;
   disabled?: boolean;
+  outline?: boolean;
 }) {
   return (
     <Pressable
@@ -126,11 +182,16 @@ export function SaveButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.save,
-        pressed && styles.pressed,
+        outline && styles.outline,
+        pressed && !outline && styles.pressed,
+        pressed && outline && styles.outlinePressed,
         disabled && styles.disabled,
       ]}
     >
-      <ThemedText type="button" themeColor="textPrimaryLight">
+      <ThemedText
+        type="button"
+        themeColor={outline ? "text" : "textPrimaryLight"}
+      >
         {label}
       </ThemedText>
     </Pressable>
@@ -138,6 +199,23 @@ export function SaveButton({
 }
 
 export const styles = StyleSheet.create({
+
+  // Linhas com resposta "Sim" que pedem atenção (ex.: ver e tratar).
+  // Borda sempre presente (transparente) para o texto não pular 3px ao
+  // destacar a linha.
+  alertRow: {
+    borderLeftWidth: 3,
+    borderLeftColor: "transparent",
+    borderRadius: 8,
+    paddingHorizontal: Spacing.two + Spacing.one,
+    paddingVertical: Spacing.two,
+  },
+
+  highlight: {
+    backgroundColor: Theme.backgroundAlert,
+    borderLeftColor: Theme.secondary,
+  },
+
   screen: {
     flex: 1,
     backgroundColor: Theme.background,
@@ -151,69 +229,30 @@ export const styles = StyleSheet.create({
     borderBottomColor: Theme.border,
   },
 
-  cancel: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
-    marginBottom: Spacing.three,
-  },
 
-  close: {
-    color: Theme.textSecondary,
-    fontSize: 26,
-    lineHeight: 20,
-  },
 
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
 
-  title: {
-    fontFamily: FontFamilies.detail,
-    fontSize: Typography.sizes.title,
-    lineHeight: Typography.lineHeights.title,
-  },
 
-  field: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
-  },
+
+
+  field: {},
 
   label: { marginBottom: Spacing.two },
 
   input: {
+    ...inputStyles.box,
     minHeight: 48,
-    borderWidth: 1,
-    borderColor: Theme.border,
-    borderRadius: 11,
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.two,
     color: Theme.text,
     fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.input,
-    backgroundColor: Theme.backgroundElement,
   },
 
   textarea: {
     minHeight: 120,
     paddingTop: Spacing.two,
   },
-
-  dateRow: {
-    flexDirection: "row",
-    gap: Spacing.two,
-  },
-
-  dateInput: {
-    flex: 1,
-    textAlign: "center",
-  },
-
-  yearInput: { flex: 1.7 },
 
   save: {
     minHeight: 54,
@@ -224,6 +263,14 @@ export const styles = StyleSheet.create({
   },
 
   pressed: { backgroundColor: Theme.primaryHoverDark },
+
+  outline: {
+    borderWidth: 1,
+    borderColor: Theme.border,
+    backgroundColor: Theme.backgroundElement,
+  },
+
+  outlinePressed: { backgroundColor: Theme.backgroundSelected },
 
   disabled: { opacity: 0.6 },
 });

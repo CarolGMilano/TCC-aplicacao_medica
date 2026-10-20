@@ -1,28 +1,40 @@
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import type { Visit } from "../types";
-import { Badge } from "./badge";
+import { Chip } from "@/components/shared/chip";
 
 type VisitItemProps = {
   visit: Visit;
+  onPress: () => void;
 };
 
 // Linha da lista de atendimentos: barra lateral, resultado, observação,
-// selos e "data · médico". Destaque em coral quando pede atenção.
-export function VisitItem({ visit }: VisitItemProps) {
+// selos e "data · médico". Destaque em coral quando pede atenção. O toque
+// abre o registro salvo.
+export function VisitItem({ visit, onPress }: VisitItemProps) {
   const tagColors = visit.highlight
     ? { color: Theme.administratorDark, background: Theme.administratorLight }
     : { color: Theme.textSecondary, background: Theme.backgroundSelected };
 
   return (
-    <View style={[styles.item, visit.highlight && styles.highlight]}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityHint="Abre o registro"
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.item,
+        visit.highlight && styles.highlight,
+        pressed && styles.pressed,
+      ]}
+    >
       <View style={[styles.bar, visit.highlight && styles.barHighlight]} />
 
       <View style={styles.content}>
-        <ThemedText numberOfLines={2}>
+        {/* Na consulta, o título é a observação (sem detalhe): vai inteira. */}
+        <ThemedText numberOfLines={visit.detail ? 2 : undefined}>
           {visit.title}
         </ThemedText>
 
@@ -35,7 +47,7 @@ export function VisitItem({ visit }: VisitItemProps) {
         {visit.tags.length > 0 ? (
           <View style={styles.tags}>
             {visit.tags.map((tag) => (
-              <Badge key={tag} label={tag} {...tagColors} />
+              <Chip key={tag} label={tag} {...tagColors} />
             ))}
           </View>
         ) : null}
@@ -44,7 +56,7 @@ export function VisitItem({ visit }: VisitItemProps) {
           {visit.date} · {visit.doctor}
         </ThemedText>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -60,7 +72,7 @@ const styles = StyleSheet.create({
   },
 
   highlight: {
-    backgroundColor: "rgba(231, 152, 151, 0.13)",
+    backgroundColor: Theme.backgroundAlert,
   },
 
   bar: {
@@ -68,6 +80,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: Theme.tertiary,
   },
+
+  pressed: { opacity: 0.7 },
 
   barHighlight: {
     backgroundColor: Theme.secondary,

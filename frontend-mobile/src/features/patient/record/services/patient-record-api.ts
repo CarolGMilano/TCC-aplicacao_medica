@@ -1,5 +1,5 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import { mockPatients } from "../../list/mocks/patients";
 import { statusMap } from "../../registration/constants";
@@ -58,8 +58,8 @@ export async function updatePatientStatus(id: number, status: string) {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
 
-  const response = await fetch(
-    `${API_BASE_URL}/api/pacientes/${id}/status?status=${encodeURIComponent(statusMap[status] ?? status)}`,
+  const response = await apiFetch(
+    `/api/pacientes/${id}/status?status=${encodeURIComponent(statusMap[status] ?? status)}`,
     {
       method: "PUT",
       headers: { Authorization: `Bearer ${token}` },
@@ -84,7 +84,7 @@ export async function fetchPatient(id: string): Promise<PatientDetail> {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/pacientes/${id}`, {
+  const response = await apiFetch(`/api/pacientes/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 

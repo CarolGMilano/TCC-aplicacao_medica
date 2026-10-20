@@ -1,13 +1,14 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import {
   cytologyLabels,
+  hpvTypeLabels,
   lesionLabels,
   procedureLabels,
   procedureResultLabels,
 } from "../constants";
-import type { Visit, VisitLists } from "../types";
+import type { Visit, VisitLists, VisitType } from "../types";
 
 export const USE_MOCK_VISITS = false;
 
@@ -17,36 +18,85 @@ type VisitResponse = {
   observacao: string | null;
 };
 
-type Consultation = VisitResponse & { idConsulta: number; dataHora: string };
-
-type Exam = VisitResponse & { dataRegistro: string };
-
-type Cytology = Exam & { idExame: number; resultado: string };
-
-type Pcr = Exam & { idExame: number; resultado: string; tiposHpv: string[] };
-
-type Colposcopy = Exam & {
-  idColposcopia: number;
-  lesao: boolean;
-  grauLesao: string | null;
-  recidiva: boolean | null;
-  verETratar: boolean;
+// Exames e procedimentos guardam também a data da última edição.
+type Exam = VisitResponse & {
+  dataRegistro: string;
+  dataEdicao: string | null;
 };
 
-type Procedure = Exam & {
+export type Consultation = VisitResponse & {
+  idConsulta: number;
+  dataHora: string;
+};
+
+export type Cytology = Exam & { idExame: number; resultado: string };
+
+export type Pcr = Exam & {
+  idExame: number;
+  resultado: string;
+  tiposHpv: string[] | null;
+};
+
+export type Colposcopy = Exam & {
+  idColposcopia: number;
+  estrogenizacao: boolean | null;
+  jec: string | null;
+  zt: string | null;
+  lesao: boolean | null;
+  grauLesao: string | null;
+  classificacao: string | null;
+  recidiva: boolean | null;
+  verETratar: boolean | null;
+  verETratarMotivo: string | null;
+};
+
+export type Procedure = Exam & {
   idProcedimento: number;
   tipo: string;
+  qtFragmento: number | null;
+  margemEndocervical: string | null;
+  margemEctocervical: string | null;
   resultado: string;
 };
 
-async function get<T>(path: string): Promise<T> {
+export type VisitResponses = {
+  consultations: Consultation;
+  cytology: Cytology;
+  pcr: Pcr;
+  colposcopy: Colposcopy;
+  procedures: Procedure;
+};
+
+const visitPaths: Record<VisitType, string> = {
+  consultations: "/api/consultas",
+  cytology: "/api/citologias",
+  pcr: "/api/pcr",
+  colposcopy: "/api/colposcopias",
+  procedures: "/api/procedimentos",
+};
+
+// Cada tipo de registro tem o id com um nome diferente na resposta.
+const visitIds: {
+  [Type in VisitType]: (item: VisitResponses[Type]) => number;
+} = {
+  consultations: (item) => item.idConsulta,
+  cytology: (item) => item.idExame,
+  pcr: (item) => item.idExame,
+  colposcopy: (item) => item.idColposcopia,
+  procedures: (item) => item.idProcedimento,
+};
+
+async function get<T>(
+  path: string,
+  errorMessage = "Não foi possível carregar os atendimentos.",
+): Promise<T> {
   const token = getToken();
 
   if (!token) {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await apiFetch(path, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -56,11 +106,11 @@ async function get<T>(path: string): Promise<T> {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
 
-  throw new Error("Não foi possível carregar os atendimentos.");
+  throw new Error(errorMessage);
 }
 
 // "2026-06-14" → "14/06/2026"; com hora, "14/06/2026 · 09:12".
-function formatDate(value: string) {
+export function formatDate(value: string) {
   const [date, time] = value.split("T");
   const [year, month, day] = date.split("-");
   const formatted = `${day}/${month}/${year}`;
@@ -92,11 +142,11 @@ export async function fetchVisits(id: number): Promise<VisitLists> {
 
   const [consultations, cytology, pcr, colposcopy, procedures] =
     await Promise.all([
-      get<Consultation[]>(`/api/consultas/paciente/${id}`),
-      get<Cytology[]>(`/api/citologias/paciente/${id}`),
-      get<Pcr[]>(`/api/pcr/paciente/${id}`),
-      get<Colposcopy[]>(`/api/colposcopias/paciente/${id}`),
-      get<Procedure[]>(`/api/procedimentos/paciente/${id}`),
+      get<Consultation[]>(`${visitPaths.consultations}/paciente/${id}`),
+      get<Cytology[]>(`${visitPaths.cytology}/paciente/${id}`),
+      get<Pcr[]>(`${visitPaths.pcr}/paciente/${id}`),
+      get<Colposcopy[]>(`${visitPaths.colposcopy}/paciente/${id}`),
+      get<Procedure[]>(`${visitPaths.procedures}/paciente/${id}`),
     ]);
 
   return {
@@ -123,8 +173,9 @@ export async function fetchVisits(id: number): Promise<VisitLists> {
         ...base(item, item.dataRegistro),
         id: item.idExame,
         title: positive
-          ? item.tiposHpv.map((type) => type.replace("_", " ")).join(" · ") ||
-            "Positivo"
+          ? (item.tiposHpv ?? [])
+              .map((type) => hpvTypeLabels[type] ?? type)
+              .join(" · ") || "Positivo"
           : "Negativo",
         tags: positive ? ["Positivo"] : [],
         highlight: positive,
@@ -154,4 +205,22 @@ export async function fetchVisits(id: number): Promise<VisitLists> {
       }`,
     })),
   };
+}
+
+// Um registro salvo, para ver e editar. O backend não busca registro por id:
+// procura na lista da paciente, que já vem completa.
+export async function fetchVisit<Type extends VisitType>(
+  type: Type,
+  patientId: number,
+  recordId: number,
+): Promise<VisitResponses[Type]> {
+  const list = await get<VisitResponses[Type][]>(
+    `${visitPaths[type]}/paciente/${patientId}`,
+    "Não foi possível carregar o registro.",
+  );
+  const getId = visitIds[type];
+  const item = list.find((visit) => getId(visit) === recordId);
+
+  if (!item) throw new Error("Registro não encontrado.");
+  return item;
 }

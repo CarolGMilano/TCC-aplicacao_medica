@@ -1,7 +1,8 @@
 import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
+import { FontFamilies, Spacing, Theme } from "@/constants/theme";
+import { Chip } from "@/components/shared/chip";
 import { ThemedText } from "@/components/shared/themed-text";
 import { statusColors } from "@/features/patient/record/constants";
 
@@ -11,6 +12,8 @@ type PatientListItemProps = {
   patient: PatientListItemType;
 };
 
+// Cartão da paciente: nome e idade/prontuário à esquerda; à direita o status
+// numa linha só e a última consulta. O nome encolhe antes do selo.
 export function PatientListItem({ patient }: PatientListItemProps) {
   const colors = statusColors[patient.status];
 
@@ -24,26 +27,28 @@ export function PatientListItem({ patient }: PatientListItemProps) {
           params: { id: String(patient.id) },
         })
       }
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
       <View style={styles.identity}>
-        <ThemedText style={styles.name} numberOfLines={1}>
+        <ThemedText style={styles.name} numberOfLines={2}>
           {patient.name}
         </ThemedText>
-        <ThemedText type="subtitle" themeColor="textSecondary">
+        <ThemedText type="small" themeColor="textSecondary">
           {patient.age} anos · PRT {patient.record}
         </ThemedText>
       </View>
       <View style={styles.details}>
         {colors ? (
-          <View style={[styles.badge, { backgroundColor: colors.background }]}>
-            <ThemedText style={[styles.badgeText, { color: colors.text }]}>
-              {patient.status}
-            </ThemedText>
-          </View>
+          <Chip
+            label={patient.status}
+            color={colors.text}
+            background={colors.background}
+          />
         ) : null}
-        <ThemedText type="small" themeColor="textSecondary">
-          última consulta em {patient.lastVisit}
+        <ThemedText type="small" themeColor="textSecondary" style={styles.date}>
+          {patient.lastVisit
+            ? `Última consulta em ${patient.lastVisit}`
+            : "Sem consultas"}
         </ThemedText>
       </View>
     </Pressable>
@@ -51,22 +56,23 @@ export function PatientListItem({ patient }: PatientListItemProps) {
 }
 
 const styles = StyleSheet.create({
-  row: {
-    minHeight: 73,
-    backgroundColor: Theme.backgroundElement,
+  card: {
+    marginHorizontal: Spacing.three,
+    marginBottom: Spacing.two,
     paddingHorizontal: Spacing.three,
-    paddingVertical: 11,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E2DDC5",
+    paddingVertical: Spacing.three - Spacing.one,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Theme.inputBorder,
+    backgroundColor: Theme.backgroundElement,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    gap: Spacing.two,
+    gap: Spacing.three,
   },
 
   identity: {
     flex: 1,
-    gap: 3,
+    gap: Spacing.half,
   },
 
   name: {
@@ -74,22 +80,12 @@ const styles = StyleSheet.create({
   },
 
   details: {
+    flexShrink: 0,
     alignItems: "flex-end",
-    gap: 4,
+    gap: Spacing.one + Spacing.half,
   },
 
-  badge: {
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-
-  badgeText: {
-    fontFamily: FontFamilies.primaryMedium,
-    fontSize: Typography.sizes.small,
-    lineHeight: Typography.lineHeights.compact,
-    letterSpacing: Typography.letterSpacing.tight,
-  },
+  date: { textAlign: "right" },
 
   pressed: { opacity: 0.7 },
 });

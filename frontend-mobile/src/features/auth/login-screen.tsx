@@ -1,6 +1,14 @@
 import { router } from "expo-router";
-import { useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  type TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Field } from "@/components/shared/field";
@@ -9,20 +17,33 @@ import { FontFamilies, Typography } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import { login } from "./services/auth-api";
 
+const emailPattern = /^[^\s@]+@[^\s@]+$/;
+
 export default function LoginScreen() {
   const theme = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const passwordRef = useRef<TextInput>(null);
 
   async function handleLogin() {
-    if (!email.trim() || !password) {
+    if (isSubmitting) return;
+
+    setError("");
+    setEmailError("");
+
+    if (!email.trim() || !password.trim()) {
       setError("Informe seu e-mail e sua senha.");
       return;
     }
 
-    setError("");
+    if (!emailPattern.test(email.trim())) {
+      setEmailError("Informe um e-mail válido.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -43,65 +64,86 @@ export default function LoginScreen() {
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
     >
-      <View style={styles.content}>
-        <View style={[styles.progress, { backgroundColor: theme.secondary }]} />
-        <View
-          style={[styles.progressAccent, { backgroundColor: theme.tertiary }]}
-        />
-        <View style={styles.heading}>
-          <ThemedText style={styles.logo}>CerviCare</ThemedText>
-          <ThemedText type="code" themeColor="textSecondary">
-            SAÚDE DA MULHER · RASTREIO E TRATAMENTO
-          </ThemedText>
-        </View>
-        <View style={styles.form}>
-          <Field
-            label="E-MAIL"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-            placeholder="seu.email@exemplo.com"
-          />
-          <Field
-            label="SENHA"
-            value={password}
-            onChangeText={setPassword}
-            password
-            autoComplete="password"
-            placeholder="••••••••"
-            error={error}
-          />
-          <Pressable
-            accessibilityRole="button"
-            disabled={isSubmitting}
-            onPress={handleLogin}
-            style={({ pressed }) => [
-              styles.submit,
-              { backgroundColor: theme.accent },
-              pressed && styles.pressed,
-            ]}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color={theme.textPrimaryLight} />
-            ) : (
-              <ThemedText type="button" themeColor="textPrimaryLight">
-                Entrar
-              </ThemedText>
-            )}
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => router.push("/forgot-password")}
-            style={styles.forgot}
-          >
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.spacer} />
+          <View style={styles.progressRow}>
+            <View
+              style={[styles.progress, { backgroundColor: theme.secondary }]}
+            />
+            <View
+              style={[
+                styles.progressAccent,
+                { backgroundColor: theme.tertiary },
+              ]}
+            />
+          </View>
+          <View style={styles.heading}>
+            <ThemedText style={styles.logo}>CerviCare</ThemedText>
             <ThemedText type="code" themeColor="textSecondary">
-              ESQUECI A SENHA
+              Saúde da mulher · rastreio e tratamento
             </ThemedText>
-          </Pressable>
-        </View>
-      </View>
+          </View>
+          <View style={styles.form}>
+            <Field
+              label="E-mail"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              placeholder="seu.email@exemplo.com"
+              returnKeyType="next"
+              submitBehavior="submit"
+              onSubmitEditing={() => passwordRef.current?.focus()}
+              error={emailError}
+            />
+            <Field
+              ref={passwordRef}
+              label="Senha"
+              value={password}
+              onChangeText={setPassword}
+              password
+              autoComplete="password"
+              placeholder="••••••••"
+              returnKeyType="go"
+              onSubmitEditing={handleLogin}
+              error={error}
+            />
+            <Pressable
+              accessibilityRole="button"
+              disabled={isSubmitting}
+              onPress={handleLogin}
+              style={({ pressed }) => [
+                styles.submit,
+                { backgroundColor: theme.accent },
+                pressed && styles.pressed,
+              ]}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color={theme.textPrimaryLight} />
+              ) : (
+                <ThemedText type="button" themeColor="textPrimaryLight">
+                  Entrar
+                </ThemedText>
+              )}
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push("/forgot-password")}
+              style={styles.forgot}
+            >
+              <ThemedText type="code" themeColor="textSecondary">
+                Esqueci a senha
+              </ThemedText>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -110,10 +152,18 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
 
   content: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 25,
-    paddingTop: 160,
+    paddingBottom: 24,
   },
+
+  // Até 160 de respiro no topo; encolhe em tela pequena ou com o teclado aberto.
+  spacer: {
+    flex: 1,
+    maxHeight: 160,
+  },
+
+  progressRow: { flexDirection: "row" },
 
   progress: {
     height: 5,
@@ -121,13 +171,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
 
+  // Sobrepõe 25 ao fim da barra rosa, para as duas ficarem emendadas.
   progressAccent: {
-    position: "absolute",
-    top: 160,
-    left: "66%",
-    right: 25,
+    flex: 1,
     height: 5,
     borderRadius: 8,
+    marginLeft: -25,
   },
 
   heading: {

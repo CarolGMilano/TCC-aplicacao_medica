@@ -1,5 +1,5 @@
 import { getToken } from "@/features/auth/auth-session";
-import { API_BASE_URL } from "@/features/auth/services/auth-api";
+import { apiFetch } from "@/features/auth/services/auth-api";
 
 import { saveMockConsultation } from "../mocks";
 import type { ConsultationRequest } from "../types";
@@ -12,7 +12,7 @@ export async function createConsultation(request: ConsultationRequest) {
   const token = getToken();
   if (!token) throw new Error("Sua sessão expirou. Faça login novamente.");
 
-  const response = await fetch(`${API_BASE_URL}/api/consultas`, {
+  const response = await apiFetch("/api/consultas", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

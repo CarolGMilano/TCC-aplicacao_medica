@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 
-import { Spacing, Theme } from "@/constants/theme";
+import { FontFamilies, Spacing, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 type SummaryRowProps = {
@@ -11,7 +11,7 @@ type SummaryRowProps = {
 export function SummaryRow({ label, value }: SummaryRowProps) {
   return (
     <View style={styles.summaryRow}>
-      <ThemedText type="code" themeColor="textSecondary">
+      <ThemedText type="code" themeColor="textSecondary" style={styles.label}>
         {label}
       </ThemedText>
 
@@ -21,20 +21,18 @@ export function SummaryRow({ label, value }: SummaryRowProps) {
 }
 
 const styles = StyleSheet.create({
+  // Rótulo em cima, valor embaixo: cabe em colunas (FieldRow).
   summaryRow: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
-    gap: Spacing.three,
+    gap: Spacing.one,
   },
 
-  // Valores longos (ex.: MAC) quebram linha em vez de sair da tela.
+  label: { fontSize: Typography.sizes.bodySmall },
+
+  // Dado salvo em destaque (17, médio), mais fácil de ler que o rótulo.
   value: {
     flexShrink: 1,
-    textAlign: "right",
+    fontFamily: FontFamilies.primaryMedium,
+    fontSize: Typography.sizes.value,
+    lineHeight: Typography.lineHeights.body,
   },
 });

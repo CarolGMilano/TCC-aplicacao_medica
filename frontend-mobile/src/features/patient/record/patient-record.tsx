@@ -1,9 +1,9 @@
-import { router } from "expo-router";
-import { SymbolView } from "expo-symbols";
-import { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   BackHandler,
+  KeyboardAvoidingView,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Spacing, Theme } from "@/constants/theme";
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 
@@ -40,13 +41,14 @@ type PatientRecordScreenProps = {
 export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
   const [record, setRecord] = useState<PatientRecord | null>(null);
   const [error, setError] = useState("");
+  // Busca em andamento: "Editar dados" espera, para o rascunho não partir
+  // da ficha antiga (ex.: com o status de antes da consulta).
+  const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState<RecordTab>(created ? "visits" : "personal");
 
-  // Mudar a chave dispara uma nova busca (botão "Tentar de novo").
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
+  const loadRecord = useCallback(() => {
     let active = true;
+    setLoading(true);
 
     fetchPatient(id)
       .then((detail) => {
@@ -59,20 +61,34 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
             ? requestError.message
             : "Não foi possível carregar a ficha da paciente.",
         );
+      })
+      .finally(() => {
+        if (active) setLoading(false);
       });
 
-    // Ignora a resposta se a tela fechar antes de ela chegar.
+    // Ignora a resposta se a tela sair de foco antes de ela chegar.
     return () => {
       active = false;
     };
-  }, [id, attempt]);
+  }, [id]);
+
+  // Busca de novo sempre que a ficha volta a aparecer (ex.: depois de uma
+  // consulta que trocou o status). A ficha atual fica na tela enquanto isso.
+  useFocusEffect(loadRecord);
 
   function reload() {
     setError("");
-    setAttempt((current) => current + 1);
+    loadRecord();
   }
 
-  const edit = useRecordEdit(record, reload);
+  // Atualiza a ficha sem a tela de carregando; se falhar, mantém a atual.
+  async function refresh() {
+    try {
+      setRecord(toPatientRecord(await fetchPatient(id)));
+    } catch {}
+  }
+
+  const edit = useRecordEdit(record, reload, refresh);
 
   // Trocar de aba descarta a edição em andamento, como no layout.
   function changeTab(next: RecordTab) {
@@ -93,8 +109,17 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
     return () => subscription.remove();
   });
 
-  // Volta para a lista sem empilhar outra tela de pacientes.
-  const goToPatients = () => router.navigate("/patients");
+  // Volta para a lista que já está na pilha, sem abrir outra. Se a ficha veio
+  // de outra tela (ex.: "Ver todas" do Dashboard), a lista entra no lugar dela.
+  // Durante a edição, só cancela, como o voltar do Android; salvando, espera.
+  function goToPatients() {
+    if (edit.saving) return;
+    if (edit.editing) {
+      edit.cancel();
+      return;
+    }
+    router.dismissTo("/patients");
+  }
 
   if (!record) {
     return (
@@ -106,26 +131,9 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
                 {error}
               </ThemedText>
               <Pressable onPress={reload} accessibilityRole="button">
-                <ThemedText type="code">TENTAR DE NOVO</ThemedText>
+                <ThemedText type="code">Tentar de novo</ThemedText>
               </Pressable>
-              <Pressable
-                onPress={goToPatients}
-                accessibilityRole="button"
-                style={styles.backButton}
-              >
-                <SymbolView
-                  name={{
-                    ios: "arrow.left",
-                    android: "arrow_back",
-                    web: "arrow_back",
-                  }}
-                  tintColor={Theme.textSecondary}
-                  size={19}
-                />
-                <ThemedText type="code" themeColor="textSecondary">
-                  PACIENTES
-                </ThemedText>
-              </Pressable>
+              <PillButton label="Pacientes" onPress={goToPatients} />
             </>
           ) : (
             <ActivityIndicator color={Theme.primary} />
@@ -137,53 +145,64 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
 
   return (
     <SafeAreaView style={registrationStyles.safeArea}>
-      <ThemedView style={registrationStyles.screen}>
-        <ScrollView
-          contentContainerStyle={registrationStyles.content}
-          showsVerticalScrollIndicator={false}
-        >
-          <RecordHeader
-            record={record}
-            tab={tab}
-            created={created}
-            editing={edit.editing}
-            onBack={goToPatients}
-            onTabChange={changeTab}
-          />
-          <View>
-            {tab !== "visits" && edit.draft ? (
-              <EditTab tab={tab} form={edit.draft} update={edit.update} />
-            ) : null}
-            {!edit.editing && tab === "personal" && (
-              <PersonalTab record={record} />
-            )}
-            {!edit.editing && tab === "obstetric" && (
-              <ObstetricTab record={record} />
-            )}
-            {!edit.editing && tab === "sexual" && <SexualTab record={record} />}
-            {!edit.editing && tab === "ist" && <IstTab record={record} />}
-            {!edit.editing && tab === "habits" && <HabitsTab record={record} />}
-            {tab === "visits" && (
-              <VisitsTab
-                patientId={record.id}
-                patientName={record.form.name}
-                patientRecord={record.form.record}
-              />
-            )}
-          </View>
-        </ScrollView>
+      {/* Mantém o rodapé acima do teclado, também no Android. */}
+      <KeyboardAvoidingView
+        style={registrationStyles.screen}
+        behavior="padding"
+      >
+        <ThemedView style={registrationStyles.screen}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <RecordHeader
+              record={record}
+              tab={tab}
+              created={created}
+              editing={edit.editing}
+              onBack={goToPatients}
+              onTabChange={changeTab}
+            />
+            <View>
+              {tab !== "visits" && edit.draft ? (
+                <EditTab tab={tab} form={edit.draft} update={edit.update} />
+              ) : null}
+              {!edit.editing && tab === "personal" && (
+                <PersonalTab record={record} />
+              )}
+              {!edit.editing && tab === "obstetric" && (
+                <ObstetricTab record={record} />
+              )}
+              {!edit.editing && tab === "sexual" && (
+                <SexualTab record={record} />
+              )}
+              {!edit.editing && tab === "ist" && <IstTab record={record} />}
+              {!edit.editing && tab === "habits" && (
+                <HabitsTab record={record} />
+              )}
+              {tab === "visits" && (
+                <VisitsTab
+                  patientId={record.id}
+                  patientName={record.form.name}
+                  patientRecord={record.form.record}
+                />
+              )}
+            </View>
+          </ScrollView>
 
-        {tab !== "visits" ? (
-          <RecordFooter
-            editing={edit.editing}
-            saving={edit.saving}
-            error={edit.error}
-            onEdit={edit.start}
-            onCancel={edit.cancel}
-            onSave={() => edit.save(tab)}
-          />
-        ) : null}
-      </ThemedView>
+          {tab !== "visits" ? (
+            <RecordFooter
+              editing={edit.editing}
+              loading={loading}
+              saving={edit.saving}
+              error={edit.error}
+              onEdit={edit.start}
+              onCancel={edit.cancel}
+              onSave={() => edit.save(tab)}
+            />
+          ) : null}
+        </ThemedView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -201,9 +220,4 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
-  },
 });

@@ -18,9 +18,15 @@ export function StepSection({ title, children }: StepSectionProps) {
         </ThemedText>
       </View>
 
-      {children}
+      <FormFields>{children}</FormFields>
     </View>
   );
+}
+
+// Campos de um grupo: empilhados com espaço entre eles, sem linha por campo
+// (as linhas ficam só entre as seções).
+export function FormFields({ children }: { children: ReactNode }) {
+  return <View style={styles.fields}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -34,9 +40,17 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.primary,
   },
 
+  fields: {
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.three,
+    gap: Spacing.three + Spacing.one,
+  },
+
   titleText: {
     color: Theme.text,
+    // Maior que os dados (17) para marcar bem o início de cada seção.
     fontFamily: FontFamilies.primarySemiBold,
-    fontSize: Typography.sizes.bodySmall,
+    fontSize: Typography.sizes.section,
+    lineHeight: Typography.lineHeights.body,
   },
 });

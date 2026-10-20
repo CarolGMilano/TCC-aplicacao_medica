@@ -93,6 +93,38 @@ export const lesionLabels: Record<string, string> = {
   INVASAO: "Invasão",
 };
 
+export const pcrResultLabels: Record<string, string> = {
+  POSITIVO: "Positivo",
+  NEGATIVO: "Negativo",
+};
+
+export const hpvTypeLabels: Record<string, string> = {
+  HPV_6: "HPV 6",
+  HPV_11: "HPV 11",
+  HPV_16: "HPV 16",
+  HPV_18: "HPV 18",
+  OUTROS: "Outros",
+};
+
+// Junção escamocolunar: o backend recebe o próprio texto ("-4" a "0").
+export const jecOptions = ["-4", "-3", "-2", "-1", "0"];
+
+// Como no layout, os botões mostram só o número da zona.
+export const transformationZoneLabels: Record<string, string> = {
+  ZT_1: "1",
+  ZT_2: "2",
+  ZT_3: "3",
+};
+
+// Classificação da lesão (pequena, média, grande): o backend usa P, M e G.
+export const lesionSizeOptions = ["P", "M", "G"];
+
+export const marginLabels: Record<string, string> = {
+  LIVRE: "Livre",
+  COMPROMETIDA: "Comprometida",
+  COINCIDENTE: "Coincidente",
+};
+
 export const procedureLabels: Record<string, string> = {
   BIOPSIA: "Biópsia",
   EZT_1: "EZT 1",

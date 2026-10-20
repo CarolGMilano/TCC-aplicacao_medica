@@ -1,4 +1,4 @@
-import { StepSection, SummaryRow } from "../../registration/components";
+import { FieldRow, StepSection, SummaryRow } from "../../registration/components";
 import type { TabProps } from "../types";
 import { formatBirthDate } from "../utils";
 
@@ -7,18 +7,20 @@ export function PersonalTab({ record }: TabProps) {
 
   return (
     <>
-      <StepSection title="IDENTIFICAÇÃO">
-        <SummaryRow label="NOME COMPLETO" value={form.name} />
-        <SummaryRow
-          label="DATA DE NASCIMENTO"
-          value={formatBirthDate(record)}
-        />
-        <SummaryRow label="IDADE CALCULADA" value={`${record.age} anos`} />
-        <SummaryRow label="PRONTUÁRIO" value={form.record} />
+      <StepSection title="Identificação">
+        <SummaryRow label="Nome completo" value={form.name} />
+        <FieldRow>
+          <SummaryRow
+            label="Data de nascimento"
+            value={formatBirthDate(record)}
+          />
+          <SummaryRow label="Idade" value={`${record.age} anos`} />
+        </FieldRow>
+        <SummaryRow label="Prontuário" value={form.record} />
       </StepSection>
 
-      <StepSection title="ACOMPANHAMENTO">
-        <SummaryRow label="STATUS DA PACIENTE" value={form.status} />
+      <StepSection title="Acompanhamento">
+        <SummaryRow label="Status da paciente" value={form.status} />
       </StepSection>
     </>
   );

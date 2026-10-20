@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
   },
 
   content: {
-    paddingBottom: 140,
+    paddingBottom: Spacing.three,
   },
 
   header: {
@@ -44,55 +44,15 @@ export const styles = StyleSheet.create({
     lineHeight: Typography.lineHeights.title,
   },
 
-  dateField: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    gap: Spacing.two,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
-  },
-
-  dateRow: {
-    flexDirection: "row",
-    gap: Spacing.two,
-  },
-
-  // Os campos da data ficam dentro de dateField, sem borda nem recuo próprios.
-  dateDay: {
-    flex: 1,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    borderBottomWidth: 0,
-  },
-
-  dateMonth: {
-    flex: 1,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    borderBottomWidth: 0,
-  },
-
-  dateYear: {
-    flex: 1.7,
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    borderBottomWidth: 0,
-  },
-
-  dateInput: {
-    textAlign: "center",
-  },
-
   review: {
     backgroundColor: Theme.backgroundElement,
     marginTop: Spacing.three,
   },
 
+  // Rodapé no fluxo, abaixo da lista: com o teclado aberto, o campo focado
+  // não fica atrás do botão.
   footer: {
-    position: "absolute",
-    bottom: Spacing.three,
-    left: Spacing.three,
-    right: Spacing.three,
+    padding: Spacing.three,
     gap: Spacing.two,
   },
 

@@ -1,6 +1,8 @@
 import { Modal, Pressable, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Spacing, Theme, Typography } from "@/constants/theme";
+import { inputStyles } from "@/components/shared/input-styles";
 import { ThemedText } from "@/components/shared/themed-text";
 
 type StatusFilterProps = {
@@ -20,6 +22,8 @@ export function StatusFilter({
   onClose,
   onChange,
 }: StatusFilterProps) {
+  const insets = useSafeAreaInsets();
+
   return (
     <>
       <Pressable
@@ -36,17 +40,21 @@ export function StatusFilter({
       <Modal
         visible={open}
         transparent
+        statusBarTranslucent
         animationType="fade"
         onRequestClose={onClose}
       >
-        <Pressable style={styles.overlay} onPress={onClose}>
+        <Pressable
+          style={[styles.overlay, { paddingTop: insets.top + Spacing.two }]}
+          onPress={onClose}
+        >
           <View style={styles.menu}>
             <ThemedText
               type="code"
               themeColor="textSecondary"
               style={styles.title}
             >
-              STATUS DA PACIENTE
+              Status da paciente
             </ThemedText>
             {options.map((option) => (
               <Pressable
@@ -80,11 +88,10 @@ export function StatusFilter({
 }
 
 const styles = StyleSheet.create({
+  // Mesmo visual dos campos de seleção.
   select: {
-    height: 40,
-    borderWidth: 1,
-    borderColor: Theme.border,
-    borderRadius: 20,
+    ...inputStyles.box,
+    minHeight: 48,
     paddingHorizontal: Spacing.three,
     flexDirection: "row",
     alignItems: "center",
@@ -112,7 +119,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#00000026",
     justifyContent: "flex-start",
-    paddingTop: 0,
     paddingHorizontal: 2,
   },
 

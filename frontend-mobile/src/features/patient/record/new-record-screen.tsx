@@ -3,17 +3,18 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 
 const recordTypes = [
-  "Consulta",
-  "Citologia",
-  "PCR DNA HPV",
-  "Colposcopia",
-  "Procedimento",
-];
+  { label: "Consulta", pathname: "/patients/[id]/consultation" },
+  { label: "Citologia", pathname: "/patients/[id]/cytology" },
+  { label: "PCR DNA HPV", pathname: "/patients/[id]/pcr" },
+  { label: "Colposcopia", pathname: "/patients/[id]/colposcopy" },
+  { label: "Procedimento", pathname: "/patients/[id]/procedure" },
+] as const;
 
 export function NewRecordScreen() {
   const { id, name, record } = useLocalSearchParams<{
@@ -26,18 +27,13 @@ export function NewRecordScreen() {
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <ThemedView style={styles.screen}>
         <View style={styles.header}>
-          <Pressable
-            accessibilityRole="button"
+          <PillButton
+            label="Cancelar"
+            icon="close"
             accessibilityLabel="Cancelar e voltar para atendimentos"
-            hitSlop={8}
             onPress={() => router.back()}
             style={styles.cancel}
-          >
-            <ThemedText style={styles.close}>×</ThemedText>
-            <ThemedText type="code" themeColor="textSecondary">
-              CANCELAR
-            </ThemedText>
-          </Pressable>
+          />
           <ThemedText style={styles.title}>Novo registro</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
             {name} · PRT {record}
@@ -45,30 +41,23 @@ export function NewRecordScreen() {
         </View>
 
         <View style={styles.options}>
-          {recordTypes.map((type) => (
+          {recordTypes.map(({ label, pathname }) => (
             <Pressable
-              key={type}
+              key={label}
               accessibilityRole="button"
-              accessibilityLabel={`Criar registro de ${type}`}
-              onPress={() => {
-                if (type === "Consulta") {
-                  router.push({
-                    pathname: "/patients/[id]/consultation",
-                    params: { id: String(id), name, record },
-                  });
-                } else if (type === "Citologia") {
-                  router.push({
-                    pathname: "/patients/[id]/cytology",
-                    params: { id: String(id), name, record },
-                  });
-                }
-              }}
+              accessibilityLabel={`Criar registro de ${label}`}
+              onPress={() =>
+                router.push({
+                  pathname,
+                  params: { id: String(id), name, record },
+                })
+              }
               style={({ pressed }) => [
                 styles.option,
                 pressed && styles.pressed,
               ]}
             >
-              <ThemedText>{type}</ThemedText>
+              <ThemedText>{label}</ThemedText>
               <SymbolView
                 name={{
                   ios: "chevron.right",
@@ -97,18 +86,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Theme.border,
   },
 
-  cancel: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
-    marginBottom: Spacing.four,
-  },
-
-  close: {
-    color: Theme.textSecondary,
-    fontSize: 26,
-    lineHeight: 20,
-  },
+  cancel: { marginBottom: Spacing.four },
 
   title: {
     fontFamily: FontFamilies.detail,

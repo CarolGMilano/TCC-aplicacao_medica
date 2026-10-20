@@ -1,29 +1,50 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Spacing, Theme } from "@/constants/theme";
-import { ThemedText } from "@/components/shared/themed-text";
-
-import { AttendanceHeader, DateInput, LabeledInput, SaveButton, styles as formStyles } from "../components";
 import { OptionRow } from "../../registration/components";
-import { styles as registrationStyles } from "../../registration/styles";
-import { createCytology } from "./cytology-api";
 import { cytologyLabels } from "../../record/constants";
+import type { Cytology } from "../../record/services/visits-api";
+import { AttendanceForm, useReturnToVisits } from "../attendance-form";
+import { DateInput, LabeledInput } from "../components";
+import { SavedVisit } from "../saved-visit";
 import type { CytologyForm } from "../types";
+import { fromIsoDate, toIsoDate, todayParts } from "../utils";
+import { CytologyDetails } from "../visit-details";
+import { saveCytology } from "./cytology-api";
 
 const results = Object.keys(cytologyLabels);
 
 export function CytologyScreen() {
+  return (
+    <SavedVisit
+      type="cytology"
+      title="Citologia"
+      details={(item) => <CytologyDetails item={item} />}
+      editable
+    >
+      {(saved) => <CytologyRecord saved={saved} />}
+    </SavedVisit>
+  );
+}
+
+// Sem saved, nova citologia; com saved, edita a citologia salva, com os
+// mesmos campos e regras.
+function CytologyRecord({ saved }: { saved: Cytology | null }) {
+  const returnToVisits = useReturnToVisits("cytology");
   const { id } = useLocalSearchParams<{ id: string }>();
-  const now = new Date();
-  const [form, setForm] = useState<CytologyForm>({
-    day: String(now.getDate()).padStart(2, "0"),
-    month: String(now.getMonth() + 1).padStart(2, "0"),
-    year: String(now.getFullYear()),
-    result: "ADENOCARCINOMA_SOE",
-    observation: "",
+  const [form, setForm] = useState<CytologyForm>(() => {
+    if (saved) {
+      const [day, month, year] = fromIsoDate(saved.dataRegistro);
+      return {
+        day,
+        month,
+        year,
+        result: saved.resultado,
+        observation: saved.observacao ?? "",
+      };
+    }
+    const [day, month, year] = todayParts();
+    return { day, month, year, result: "ADENOCARCINOMA_SOE", observation: "" };
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -33,71 +54,70 @@ export function CytologyScreen() {
       setError("Preencha a data e o resultado.");
       return;
     }
+    // Completa o dia e o mês com zero ("5" vira "05"), senão o backend recusa.
+    const dataRegistro = toIsoDate([form.day, form.month, form.year]);
+    if (!dataRegistro) {
+      setError("Informe uma data válida, entre 01/01/1900 e hoje.");
+      return;
+    }
     setSaving(true);
     try {
-      await createCytology({
-        idPaciente: Number(id),
-        dataRegistro: `${form.year}-${form.month}-${form.day}`,
-        resultado: form.result,
-        observacao: form.observation.trim() || "",
-      });
-      router.back();
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Não foi possível salvar a citologia.");
-    } finally {
+      await saveCytology(
+        {
+          idPaciente: Number(id),
+          dataRegistro,
+          resultado: form.result,
+          observacao: form.observation.trim() || "",
+        },
+        saved?.idExame,
+      );
+      // Volta para a ficha (aba Atend.) no filtro de citologia, como os outros
+      // registros.
+      returnToVisits();
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Não foi possível salvar a citologia.",
+      );
+      // Só no erro: depois do sucesso a tela fecha e fica travada até sair.
       setSaving(false);
     }
   }
 
   return (
-    <SafeAreaView style={formStyles.screen} edges={["top", "bottom"]}>
-      <KeyboardAvoidingView style={formStyles.screen} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-        <AttendanceHeader title="Nova citologia" />
-        <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.meta}>
-            <View style={styles.metaCell}>
-              <ThemedText type="code" themeColor="textSecondary">ÚLTIMA EDIÇÃO</ThemedText>
-              <ThemedText>—</ThemedText>
-            </View>
-            <View style={styles.metaCell}>
-              <ThemedText type="code" themeColor="textSecondary">MÉDICO RESPONSÁVEL</ThemedText>
-              <ThemedText>Ana Ribeiro</ThemedText>
-            </View>
-          </View>
-          <DateInput label="DATA DO REGISTRO" values={[form.day, form.month, form.year]} onChange={(index, value) => {
-            const keys: (keyof CytologyForm)[] = ["day", "month", "year"];
-            setForm({ ...form, [keys[index]]: value });
-          }} />
-          <OptionRow
-            label="RESULTADO"
-            value={cytologyLabels[form.result] ?? form.result}
-            options={results.map((result) => cytologyLabels[result])}
-            onChange={(value) => {
-              const result = results.find((item) => cytologyLabels[item] === value);
-              if (result) setForm({ ...form, result });
-            }}
-          />
-          <LabeledInput label="OBSERVAÇÃO" value={form.observation} onChangeText={(observation) => setForm({ ...form, observation })} multiline placeholder="Digite uma observação..." />
-        </ScrollView>
-        <View style={styles.footer}>
-          {error ? <ThemedText type="small" themeColor="error" style={registrationStyles.error}>{error}</ThemedText> : null}
-          <SaveButton label="Salvar registro" onPress={save} disabled={saving} />
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <AttendanceForm
+      title={saved ? "Alterar citologia" : "Nova citologia"}
+      mode={saved ? "edit" : "new"}
+      saved={saved ?? undefined}
+      buttonLabel={saved ? "Salvar alterações" : undefined}
+      error={error}
+      saving={saving}
+      onSave={save}
+    >
+      <DateInput
+        label="Data do registro"
+        values={[form.day, form.month, form.year]}
+        onChange={([day, month, year]) =>
+          setForm({ ...form, day, month, year })
+        }
+      />
+      <OptionRow
+        label="Resultado"
+        value={cytologyLabels[form.result] ?? form.result}
+        options={results.map((result) => cytologyLabels[result])}
+        onChange={(value) => {
+          const result = results.find((item) => cytologyLabels[item] === value);
+          if (result) setForm({ ...form, result });
+        }}
+      />
+      <LabeledInput
+        label="Observação"
+        value={form.observation}
+        onChangeText={(observation) => setForm({ ...form, observation })}
+        multiline
+        placeholder="Digite uma observação..."
+      />
+    </AttendanceForm>
   );
 }
-
-const styles = StyleSheet.create({
-  content: { paddingBottom: 120 },
-  meta: {
-    flexDirection: "row",
-    gap: Spacing.three,
-    padding: Spacing.three,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
-    backgroundColor: "#E9E6DF",
-  },
-  metaCell: { flex: 1, gap: Spacing.one },
-  footer: { padding: Spacing.three, gap: Spacing.two, backgroundColor: Theme.background },
-});

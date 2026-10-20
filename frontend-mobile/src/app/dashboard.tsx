@@ -1,15 +1,32 @@
 import { SymbolView } from "expo-symbols";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNav } from "@/components/shared/bottom-nav";
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedView } from "@/components/shared/themed-view";
 import { logout } from "@/features/auth/auth-session";
+import { usePostProcedure } from "@/features/dashboard/post-procedure/use-post-procedure";
+import type { WithoutReturnAlert as AlertItem } from "@/features/dashboard/without-return/types";
+import { useWithoutReturn } from "@/features/dashboard/without-return/use-without-return";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/shared/themed-text";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 
+// Total ainda fixo (como o card "Pacientes cadastradas"); usado só no
+// percentual dos alertas.
+const TOTAL_PATIENTS = 248;
+
 export default function DashboardScreen() {
+  const withoutReturn = useWithoutReturn();
+  const postProcedure = usePostProcedure();
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <ThemedView style={styles.screen}>
@@ -19,8 +36,8 @@ export default function DashboardScreen() {
         >
           <View style={styles.header}>
             <View>
-              <ThemedText type="code" themeColor="textSecondary">
-                QUI, 04 SET
+              <ThemedText type="small" themeColor="textSecondary">
+                Qui, 04 set
               </ThemedText>
               <ThemedText style={styles.greeting}>Ana Ribeiro</ThemedText>
               <ThemedText
@@ -31,18 +48,18 @@ export default function DashboardScreen() {
                 CRM 118 402
               </ThemedText>
             </View>
-            <Pressable
-              accessibilityRole="button"
+            <PillButton
+              label="Sair"
+              icon="logout"
               onPress={() => {
                 logout();
+                // Sem limpar a pilha, o voltar do Android reabre telas da sessão.
+                if (router.canDismiss()) {
+                  router.dismissAll();
+                }
                 router.replace("/");
               }}
-              style={styles.exit}
-            >
-              <ThemedText type="code" themeColor="textSecondary">
-                SAIR
-              </ThemedText>
-            </Pressable>
+            />
           </View>
 
           <ThemedView
@@ -52,8 +69,8 @@ export default function DashboardScreen() {
           >
             <View style={styles.cardLabel}>
               <ThemedView type="tertiary" style={styles.line} />
-              <ThemedText type="code" themeColor="textSecondary">
-                PACIENTES CADASTRADAS
+              <ThemedText type="smallBold" themeColor="textSecondary">
+                Pacientes cadastradas
               </ThemedText>
             </View>
             <ThemedText style={styles.total}>248</ThemedText>
@@ -70,9 +87,7 @@ export default function DashboardScreen() {
                   pressed && styles.pressed,
                 ]}
               >
-                <ThemedText type="code" themeColor="textSecondary">
-                  VER LISTA
-                </ThemedText>
+                <ThemedText style={styles.linkText}>Ver lista</ThemedText>
                 <SymbolView
                   name={{
                     ios: "arrow.right",
@@ -89,17 +104,13 @@ export default function DashboardScreen() {
           <ReturnCard
             title="Ver e tratar sem retorno"
             description="Indicação de ver e tratar há mais de 2 meses sem nova consulta registrada."
-            count="12 PACIENTES · 4,8% DAS CADASTRADAS"
-            names={["Cláudia Nunes", "Marina Souza"]}
-            days={["146 d", "134 d"]}
+            state={withoutReturn}
             route="/dashboard/without-return"
           />
           <ReturnCard
             title="Pós-procedimento sem retorno"
             description="EZT ou biópsia realizada há mais de 3 meses sem consulta de acompanhamento."
-            count="7 PACIENTES · 2,8% DAS CADASTRADAS"
-            names={["Rita Almeida", "Joana Vilela"]}
-            days={["129 d", "112 d"]}
+            state={postProcedure}
             route="/dashboard/post-procedure"
           />
         </ScrollView>
@@ -109,21 +120,25 @@ export default function DashboardScreen() {
   );
 }
 
+// Alertas reais (mesmos dados do "Ver todas"): as duas primeiras pacientes,
+// cada uma abrindo a própria ficha.
 function ReturnCard({
   title,
   description,
-  count,
-  names,
-  days,
+  state,
   route,
 }: {
   title: string;
   description: string;
-  count: string;
-  names: string[];
-  days: string[];
+  state: { alerts: AlertItem[]; error: string; isLoading: boolean };
   route: "/dashboard/without-return" | "/dashboard/post-procedure";
 }) {
+  const { alerts, error, isLoading } = state;
+  const percentage = ((alerts.length / TOTAL_PATIENTS) * 100).toLocaleString(
+    "pt-BR",
+    { maximumFractionDigits: 1 },
+  );
+
   return (
     <ThemedView
       type="backgroundElement"
@@ -146,25 +161,40 @@ function ReturnCard({
       >
         {description}
       </ThemedText>
-      <ThemedText type="code" themeColor="textSecondary" style={styles.count}>
-        {count}
-      </ThemedText>
-      {names.map((name, index) => (
-        <ThemedView
-          type="backgroundElement"
-          key={name}
-          style={styles.patientRow}
-          borderTopColor="border"
+      {isLoading ? (
+        <ActivityIndicator color={Theme.primary} style={styles.count} />
+      ) : (
+        <ThemedText
+          type="small"
+          themeColor={error ? "error" : "textSecondary"}
+          style={styles.count}
         >
-          <View>
-            <ThemedText>{name}</ThemedText>
-            <ThemedText type="subtitle" themeColor="muted">
-              PRT 10482
+          {error ||
+            `${alerts.length} pacientes · ${percentage}% das cadastradas`}
+        </ThemedText>
+      )}
+      {alerts.slice(0, 2).map((alert) => (
+        <Pressable
+          key={`${alert.idPaciente}-${alert.tipoAlerta}`}
+          accessibilityRole="button"
+          accessibilityLabel={`Abrir ficha de ${alert.nome}`}
+          onPress={() =>
+            router.push({
+              pathname: "/patients/[id]",
+              params: { id: String(alert.idPaciente) },
+            })
+          }
+          style={({ pressed }) => [styles.patientRow, pressed && styles.pressed]}
+        >
+          <View style={styles.identity}>
+            <ThemedText style={styles.name}>{alert.nome}</ThemedText>
+            <ThemedText type="small" themeColor="muted">
+              PRT {alert.prontuario}
             </ThemedText>
           </View>
           <View style={styles.daysRow}>
             <ThemedText themeColor="error" style={styles.days}>
-              {days[index]}
+              {alert.diasAtraso} d
             </ThemedText>
             <SymbolView
               name={{
@@ -176,18 +206,17 @@ function ReturnCard({
               size={16}
             />
           </View>
-        </ThemedView>
+        </Pressable>
       ))}
-      {names.length > 0 && (
+      {alerts.length > 0 && (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Ver todas: ${title}`}
           onPress={() => router.push(route)}
           style={({ pressed }) => [styles.more, pressed && styles.pressed]}
         >
-          <ThemedText type="code" themeColor="textSecondary">
-            VER TODAS ·{" "}
-            {names.length === 2 ? (count.startsWith("12") ? "12" : "7") : ""}
+          <ThemedText style={styles.linkText}>
+            Ver todas · {alerts.length}
           </ThemedText>
         </Pressable>
       )}
@@ -222,19 +251,11 @@ const styles = StyleSheet.create({
 
   crm: { marginTop: 3 },
 
-  exit: {
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderColor: Theme.border,
-  },
-
   totalCard: {
     borderWidth: 1,
-    borderRadius: 17,
-    padding: 18,
-    gap: 8,
+    borderRadius: 14,
+    padding: Spacing.three,
+    gap: Spacing.two,
   },
 
   cardLabel: {
@@ -262,16 +283,26 @@ const styles = StyleSheet.create({
   },
 
   listLink: {
+    minHeight: 44,
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: Spacing.one,
   },
+
+  linkText: {
+    color: Theme.primary,
+    fontFamily: FontFamilies.primaryMedium,
+    fontSize: Typography.sizes.action,
+    lineHeight: Typography.lineHeights.input,
+  },
+
+  name: { fontFamily: FontFamilies.primaryMedium },
 
   pressed: { opacity: 0.7 },
 
   returnCard: {
     borderWidth: 1,
-    borderRadius: 16,
+    borderRadius: 14,
     overflow: "hidden",
   },
 
@@ -300,12 +331,16 @@ const styles = StyleSheet.create({
 
   patientRow: {
     borderTopWidth: 1,
+    borderTopColor: Theme.border,
+    backgroundColor: Theme.backgroundElement,
     paddingHorizontal: 16,
     paddingVertical: 11,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
+
+  identity: { flexShrink: 1 },
 
   daysRow: {
     flexDirection: "row",
@@ -314,17 +349,17 @@ const styles = StyleSheet.create({
   },
 
   days: {
-    fontFamily: FontFamilies.primary,
-    fontSize: Typography.sizes.bodySmall,
+    fontFamily: FontFamilies.primaryMedium,
+    fontSize: Typography.sizes.action,
   },
 
+  // Ação secundária com fundo suave, como os outros botões do app.
   more: {
-    borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 35,
-    margin: 12,
-    borderColor: Theme.primary,
+    minHeight: 44,
+    margin: Spacing.three - Spacing.one,
+    backgroundColor: Theme.inputBackground,
   },
 });

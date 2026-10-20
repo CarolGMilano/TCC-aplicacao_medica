@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ColposcopiaRepository extends JpaRepository<Colposcopia, Integer> {
 
-    @Query("SELECT c FROM Colposcopia c WHERE c.verETratar = true " +
+    @Query("SELECT c FROM Colposcopia c WHERE c.verETratar = true AND c.paciente.ativo = true " +
            "AND c.dataRegistro <= :dataLimite " +
            "AND NOT EXISTS (SELECT 1 FROM Consulta cons WHERE cons.paciente = c.paciente AND cons.dataHora > CAST(c.dataRegistro AS timestamp))")
     List<Colposcopia> findVerETratarAtrasados(@Param("dataLimite") LocalDate dataLimite);

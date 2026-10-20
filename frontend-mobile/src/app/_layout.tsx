@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
+import { DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import {
   Poppins_400Regular,
   Poppins_500Medium,
@@ -7,14 +7,21 @@ import {
 import { PTSerif_400Regular } from "@expo-google-fonts/pt-serif";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { useColorScheme } from "react-native";
 import { AnimatedSplashOverlay } from "@/components/ui/animated-icon";
+import { Theme } from "@/constants/theme";
 
 SplashScreen.preventAutoHideAsync();
 
+// O app só tem tema claro: sem isso, o modo escuro do celular pinta o fundo
+// das telas de preto e deixa os ícones da barra de status claros.
+const navigationTheme = {
+  ...DefaultTheme,
+  colors: { ...DefaultTheme.colors, background: Theme.background },
+};
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [fontsLoaded, fontError] = useFonts({
     Poppins: Poppins_400Regular,
     // Pesos registrados com nome próprio: no Android, fontWeight não
@@ -35,7 +42,8 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={navigationTheme}>
+      <StatusBar style="dark" />
       <AnimatedSplashOverlay />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
