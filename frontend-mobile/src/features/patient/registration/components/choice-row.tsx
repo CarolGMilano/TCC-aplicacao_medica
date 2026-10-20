@@ -9,7 +9,6 @@ type ChoiceRowProps = {
   // Uma opção (seleção única) ou várias (seleção múltipla).
   selected: string | string[];
   onSelect: (value: string) => void;
-  inline?: boolean;
   // Texto de apoio abaixo do rótulo.
   hint?: string;
   // Cor da opção marcada, quando não é a primária (ex.: coral nos alertas).
@@ -21,12 +20,11 @@ export function ChoiceRow({
   options,
   selected,
   onSelect,
-  inline = false,
   hint,
   selectedColor,
 }: ChoiceRowProps) {
   return (
-    <View style={[styles.choiceRow, inline && styles.choiceRowInline]}>
+    <View style={styles.choiceRow}>
       <ThemedText type="code" themeColor="textSecondary">
         {label}
       </ThemedText>
@@ -36,7 +34,7 @@ export function ChoiceRow({
         </ThemedText>
       ) : null}
 
-      <View style={[styles.choiceList, inline && styles.choiceListInline]}>
+      <View style={styles.choiceList}>
         {options.map((option) => {
           const isSelected = Array.isArray(selected)
             ? selected.includes(option)
@@ -73,37 +71,26 @@ export function ChoiceRow({
 
 const styles = StyleSheet.create({
   choiceRow: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
     gap: Spacing.two,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
-  },
-
-  choiceRowInline: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
   },
 
   choiceList: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: Spacing.one,
-    flexShrink: 1,
+    gap: Spacing.two,
   },
 
-  choiceListInline: {
-    justifyContent: "flex-end",
-  },
-
+  // Opções com 44px de altura, fáceis de tocar.
   choice: {
-    backgroundColor: Theme.backgroundElement,
+    minHeight: 44,
+    minWidth: 52,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Theme.inputBackground,
     borderWidth: 1,
-    borderColor: Theme.border,
-    borderRadius: 20,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
+    borderColor: Theme.inputBorder,
+    borderRadius: 22,
+    paddingHorizontal: Spacing.three,
   },
 
   choiceSelected: {

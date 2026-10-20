@@ -46,7 +46,7 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
             onPress={() => setVisible((current) => !current)}
           >
             <ThemedText type="code" themeColor="textSecondary">
-              {visible ? "OCULTAR" : "MOSTRAR"}
+              {visible ? "Ocultar" : "Mostrar"}
             </ThemedText>
           </Pressable>
         ) : null}

@@ -78,16 +78,9 @@ export function Counter({
 }
 
 const styles = StyleSheet.create({
+  // Rótulo em cima, botões embaixo: cabe em colunas (FieldRow).
   row: {
-    minHeight: 60,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    paddingRight: 1,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    gap: Spacing.two,
   },
 
   counter: {
@@ -97,7 +90,7 @@ const styles = StyleSheet.create({
   },
 
   suffix: {
-    width: 40,
+    width: 36,
   },
 
   counterValue: {

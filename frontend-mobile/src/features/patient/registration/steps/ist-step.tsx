@@ -5,16 +5,16 @@ import { toggleIst } from "../utils";
 
 export function IstStep({ form, update }: StepProps) {
   return (
-    <StepSection title="HISTÓRICO DE IST">
+    <StepSection title="Histórico de IST">
       <ChoiceRow
-        label="ISTS"
+        label="ISTs"
         options={istOptions}
         selected={form.ists}
         onSelect={(value) => update("ists", toggleIst(form.ists, value))}
       />
       {form.ists.includes("HPV") ? (
         <ToggleRow
-          label="CONDILOMA HPV"
+          label="Condiloma HPV"
           value={form.hpvWart}
           onChange={(value) => update("hpvWart", value)}
         />

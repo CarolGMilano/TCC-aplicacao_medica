@@ -3,6 +3,8 @@ import { Modal, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
+import { inputStyles } from "@/components/shared/input-styles";
+import { PillButton } from "@/components/shared/pill-button";
 
 type OptionRowProps = {
   label: string;
@@ -44,16 +46,12 @@ export function OptionRow({
               ]}
             />
             <ThemedText style={styles.optionValue}>{value}</ThemedText>
-            <Pressable
-              accessibilityRole="button"
+            <PillButton
+              label={actionLabel}
+              icon={null}
               accessibilityLabel={`${actionLabel}: ${label}`}
-              style={styles.actionButton}
               onPress={() => setIsOpen(true)}
-            >
-              <ThemedText type="code" themeColor="textSecondary">
-                {actionLabel}
-              </ThemedText>
-            </Pressable>
+            />
           </View>
         ) : (
           <Pressable
@@ -110,19 +108,12 @@ export function OptionRow({
 
 const styles = StyleSheet.create({
   optionRow: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
     gap: Spacing.two,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
   },
 
   optionField: {
+    ...inputStyles.box,
     minHeight: 48,
-    borderWidth: 1,
-    borderRadius: 12,
-    borderColor: Theme.border,
-    backgroundColor: Theme.backgroundElement,
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.two,
     flexDirection: "row",
@@ -135,26 +126,25 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
+  // Valor atual num cartão, com a ação ao lado (ex.: status na consulta).
   compactValue: {
-    minHeight: 32,
+    minHeight: 56,
     flexDirection: "row",
     alignItems: "center",
-    gap: Spacing.one,
+    gap: Spacing.two,
+    paddingLeft: Spacing.three,
+    paddingRight: Spacing.two,
+    paddingVertical: Spacing.one + Spacing.half,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Theme.inputBorder,
+    backgroundColor: Theme.backgroundElement,
   },
 
   statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-
-  actionButton: {
-    borderWidth: 1,
-    borderStyle: "dashed",
-    borderColor: Theme.textSecondary,
-    borderRadius: 12,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
 
   // Seta para baixo desenhada com duas bordas de um quadrado girado,

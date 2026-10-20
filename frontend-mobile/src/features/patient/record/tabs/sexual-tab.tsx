@@ -1,4 +1,4 @@
-import { StepSection, SummaryRow } from "../../registration/components";
+import { FieldRow, StepSection, SummaryRow } from "../../registration/components";
 import { EmptyState } from "../components";
 import type { TabProps } from "../types";
 import { yesNo } from "../utils";
@@ -12,14 +12,16 @@ export function SexualTab({ record }: TabProps) {
 
   return (
     <>
-      <StepSection title="INÍCIO DA VIDA SEXUAL">
-        <SummaryRow label="SEXARCA" value={`${form.sexarche} anos`} />
-        <SummaryRow label="VVS" value={yesNo(form.vvs)} />
+      <StepSection title="Início da vida sexual">
+        <FieldRow>
+          <SummaryRow label="Sexarca" value={`${form.sexarche} anos`} />
+          <SummaryRow label="VVS" value={yesNo(form.vvs)} />
+        </FieldRow>
       </StepSection>
 
-      <StepSection title="CONTRACEPÇÃO E PARCEIROS">
+      <StepSection title="Contracepção e parceiros">
         <SummaryRow label="MAC" value={form.contraception} />
-        <SummaryRow label="Nº DE PARCEIROS" value={String(form.partners)} />
+        <SummaryRow label="Nº de parceiros" value={String(form.partners)} />
       </StepSection>
     </>
   );

@@ -30,7 +30,7 @@ export function ReviewBlock({
           onPress={onEdit}
         >
           <ThemedText type="code" themeColor="textSecondary">
-            ALTERAR
+            Alterar
           </ThemedText>
         </Pressable>
       </View>

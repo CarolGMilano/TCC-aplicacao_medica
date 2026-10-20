@@ -20,7 +20,6 @@ export function ToggleRow({
       selected={value ? "Sim" : "Não"}
       onSelect={(choice) => onChange(choice === "Sim")}
       selectedColor={selectedColor}
-      inline
     />
   );
 }

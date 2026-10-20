@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -7,14 +6,13 @@ import {
   KeyboardAvoidingView,
   Pressable,
   ScrollView,
-  StyleSheet,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
-import { Spacing, Theme } from "@/constants/theme";
 
 import { initialForm, stepTitles, totalSteps } from "./constants";
 import { registerPatient } from "./services/patient-registration-api";
@@ -158,7 +156,7 @@ export function PatientRegistration() {
               step={step}
               title={stepTitles[step - 1]}
               subtitle={
-                step === 1 ? "NOVA PACIENTE" : form.name.trim().toUpperCase()
+                step === 1 ? "Nova paciente" : form.name.trim()
               }
               cancel={leavesOnBack}
               onBack={goBack}
@@ -227,32 +225,13 @@ function RegistrationHeader({
   return (
     <View style={styles.header}>
       <View style={styles.headerTop}>
-        <Pressable onPress={onBack} accessibilityRole="button" hitSlop={8}>
-          <View style={headerStyles.backButton}>
-            <SymbolView
-              name={
-                cancel
-                  ? {
-                      ios: "xmark",
-                      android: "close",
-                      web: "close",
-                    }
-                  : {
-                      ios: "arrow.left",
-                      android: "arrow_back",
-                      web: "arrow_back",
-                    }
-              }
-              tintColor={Theme.textSecondary}
-              size={19}
-            />
-            <ThemedText type="code" themeColor="textSecondary">
-              {cancel ? "CANCELAR" : "VOLTAR"}
-            </ThemedText>
-          </View>
-        </Pressable>
+        <PillButton
+          label={cancel ? "Cancelar" : "Voltar"}
+          icon={cancel ? "close" : "back"}
+          onPress={onBack}
+        />
         <ThemedText type="code" themeColor="textSecondary">
-          ETAPA {step} DE {totalSteps}
+          Etapa {step} de {totalSteps}
         </ThemedText>
       </View>
       <View style={styles.progress}>
@@ -271,11 +250,3 @@ function RegistrationHeader({
     </View>
   );
 }
-
-const headerStyles = StyleSheet.create({
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
-  },
-});

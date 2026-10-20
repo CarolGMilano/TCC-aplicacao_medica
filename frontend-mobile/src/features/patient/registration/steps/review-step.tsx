@@ -36,13 +36,13 @@ export function ReviewStep({ form, onEdit }: ReviewStepProps) {
   return (
     <View style={styles.review}>
       <ReviewBlock
-        title="PESSOAIS"
+        title="Pessoais"
         value={`${form.name.trim()} · ${birthDate} · ${age ?? "—"} anos`}
         detail={`PRT ${form.record} · ${form.status.toLowerCase()}`}
         onEdit={() => onEdit(1)}
       />
       <ReviewBlock
-        title="GINECO-OBSTÉTRICOS"
+        title="Gineco-obstétricos"
         value={`G${form.pregnancies} · PN${form.vaginalBirths} · C${form.cesareans} · A${form.abortions}`}
         detail={`Menarca ${form.menarche} anos · ${
           form.menopause
@@ -52,7 +52,7 @@ export function ReviewStep({ form, onEdit }: ReviewStepProps) {
         onEdit={() => onEdit(2)}
       />
       <ReviewBlock
-        title="SEXUAIS"
+        title="Sexuais"
         value={`Sexarca ${form.sexarche} anos · VVS ${yesNo(form.vvs)}`}
         detail={`${form.partners} parceiros · MAC ${form.contraception.toLowerCase()}`}
         onEdit={() => onEdit(3)}
@@ -68,7 +68,7 @@ export function ReviewStep({ form, onEdit }: ReviewStepProps) {
         onEdit={() => onEdit(4)}
       />
       <ReviewBlock
-        title="HÁBITOS"
+        title="Hábitos"
         value={smokingLabels[form.smoking]}
         detail={smokingDetail(form)}
         onEdit={() => onEdit(5)}

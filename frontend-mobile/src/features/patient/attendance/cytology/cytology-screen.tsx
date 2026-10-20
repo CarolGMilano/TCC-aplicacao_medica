@@ -96,15 +96,14 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       onSave={save}
     >
       <DateInput
-        label="DATA DO REGISTRO"
+        label="Data do registro"
         values={[form.day, form.month, form.year]}
-        onChange={(index, value) => {
-          const keys: (keyof CytologyForm)[] = ["day", "month", "year"];
-          setForm({ ...form, [keys[index]]: value });
-        }}
+        onChange={([day, month, year]) =>
+          setForm({ ...form, day, month, year })
+        }
       />
       <OptionRow
-        label="RESULTADO"
+        label="Resultado"
         value={cytologyLabels[form.result] ?? form.result}
         options={results.map((result) => cytologyLabels[result])}
         onChange={(value) => {
@@ -113,7 +112,7 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
         }}
       />
       <LabeledInput
-        label="OBSERVAÇÃO"
+        label="Observação"
         value={form.observation}
         onChangeText={(observation) => setForm({ ...form, observation })}
         multiline

@@ -2,6 +2,7 @@ import { Modal, Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Spacing, Theme, Typography } from "@/constants/theme";
+import { inputStyles } from "@/components/shared/input-styles";
 import { ThemedText } from "@/components/shared/themed-text";
 
 type StatusFilterProps = {
@@ -53,7 +54,7 @@ export function StatusFilter({
               themeColor="textSecondary"
               style={styles.title}
             >
-              STATUS DA PACIENTE
+              Status da paciente
             </ThemedText>
             {options.map((option) => (
               <Pressable
@@ -87,11 +88,10 @@ export function StatusFilter({
 }
 
 const styles = StyleSheet.create({
+  // Mesmo visual dos campos de seleção.
   select: {
-    height: 40,
-    borderWidth: 1,
-    borderColor: Theme.border,
-    borderRadius: 20,
+    ...inputStyles.box,
+    minHeight: 48,
     paddingHorizontal: Spacing.three,
     flexDirection: "row",
     alignItems: "center",

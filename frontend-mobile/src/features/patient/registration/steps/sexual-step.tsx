@@ -1,4 +1,10 @@
-import { Counter, OptionRow, StepSection, ToggleRow } from "../components";
+import {
+  Counter,
+  FieldRow,
+  OptionRow,
+  StepSection,
+  ToggleRow,
+} from "../components";
 import { contraceptionOptions, minAges } from "../constants";
 import type { StepProps } from "../types";
 import { getAge } from "../utils";
@@ -8,23 +14,25 @@ export function SexualStep({ form, update }: StepProps) {
 
   return (
     <>
-      <StepSection title="INÍCIO DA VIDA SEXUAL">
-        <Counter
-          label="SEXARCA"
-          value={form.sexarche}
-          min={minAges.sexarche}
-          max={age}
-          suffix="ANOS"
-          onChange={(value) => update("sexarche", value)}
-        />
-        <ToggleRow
-          label="VVS"
-          value={form.vvs}
-          onChange={(value) => update("vvs", value)}
-        />
+      <StepSection title="Início da vida sexual">
+        <FieldRow>
+          <Counter
+            label="Sexarca"
+            value={form.sexarche}
+            min={minAges.sexarche}
+            max={age}
+            suffix="anos"
+            onChange={(value) => update("sexarche", value)}
+          />
+          <ToggleRow
+            label="VVS"
+            value={form.vvs}
+            onChange={(value) => update("vvs", value)}
+          />
+        </FieldRow>
       </StepSection>
 
-      <StepSection title="CONTRACEPÇÃO E PARCEIROS">
+      <StepSection title="Contracepção e parceiros">
         <OptionRow
           label="MAC"
           value={form.contraception}
@@ -32,7 +40,7 @@ export function SexualStep({ form, update }: StepProps) {
           onChange={(value) => update("contraception", value)}
         />
         <Counter
-          label="Nº DE PARCEIROS"
+          label="Nº de parceiros"
           value={form.partners}
           max={999}
           editable

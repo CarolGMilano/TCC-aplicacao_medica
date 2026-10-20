@@ -21,6 +21,7 @@ import { ThemedText } from "@/components/shared/themed-text";
 
 import { formatDate } from "../record/services/visits-api";
 import type { VisitType } from "../record/types";
+import { FormFields } from "../registration/components/step-section";
 import { styles as registrationStyles } from "../registration/styles";
 import { fetchDoctorName } from "./attendance-api";
 import {
@@ -73,6 +74,7 @@ export function AttendanceForm({
   buttonLabel = "Salvar registro",
   mode = "new",
   saved,
+  sectioned = false,
 }: {
   title: string;
   error?: string;
@@ -84,6 +86,9 @@ export function AttendanceForm({
   buttonLabel?: string;
   mode?: AttendanceMode;
   saved?: { nomeMedico: string; dataEdicao?: string | null };
+  // Telas que já dividem os campos em seções (StepSection), como a
+  // colposcopia; as outras recebem o mesmo espaçamento aqui.
+  sectioned?: boolean;
 }) {
   const [doctor, setDoctor] = useState<string | null>(null);
   const isSaved = Boolean(saved);
@@ -128,6 +133,9 @@ export function AttendanceForm({
           disabled={saving}
           step={step}
           mode={mode}
+          // Registro novo: o médico logado aparece junto da paciente, e a
+          // faixa de última edição (ainda vazia) não é mostrada.
+          doctor={isSaved ? null : doctor}
         />
         <ScrollView
           // Cada passo começa do topo.
@@ -135,23 +143,25 @@ export function AttendanceForm({
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.meta}>
-            <View style={styles.metaCell}>
-              <ThemedText type="code" themeColor="textSecondary">
-                ÚLTIMA EDIÇÃO
-              </ThemedText>
-              <ThemedText>
-                {saved?.dataEdicao ? formatDate(saved.dataEdicao) : "—"}
-              </ThemedText>
+          {saved ? (
+            <View style={styles.meta}>
+              <View style={styles.metaCell}>
+                <ThemedText type="code" themeColor="textSecondary">
+                  Última edição
+                </ThemedText>
+                <ThemedText>
+                  {saved.dataEdicao ? formatDate(saved.dataEdicao) : "—"}
+                </ThemedText>
+              </View>
+              <View style={styles.metaCell}>
+                <ThemedText type="code" themeColor="textSecondary">
+                  Médico responsável
+                </ThemedText>
+                <ThemedText>{saved.nomeMedico || "—"}</ThemedText>
+              </View>
             </View>
-            <View style={styles.metaCell}>
-              <ThemedText type="code" themeColor="textSecondary">
-                MÉDICO RESPONSÁVEL
-              </ThemedText>
-              <ThemedText>{(saved?.nomeMedico ?? doctor) || "—"}</ThemedText>
-            </View>
-          </View>
-          {children}
+          ) : null}
+          {sectioned ? children : <FormFields>{children}</FormFields>}
         </ScrollView>
         {/* Consulta salva: só leitura, sem rodapé. */}
         {onSave || error ? (

@@ -36,10 +36,10 @@ export function ConsultationDetails({ item }: { item: Consultation }) {
   const [date, time] = item.dataHora.split("T");
   return (
     <>
-      <SummaryRow label="DATA DO REGISTRO" value={formatDate(date)} />
-      <SummaryRow label="HORÁRIO" value={time ? time.slice(0, 5) : "—"} />
+      <SummaryRow label="Data do registro" value={formatDate(date)} />
+      <SummaryRow label="Horário" value={time ? time.slice(0, 5) : "—"} />
       <TextBlock
-        label="OBSERVAÇÃO"
+        label="Observação"
         value={item.observacao || "Sem observações"}
       />
     </>
@@ -50,14 +50,14 @@ export function CytologyDetails({ item }: { item: Cytology }) {
   return (
     <>
       <SummaryRow
-        label="DATA DO REGISTRO"
+        label="Data do registro"
         value={formatDate(item.dataRegistro)}
       />
       <SummaryRow
-        label="RESULTADO"
+        label="Resultado"
         value={label(cytologyLabels, item.resultado)}
       />
-      <TextBlock label="OBSERVAÇÃO" value={item.observacao || "—"} />
+      <TextBlock label="Observação" value={item.observacao || "—"} />
     </>
   );
 }
@@ -66,16 +66,16 @@ export function PcrDetails({ item }: { item: Pcr }) {
   return (
     <>
       <SummaryRow
-        label="DATA DO REGISTRO"
+        label="Data do registro"
         value={formatDate(item.dataRegistro)}
       />
       <SummaryRow
-        label="RESULTADO"
+        label="Resultado"
         value={label(pcrResultLabels, item.resultado)}
       />
       {item.resultado === "POSITIVO" ? (
         <SummaryRow
-          label="TIPO DE HPV"
+          label="Tipo de HPV"
           value={
             (item.tiposHpv ?? [])
               .map((type) => label(hpvTypeLabels, type))
@@ -83,7 +83,7 @@ export function PcrDetails({ item }: { item: Pcr }) {
           }
         />
       ) : null}
-      <TextBlock label="OBSERVAÇÃO" value={item.observacao || "—"} />
+      <TextBlock label="Observação" value={item.observacao || "—"} />
     </>
   );
 }
@@ -93,40 +93,40 @@ export function ColposcopyDetails({ item }: { item: Colposcopy }) {
   return (
     <>
       <SummaryRow
-        label="DATA DO REGISTRO"
+        label="Data do registro"
         value={formatDate(item.dataRegistro)}
       />
-      <SummaryRow label="ESTROGENIZAÇÃO" value={yesNo(item.estrogenizacao)} />
+      <SummaryRow label="Estrogenização" value={yesNo(item.estrogenizacao)} />
       <SummaryRow label="JEC" value={item.jec ?? "—"} />
       <SummaryRow
-        label="ZONA DE TRANSFORMAÇÃO"
+        label="Zona de transformação"
         value={label(transformationZoneLabels, item.zt)}
       />
-      <SummaryRow label="LESÃO" value={yesNo(item.lesao)} />
+      <SummaryRow label="Lesão" value={yesNo(item.lesao)} />
       {item.lesao ? (
         <>
           <SummaryRow
-            label="GRAU DA LESÃO"
+            label="Grau da lesão"
             value={label(lesionLabels, item.grauLesao)}
           />
-          <SummaryRow label="CLASSIFICAÇÃO" value={item.classificacao ?? "—"} />
+          <SummaryRow label="Classificação" value={item.classificacao ?? "—"} />
           <View style={[styles.alertRow, item.recidiva && styles.highlight]}>
-            <SummaryRow label="LESÃO RECIDIVA" value={yesNo(item.recidiva)} />
+            <SummaryRow label="Lesão recidiva" value={yesNo(item.recidiva)} />
           </View>
           <View style={[styles.alertRow, item.verETratar && styles.highlight]}>
-            <SummaryRow label="VER E TRATAR" value={yesNo(item.verETratar)} />
+            <SummaryRow label="Ver e tratar" value={yesNo(item.verETratar)} />
           </View>
           {item.verETratar ? (
             <View style={[styles.alertRow, styles.highlight]}>
               <TextBlock
-                label="MOTIVO DO VER E TRATAR"
+                label="Motivo do ver e tratar"
                 value={item.verETratarMotivo || "—"}
               />
             </View>
           ) : null}
         </>
       ) : null}
-      <TextBlock label="OBSERVAÇÃO" value={item.observacao || "—"} />
+      <TextBlock label="Observação" value={item.observacao || "—"} />
     </>
   );
 }
@@ -136,28 +136,28 @@ export function ProcedureDetails({ item }: { item: Procedure }) {
   return (
     <>
       <SummaryRow
-        label="DATA DO REGISTRO"
+        label="Data do registro"
         value={formatDate(item.dataRegistro)}
       />
-      <SummaryRow label="TIPO" value={label(procedureLabels, item.tipo)} />
-      <SummaryRow label="FRAGMENTOS" value={String(item.qtFragmento ?? "—")} />
+      <SummaryRow label="Tipo" value={label(procedureLabels, item.tipo)} />
+      <SummaryRow label="Fragmentos" value={String(item.qtFragmento ?? "—")} />
       {item.tipo !== "BIOPSIA" ? (
         <>
           <SummaryRow
-            label="MARGEM ENDOCERVICAL"
+            label="Margem endocervical"
             value={label(marginLabels, item.margemEndocervical)}
           />
           <SummaryRow
-            label="MARGEM ECTOCERVICAL"
+            label="Margem ectocervical"
             value={label(marginLabels, item.margemEctocervical)}
           />
         </>
       ) : null}
       <SummaryRow
-        label="RESULTADO"
+        label="Resultado"
         value={label(procedureResultLabels, item.resultado)}
       />
-      <TextBlock label="OBSERVAÇÃO" value={item.observacao || "—"} />
+      <TextBlock label="Observação" value={item.observacao || "—"} />
     </>
   );
 }

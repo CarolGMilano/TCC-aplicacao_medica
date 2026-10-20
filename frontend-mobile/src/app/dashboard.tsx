@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNav } from "@/components/shared/bottom-nav";
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedView } from "@/components/shared/themed-view";
 import { logout } from "@/features/auth/auth-session";
 import { router } from "expo-router";
@@ -19,8 +20,8 @@ export default function DashboardScreen() {
         >
           <View style={styles.header}>
             <View>
-              <ThemedText type="code" themeColor="textSecondary">
-                QUI, 04 SET
+              <ThemedText type="small" themeColor="textSecondary">
+                Qui, 04 set
               </ThemedText>
               <ThemedText style={styles.greeting}>Ana Ribeiro</ThemedText>
               <ThemedText
@@ -31,8 +32,9 @@ export default function DashboardScreen() {
                 CRM 118 402
               </ThemedText>
             </View>
-            <Pressable
-              accessibilityRole="button"
+            <PillButton
+              label="Sair"
+              icon="logout"
               onPress={() => {
                 logout();
                 // Sem limpar a pilha, o voltar do Android reabre telas da sessão.
@@ -41,12 +43,7 @@ export default function DashboardScreen() {
                 }
                 router.replace("/");
               }}
-              style={styles.exit}
-            >
-              <ThemedText type="code" themeColor="textSecondary">
-                SAIR
-              </ThemedText>
-            </Pressable>
+            />
           </View>
 
           <ThemedView
@@ -56,8 +53,8 @@ export default function DashboardScreen() {
           >
             <View style={styles.cardLabel}>
               <ThemedView type="tertiary" style={styles.line} />
-              <ThemedText type="code" themeColor="textSecondary">
-                PACIENTES CADASTRADAS
+              <ThemedText type="smallBold" themeColor="textSecondary">
+                Pacientes cadastradas
               </ThemedText>
             </View>
             <ThemedText style={styles.total}>248</ThemedText>
@@ -74,9 +71,7 @@ export default function DashboardScreen() {
                   pressed && styles.pressed,
                 ]}
               >
-                <ThemedText type="code" themeColor="textSecondary">
-                  VER LISTA
-                </ThemedText>
+                <ThemedText style={styles.linkText}>Ver lista</ThemedText>
                 <SymbolView
                   name={{
                     ios: "arrow.right",
@@ -93,7 +88,7 @@ export default function DashboardScreen() {
           <ReturnCard
             title="Ver e tratar sem retorno"
             description="Indicação de ver e tratar há mais de 2 meses sem nova consulta registrada."
-            count="12 PACIENTES · 4,8% DAS CADASTRADAS"
+            count="12 pacientes · 4,8% das cadastradas"
             names={["Cláudia Nunes", "Marina Souza"]}
             days={["146 d", "134 d"]}
             route="/dashboard/without-return"
@@ -101,7 +96,7 @@ export default function DashboardScreen() {
           <ReturnCard
             title="Pós-procedimento sem retorno"
             description="EZT ou biópsia realizada há mais de 3 meses sem consulta de acompanhamento."
-            count="7 PACIENTES · 2,8% DAS CADASTRADAS"
+            count="7 pacientes · 2,8% das cadastradas"
             names={["Rita Almeida", "Joana Vilela"]}
             days={["129 d", "112 d"]}
             route="/dashboard/post-procedure"
@@ -150,7 +145,7 @@ function ReturnCard({
       >
         {description}
       </ThemedText>
-      <ThemedText type="code" themeColor="textSecondary" style={styles.count}>
+      <ThemedText type="small" themeColor="textSecondary" style={styles.count}>
         {count}
       </ThemedText>
       {names.map((name, index) => (
@@ -161,8 +156,8 @@ function ReturnCard({
           borderTopColor="border"
         >
           <View>
-            <ThemedText>{name}</ThemedText>
-            <ThemedText type="subtitle" themeColor="muted">
+            <ThemedText style={styles.name}>{name}</ThemedText>
+            <ThemedText type="small" themeColor="muted">
               PRT 10482
             </ThemedText>
           </View>
@@ -189,8 +184,8 @@ function ReturnCard({
           onPress={() => router.push(route)}
           style={({ pressed }) => [styles.more, pressed && styles.pressed]}
         >
-          <ThemedText type="code" themeColor="textSecondary">
-            VER TODAS ·{" "}
+          <ThemedText style={styles.linkText}>
+            Ver todas ·{" "}
             {names.length === 2 ? (count.startsWith("12") ? "12" : "7") : ""}
           </ThemedText>
         </Pressable>
@@ -226,19 +221,11 @@ const styles = StyleSheet.create({
 
   crm: { marginTop: 3 },
 
-  exit: {
-    borderWidth: 1,
-    borderRadius: 20,
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderColor: Theme.border,
-  },
-
   totalCard: {
     borderWidth: 1,
-    borderRadius: 17,
-    padding: 18,
-    gap: 8,
+    borderRadius: 14,
+    padding: Spacing.three,
+    gap: Spacing.two,
   },
 
   cardLabel: {
@@ -266,16 +253,26 @@ const styles = StyleSheet.create({
   },
 
   listLink: {
+    minHeight: 44,
     flexDirection: "row",
     alignItems: "center",
-    gap: 5,
+    gap: Spacing.one,
   },
+
+  linkText: {
+    color: Theme.primary,
+    fontFamily: FontFamilies.primaryMedium,
+    fontSize: Typography.sizes.action,
+    lineHeight: Typography.lineHeights.input,
+  },
+
+  name: { fontFamily: FontFamilies.primaryMedium },
 
   pressed: { opacity: 0.7 },
 
   returnCard: {
     borderWidth: 1,
-    borderRadius: 16,
+    borderRadius: 14,
     overflow: "hidden",
   },
 
@@ -318,17 +315,17 @@ const styles = StyleSheet.create({
   },
 
   days: {
-    fontFamily: FontFamilies.primary,
-    fontSize: Typography.sizes.bodySmall,
+    fontFamily: FontFamilies.primaryMedium,
+    fontSize: Typography.sizes.action,
   },
 
+  // Ação secundária com fundo suave, como os outros botões do app.
   more: {
-    borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 35,
-    margin: 12,
-    borderColor: Theme.primary,
+    minHeight: 44,
+    margin: Spacing.three - Spacing.one,
+    backgroundColor: Theme.inputBackground,
   },
 });

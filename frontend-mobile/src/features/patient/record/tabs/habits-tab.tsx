@@ -1,4 +1,4 @@
-import { StepSection, SummaryRow } from "../../registration/components";
+import { FieldRow, StepSection, SummaryRow } from "../../registration/components";
 import { getSmokingLoad } from "../../registration/utils";
 import { EmptyState } from "../components";
 import type { TabProps } from "../types";
@@ -18,21 +18,23 @@ export function HabitsTab({ record }: TabProps) {
   }
 
   return (
-    <StepSection title="USO DE TABACO">
-      <SummaryRow label="TABAGISMO" value={smokingLabels[form.smoking]} />
-      {smokes ? (
-        <SummaryRow label="COMEÇOU AOS" value={`${form.smokingStart} anos`} />
-      ) : null}
-      {form.smoking === "Parou" ? (
-        <SummaryRow label="PAROU AOS" value={`${form.smokingEnd} anos`} />
-      ) : null}
+    <StepSection title="Uso de tabaco">
+      <SummaryRow label="Tabagismo" value={smokingLabels[form.smoking]} />
       {smokes ? (
         <>
-          <SummaryRow
-            label="CIGARROS POR DIA"
-            value={String(form.cigarettesPerDay)}
-          />
-          <SummaryRow label="CARGA TABÁGICA" value={getSmokingLoad(form)} />
+          <FieldRow>
+            <SummaryRow label="Começou aos" value={`${form.smokingStart} anos`} />
+            {form.smoking === "Parou" ? (
+              <SummaryRow label="Parou aos" value={`${form.smokingEnd} anos`} />
+            ) : null}
+          </FieldRow>
+          <FieldRow>
+            <SummaryRow
+              label="Cigarros por dia"
+              value={String(form.cigarettesPerDay)}
+            />
+            <SummaryRow label="Carga tabágica" value={getSmokingLoad(form)} />
+          </FieldRow>
         </>
       ) : null}
     </StepSection>

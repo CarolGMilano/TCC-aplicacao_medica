@@ -108,30 +108,25 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
       onSave={save}
     >
       <DateInput
-        label="DATA DO REGISTRO"
+        label="Data do registro"
         values={date}
-        onChange={(index, value) => {
+        onChange={(next) => {
           setError("");
-          setDate((current) => {
-            const next = [...current] as DateParts;
-            next[index] = value;
-            return next;
-          });
+          setDate(next);
         }}
       />
       <ChoiceRow
-        label="RESULTADO"
+        label="Resultado"
         options={Object.values(pcrResultLabels)}
         selected={pcrResultLabels[result]}
         onSelect={(label) => {
           setError("");
           setResult(keyOf(pcrResultLabels, label) ?? result);
         }}
-        inline
       />
       {positive ? (
         <ChoiceRow
-          label="TIPO DE HPV"
+          label="Tipo de HPV"
           hint="Selecione todos os tipos detectados"
           options={Object.values(hpvTypeLabels)}
           selected={hpvTypes.map((type) => hpvTypeLabels[type])}
@@ -139,7 +134,7 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
         />
       ) : null}
       <LabeledInput
-        label="OBSERVAÇÃO"
+        label="Observação"
         value={observation}
         onChangeText={(value) => {
           setError("");

@@ -30,7 +30,8 @@ const statusLabels = Object.fromEntries(
 export const USE_MOCK_PATIENTS = false;
 
 function formatLastVisit(value: string | null) {
-  if (!value) return "sem consultas";
+  // Sem consulta: vazio, e a lista mostra "Sem consultas".
+  if (!value) return "";
 
   const [date] = value.split("T");
   const [year, month, day] = date.split("-");
