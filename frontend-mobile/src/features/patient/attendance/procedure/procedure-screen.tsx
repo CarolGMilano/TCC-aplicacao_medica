@@ -131,19 +131,15 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
       onSave={save}
     >
       <DateInput
-        label="DATA DO REGISTRO"
+        label="Data do registro"
         values={date}
-        onChange={(index, value) => {
+        onChange={(next) => {
           setError("");
-          setDate((current) => {
-            const next = [...current] as DateParts;
-            next[index] = value;
-            return next;
-          });
+          setDate(next);
         }}
       />
       <ChoiceRow
-        label="TIPO"
+        label="Tipo"
         options={Object.values(procedureLabels)}
         selected={procedureLabels[type]}
         onSelect={(label) =>
@@ -151,7 +147,7 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
         }
       />
       <Counter
-        label="FRAGMENTOS"
+        label="Fragmentos"
         value={fragments}
         min={1}
         onChange={clearError(setFragments)}
@@ -159,7 +155,7 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
       {hasMargins ? (
         <>
           <ChoiceRow
-            label="MARGEM ENDOCERVICAL"
+            label="Margem endocervical"
             options={Object.values(marginLabels)}
             selected={endocervical ? marginLabels[endocervical] : ""}
             onSelect={(label) =>
@@ -167,7 +163,7 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
             }
           />
           <ChoiceRow
-            label="MARGEM ECTOCERVICAL"
+            label="Margem ectocervical"
             options={Object.values(marginLabels)}
             selected={ectocervical ? marginLabels[ectocervical] : ""}
             onSelect={(label) =>
@@ -177,7 +173,7 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
         </>
       ) : null}
       <OptionRow
-        label="RESULTADO"
+        label="Resultado"
         value={result ? procedureResultLabels[result] : resultPlaceholder}
         options={Object.values(procedureResultLabels)}
         onChange={(label) =>
@@ -185,7 +181,7 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
         }
       />
       <LabeledInput
-        label="OBSERVAÇÃO"
+        label="Observação"
         value={observation}
         onChangeText={clearError(setObservation)}
         multiline

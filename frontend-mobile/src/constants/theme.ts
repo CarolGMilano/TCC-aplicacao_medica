@@ -29,6 +29,10 @@ const palette = {
   // Fundo das linhas que pedem atenção (secondary com transparência).
   backgroundAlert: 'rgba(231, 152, 151, 0.13)',
   tableRowHover: '#f7f6f16e',
+  // Campos de digitação e seleção: preenchimento suave, um pouco mais escuro
+  // que o fundo, com contorno quase invisível (verde ao focar).
+  inputBackground: '#E9E6DF',
+  inputBorder: 'rgba(198, 192, 156, 0.35)',
 
   textSecondary: '#3F4D42',
   accent: '#768E78',
@@ -92,6 +96,8 @@ export const Typography = {
     small: 12,
     notice: 13,
     bodySmall: 14,
+    // Voltar/cancelar dos cabeçalhos e subtítulo da paciente.
+    action: 15,
     input: 16,
     body: 16,
     greeting: 25,

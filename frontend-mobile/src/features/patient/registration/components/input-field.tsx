@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   StyleProp,
   StyleSheet,
@@ -9,6 +10,7 @@ import {
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
+import { inputStyles } from "@/components/shared/input-styles";
 
 type InputFieldProps = {
   label?: string;
@@ -33,6 +35,8 @@ export function InputField({
   containerStyle,
   inputStyle,
 }: InputFieldProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <View style={[styles.inputField, containerStyle]}>
       {label ? (
@@ -41,7 +45,11 @@ export function InputField({
         </ThemedText>
       ) : null}
 
-      <View style={prefix ? styles.inputRow : undefined}>
+      <View
+        style={
+          prefix ? [styles.inputRow, focused && inputStyles.focused] : undefined
+        }
+      >
         {prefix ? (
           <ThemedText style={styles.prefix} themeColor="textSecondary">
             {prefix}
@@ -54,7 +62,14 @@ export function InputField({
           keyboardType={keyboardType}
           maxLength={maxLength}
           placeholderTextColor={Theme.placeholder}
-          style={[styles.textInput, prefix && styles.textInputWithPrefix, inputStyle]}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={[
+            styles.textInput,
+            prefix && styles.textInputWithPrefix,
+            !prefix && focused && inputStyles.focused,
+            inputStyle,
+          ]}
         />
       </View>
     </View>
@@ -63,18 +78,11 @@ export function InputField({
 
 const styles = StyleSheet.create({
   inputField: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
     gap: Spacing.two,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
   },
 
   textInput: {
-    backgroundColor: Theme.backgroundElement,
-    borderWidth: 1,
-    borderColor: Theme.border,
-    borderRadius: 12,
+    ...inputStyles.box,
     minHeight: 48,
     paddingHorizontal: Spacing.two,
     fontFamily: FontFamilies.primary,
@@ -85,10 +93,7 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Theme.backgroundElement,
-    borderWidth: 1,
-    borderColor: Theme.border,
-    borderRadius: 12,
+    ...inputStyles.box,
     minHeight: 48,
   },
 
