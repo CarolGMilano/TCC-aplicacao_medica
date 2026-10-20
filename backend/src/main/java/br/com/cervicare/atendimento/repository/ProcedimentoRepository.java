@@ -11,7 +11,7 @@ import java.util.List;
 public interface ProcedimentoRepository extends JpaRepository<Procedimento, Integer> {
 
     @Query("SELECT p FROM Procedimento p WHERE " +
-           "p.dataRegistro <= :dataLimite " +
+           "p.paciente.ativo = true AND p.dataRegistro <= :dataLimite " +
            "AND NOT EXISTS (SELECT 1 FROM Consulta cons WHERE cons.paciente = p.paciente AND cons.dataHora > CAST(p.dataRegistro AS timestamp))")
     List<Procedimento> findPosProcedimentoAtrasados(@Param("dataLimite") LocalDate dataLimite);
 

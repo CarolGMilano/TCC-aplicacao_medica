@@ -1,3 +1,4 @@
+import { getToken } from "@/features/auth/auth-session";
 import { apiFetch } from "@/features/auth/services/auth-api";
 
 import { mockPostProcedureAlerts } from "../post-procedure/mocks";
@@ -5,14 +6,19 @@ import type { PostProcedureAlert } from "../post-procedure/types";
 import { mockWithoutReturnAlerts } from "../without-return/mocks";
 import type { WithoutReturnAlert } from "../without-return/types";
 
-export const USE_MOCK_DASHBOARD_ALERTS = true;
+// O backend exige o JWT em todas as rotas do dashboard.
+function authHeaders() {
+  return { headers: { Authorization: `Bearer ${getToken()}` } };
+}
+
+export const USE_MOCK_DASHBOARD_ALERTS = false;
 
 export async function fetchWithoutReturnAlerts(): Promise<WithoutReturnAlert[]> {
   if (USE_MOCK_DASHBOARD_ALERTS) {
     return mockWithoutReturnAlerts.map((alert) => ({ ...alert }));
   }
 
-  const response = await apiFetch("/api/dashboard/alertas/ver-e-tratar");
+  const response = await apiFetch("/api/dashboard/alertas/ver-e-tratar", authHeaders());
   if (!response.ok) {
     throw new Error("Não foi possível carregar as pacientes sem retorno.");
   }
@@ -26,7 +32,10 @@ export async function fetchPostProcedureAlerts(): Promise<
     return mockPostProcedureAlerts.map((alert) => ({ ...alert }));
   }
 
-  const response = await apiFetch("/api/dashboard/alertas/pos-procedimento");
+  const response = await apiFetch(
+    "/api/dashboard/alertas/pos-procedimento",
+    authHeaders(),
+  );
   if (!response.ok) {
     throw new Error("Não foi possível carregar as pacientes pós-procedimento.");
   }

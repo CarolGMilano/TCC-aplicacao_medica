@@ -99,6 +99,10 @@ export const Typography = {
     // Voltar/cancelar dos cabeçalhos e subtítulo da paciente.
     action: 15,
     input: 16,
+    // Dados salvos na ficha (modo leitura).
+    value: 17,
+    // Títulos das seções da ficha, do cadastro e dos registros.
+    section: 19,
     body: 16,
     greeting: 25,
     heading: 30,

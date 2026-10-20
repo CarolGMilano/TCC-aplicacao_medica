@@ -1,16 +1,32 @@
 import { SymbolView } from "expo-symbols";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNav } from "@/components/shared/bottom-nav";
 import { PillButton } from "@/components/shared/pill-button";
 import { ThemedView } from "@/components/shared/themed-view";
 import { logout } from "@/features/auth/auth-session";
+import { usePostProcedure } from "@/features/dashboard/post-procedure/use-post-procedure";
+import type { WithoutReturnAlert as AlertItem } from "@/features/dashboard/without-return/types";
+import { useWithoutReturn } from "@/features/dashboard/without-return/use-without-return";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/shared/themed-text";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 
+// Total ainda fixo (como o card "Pacientes cadastradas"); usado só no
+// percentual dos alertas.
+const TOTAL_PATIENTS = 248;
+
 export default function DashboardScreen() {
+  const withoutReturn = useWithoutReturn();
+  const postProcedure = usePostProcedure();
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <ThemedView style={styles.screen}>
@@ -88,17 +104,13 @@ export default function DashboardScreen() {
           <ReturnCard
             title="Ver e tratar sem retorno"
             description="Indicação de ver e tratar há mais de 2 meses sem nova consulta registrada."
-            count="12 pacientes · 4,8% das cadastradas"
-            names={["Cláudia Nunes", "Marina Souza"]}
-            days={["146 d", "134 d"]}
+            state={withoutReturn}
             route="/dashboard/without-return"
           />
           <ReturnCard
             title="Pós-procedimento sem retorno"
             description="EZT ou biópsia realizada há mais de 3 meses sem consulta de acompanhamento."
-            count="7 pacientes · 2,8% das cadastradas"
-            names={["Rita Almeida", "Joana Vilela"]}
-            days={["129 d", "112 d"]}
+            state={postProcedure}
             route="/dashboard/post-procedure"
           />
         </ScrollView>
@@ -108,21 +120,25 @@ export default function DashboardScreen() {
   );
 }
 
+// Alertas reais (mesmos dados do "Ver todas"): as duas primeiras pacientes,
+// cada uma abrindo a própria ficha.
 function ReturnCard({
   title,
   description,
-  count,
-  names,
-  days,
+  state,
   route,
 }: {
   title: string;
   description: string;
-  count: string;
-  names: string[];
-  days: string[];
+  state: { alerts: AlertItem[]; error: string; isLoading: boolean };
   route: "/dashboard/without-return" | "/dashboard/post-procedure";
 }) {
+  const { alerts, error, isLoading } = state;
+  const percentage = ((alerts.length / TOTAL_PATIENTS) * 100).toLocaleString(
+    "pt-BR",
+    { maximumFractionDigits: 1 },
+  );
+
   return (
     <ThemedView
       type="backgroundElement"
@@ -145,25 +161,40 @@ function ReturnCard({
       >
         {description}
       </ThemedText>
-      <ThemedText type="small" themeColor="textSecondary" style={styles.count}>
-        {count}
-      </ThemedText>
-      {names.map((name, index) => (
-        <ThemedView
-          type="backgroundElement"
-          key={name}
-          style={styles.patientRow}
-          borderTopColor="border"
+      {isLoading ? (
+        <ActivityIndicator color={Theme.primary} style={styles.count} />
+      ) : (
+        <ThemedText
+          type="small"
+          themeColor={error ? "error" : "textSecondary"}
+          style={styles.count}
         >
-          <View>
-            <ThemedText style={styles.name}>{name}</ThemedText>
+          {error ||
+            `${alerts.length} pacientes · ${percentage}% das cadastradas`}
+        </ThemedText>
+      )}
+      {alerts.slice(0, 2).map((alert) => (
+        <Pressable
+          key={`${alert.idPaciente}-${alert.tipoAlerta}`}
+          accessibilityRole="button"
+          accessibilityLabel={`Abrir ficha de ${alert.nome}`}
+          onPress={() =>
+            router.push({
+              pathname: "/patients/[id]",
+              params: { id: String(alert.idPaciente) },
+            })
+          }
+          style={({ pressed }) => [styles.patientRow, pressed && styles.pressed]}
+        >
+          <View style={styles.identity}>
+            <ThemedText style={styles.name}>{alert.nome}</ThemedText>
             <ThemedText type="small" themeColor="muted">
-              PRT 10482
+              PRT {alert.prontuario}
             </ThemedText>
           </View>
           <View style={styles.daysRow}>
             <ThemedText themeColor="error" style={styles.days}>
-              {days[index]}
+              {alert.diasAtraso} d
             </ThemedText>
             <SymbolView
               name={{
@@ -175,9 +206,9 @@ function ReturnCard({
               size={16}
             />
           </View>
-        </ThemedView>
+        </Pressable>
       ))}
-      {names.length > 0 && (
+      {alerts.length > 0 && (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Ver todas: ${title}`}
@@ -185,8 +216,7 @@ function ReturnCard({
           style={({ pressed }) => [styles.more, pressed && styles.pressed]}
         >
           <ThemedText style={styles.linkText}>
-            Ver todas ·{" "}
-            {names.length === 2 ? (count.startsWith("12") ? "12" : "7") : ""}
+            Ver todas · {alerts.length}
           </ThemedText>
         </Pressable>
       )}
@@ -301,12 +331,16 @@ const styles = StyleSheet.create({
 
   patientRow: {
     borderTopWidth: 1,
+    borderTopColor: Theme.border,
+    backgroundColor: Theme.backgroundElement,
     paddingHorizontal: 16,
     paddingVertical: 11,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
+
+  identity: { flexShrink: 1 },
 
   daysRow: {
     flexDirection: "row",
