@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Pressable,
   StyleSheet,
   TextInput,
   View,
@@ -12,6 +11,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { BottomNav, useBottomNavHeight } from "@/components/shared/bottom-nav";
+import { inputStyles } from "@/components/shared/input-styles";
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
@@ -44,26 +45,11 @@ export function PatientList() {
       <ThemedView style={styles.screen}>
         <View style={styles.content}>
           <View style={styles.headerTop}>
-            <Pressable
-              accessibilityRole="button"
+            <PillButton
+              label="Dashboard"
               accessibilityLabel="Voltar para o Dashboard"
-              hitSlop={8}
               onPress={() => router.dismissTo("/dashboard")}
-              style={styles.backButton}
-            >
-              <SymbolView
-                name={{
-                  ios: "arrow.left",
-                  android: "arrow_back",
-                  web: "arrow_back",
-                }}
-                tintColor={Theme.textSecondary}
-                size={19}
-              />
-              <ThemedText type="code" themeColor="textSecondary">
-                DASHBOARD
-              </ThemedText>
-            </Pressable>
+            />
             <ActivityIndicator
               animating={isRefreshing && filteredPatients.length > 0}
               color={Theme.primary}
@@ -71,8 +57,8 @@ export function PatientList() {
           </View>
           <View style={styles.titleRow}>
             <ThemedText style={styles.title}>Pacientes</ThemedText>
-            <ThemedText type="code" themeColor="textSecondary">
-              {unitCount} NA UNIDADE
+            <ThemedText type="small" themeColor="textSecondary">
+              {unitCount} na unidade
             </ThemedText>
           </View>
           <View style={styles.searchBox}>
@@ -83,7 +69,7 @@ export function PatientList() {
                 web: "search",
               }}
               tintColor={Theme.textSecondary}
-              size={14}
+              size={18}
             />
             <TextInput
               accessibilityLabel="Pesquisar pacientes"
@@ -97,7 +83,7 @@ export function PatientList() {
           </View>
           <View style={styles.filterRow}>
             <ThemedText type="code" themeColor="textSecondary">
-              STATUS
+              Status
             </ThemedText>
             <StatusFilter
               value={status}
@@ -159,10 +145,10 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   screen: { flex: 1 },
   content: {
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.one,
-    paddingBottom: Spacing.two,
-    gap: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.two,
+    paddingBottom: Spacing.three,
+    gap: Spacing.three,
   },
 
   headerTop: {
@@ -170,30 +156,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
-  },
-
   titleRow: {
-    paddingTop: 1,
-    paddingBottom: 5,
     flexDirection: "row",
     alignItems: "baseline",
     justifyContent: "space-between",
   },
   title: {
     fontFamily: FontFamilies.detail,
-    fontSize: Typography.sizes.greeting,
-    lineHeight: Typography.lineHeights.greeting,
+    fontSize: Typography.sizes.heading,
+    lineHeight: Typography.lineHeights.title,
   },
 
+  // Mesmo visual dos outros campos.
   searchBox: {
-    height: 45,
-    borderWidth: 1,
-    borderColor: Theme.border,
-    borderRadius: 24,
+    ...inputStyles.box,
+    minHeight: 48,
     paddingHorizontal: Spacing.three,
     flexDirection: "row",
     alignItems: "center",
@@ -209,11 +186,6 @@ const styles = StyleSheet.create({
   },
 
   filterRow: {
-    marginTop: Spacing.two,
-    borderTopWidth: 1,
-    borderTopColor: Theme.border,
-    paddingTop: Spacing.three,
-    paddingBottom: Spacing.two,
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.three,
@@ -221,8 +193,6 @@ const styles = StyleSheet.create({
 
   listContainer: {
     flex: 1,
-    borderTopWidth: 1,
-    borderTopColor: Theme.border,
   },
 
   centered: {
