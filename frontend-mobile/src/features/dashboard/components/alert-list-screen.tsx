@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
@@ -45,38 +46,24 @@ export function AlertListScreen({
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          <Pressable
-            accessibilityRole="button"
+          <PillButton
+            label="Dashboard"
             accessibilityLabel="Voltar para o Dashboard"
-            hitSlop={8}
             onPress={() => router.dismissTo("/dashboard")}
             style={styles.backButton}
-          >
-            <SymbolView
-              name={{
-                ios: "arrow.left",
-                android: "arrow_back",
-                web: "arrow_back",
-              }}
-              tintColor={Theme.textSecondary}
-              size={18}
-            />
-            <ThemedText type="code" themeColor="textSecondary">
-              DASHBOARD
-            </ThemedText>
-          </Pressable>
+          />
 
           <View style={styles.heading}>
             <View style={styles.eyebrow}>
               <ThemedView type="tertiary" style={styles.line} />
               <ThemedText type="code" themeColor="textSecondary">
-                {title === "Ver e tratar" ? "SEM RETORNO" : "PÓS-PROCEDIMENTO"}
+                {title === "Ver e tratar" ? "Sem retorno" : "Pós-procedimento"}
               </ThemedText>
             </View>
             <ThemedText style={styles.title}>{title}</ThemedText>
             {!isLoading && !error ? (
-              <ThemedText type="code" themeColor="textSecondary">
-                {alerts.length} PACIENTES · {percentage}% DAS CADASTRADAS
+              <ThemedText type="small" themeColor="textSecondary">
+                {alerts.length} pacientes · {percentage}% das cadastradas
               </ThemedText>
             ) : null}
             <ThemedText
@@ -119,8 +106,8 @@ export function AlertListScreen({
                 ]}
               >
                 <View style={styles.identity}>
-                  <ThemedText>{alert.nome}</ThemedText>
-                  <ThemedText type="subtitle" themeColor="textSecondary">
+                  <ThemedText style={styles.name}>{alert.nome}</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
                     PRT {alert.prontuario}
                   </ThemedText>
                 </View>
@@ -160,20 +147,15 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   backButton: {
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.one,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
+    marginHorizontal: Spacing.three,
+    marginTop: Spacing.one,
   },
 
   heading: {
     paddingHorizontal: Spacing.three,
     paddingTop: Spacing.three,
-    paddingBottom: Spacing.four,
+    paddingBottom: Spacing.three,
     gap: Spacing.one,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
   },
 
   eyebrow: {
@@ -189,21 +171,24 @@ const styles = StyleSheet.create({
 
   title: {
     fontFamily: FontFamilies.detail,
-    fontSize: Typography.sizes.greeting,
-    lineHeight: Typography.lineHeights.greeting,
+    fontSize: Typography.sizes.heading,
+    lineHeight: Typography.lineHeights.title,
   },
 
   description: {
     marginTop: Spacing.one,
   },
 
+  // Mesmo cartão da lista de pacientes.
   patientRow: {
-    minHeight: 69,
+    marginHorizontal: Spacing.three,
+    marginBottom: Spacing.two,
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
+    paddingVertical: Spacing.three - Spacing.one,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Theme.inputBorder,
     backgroundColor: Theme.backgroundElement,
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -214,8 +199,10 @@ const styles = StyleSheet.create({
   // os dias para fora da tela.
   identity: {
     flexShrink: 1,
-    gap: 3,
+    gap: Spacing.half,
   },
+
+  name: { fontFamily: FontFamilies.primaryMedium },
 
   delay: {
     flexDirection: "row",
@@ -224,7 +211,8 @@ const styles = StyleSheet.create({
   },
 
   days: {
-    fontSize: Typography.sizes.bodySmall,
+    fontFamily: FontFamilies.primaryMedium,
+    fontSize: Typography.sizes.action,
   },
 
   loading: {
