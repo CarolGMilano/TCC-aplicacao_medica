@@ -5,7 +5,6 @@ import br.com.cervicare.atendimento.dto.CitologiaRequestDTO;
 import br.com.cervicare.atendimento.dto.CitologiaResponseDTO;
 import br.com.cervicare.atendimento.repository.CitologiaRepository;
 import br.com.cervicare.core.exception.ResourceNotFoundException;
-import br.com.cervicare.core.validation.RegrasClinicas;
 import br.com.cervicare.medico.domain.Medico;
 import br.com.cervicare.medico.service.MedicoService;
 import br.com.cervicare.paciente.domain.Paciente;
@@ -30,7 +29,6 @@ public class CitologiaService {
         Paciente paciente = pacienteRepository.findById(dto.idPaciente())
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada para o ID: " + dto.idPaciente()));
 
-        RegrasClinicas.validarDataExame(dto.dataRegistro(), paciente.getDataNascimento());
         Medico medico = medicoService.getMedicoLogado();
 
         Citologia citologia = new Citologia();
@@ -62,7 +60,6 @@ public class CitologiaService {
     public CitologiaResponseDTO atualizar(Integer idExame, CitologiaRequestDTO dto) {
         Citologia citologia = citologiaRepository.findById(idExame)
                 .orElseThrow(() -> new ResourceNotFoundException("Exame de citologia não encontrado."));
-        RegrasClinicas.validarDataExame(dto.dataRegistro(), citologia.getPaciente().getDataNascimento());
 
         citologia.setDataRegistro(dto.dataRegistro());
         citologia.setResultado(dto.resultado());

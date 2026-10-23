@@ -4,7 +4,6 @@ import br.com.cervicare.atendimento.domain.Consulta;
 import br.com.cervicare.atendimento.repository.ConsultaRepository;
 import br.com.cervicare.core.exception.DuplicateResourceException;
 import br.com.cervicare.core.exception.ResourceNotFoundException;
-import br.com.cervicare.core.validation.RegrasClinicas;
 import br.com.cervicare.historico.domain.DadosGinecoObstetricos;
 import br.com.cervicare.historico.domain.HistoricoIst;
 import br.com.cervicare.historico.domain.HistoricoTabagismo;
@@ -159,18 +158,6 @@ public class PacienteService {
 
     @Transactional
     public PacienteResponseDTO cadastrarCompleto(PacienteCompletoRequestDTO dto) {
-        LocalDate nascimento = dto.paciente().dataNascimento();
-        if (dto.dadosGinecoObstetricos() != null) {
-            RegrasClinicas.validarGineco(dto.dadosGinecoObstetricos().menarca(),
-                    dto.dadosGinecoObstetricos().menopausa(), nascimento);
-        }
-        if (dto.saudeSexual() != null) {
-            RegrasClinicas.validarSexarca(dto.saudeSexual().sexarca(), nascimento);
-        }
-        if (dto.historicoTabagismo() != null) {
-            RegrasClinicas.validarTabagismo(dto.historicoTabagismo().fumante(),
-                    dto.historicoTabagismo().idadeInicio(), dto.historicoTabagismo().idadeFim(), nascimento);
-        }
 
         PacienteResponseDTO pacienteDTO = cadastrar(dto.paciente());
 

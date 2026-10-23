@@ -1,7 +1,6 @@
 package br.com.cervicare.historico.service;
 
 import br.com.cervicare.core.exception.ResourceNotFoundException;
-import br.com.cervicare.core.validation.RegrasClinicas;
 import br.com.cervicare.historico.domain.SaudeSexual;
 import br.com.cervicare.historico.dto.SaudeSexualRequestDTO;
 import br.com.cervicare.historico.dto.SaudeSexualResponseDTO;
@@ -25,7 +24,6 @@ public class SaudeSexualService {
     public SaudeSexualResponseDTO registrar(SaudeSexualRequestDTO dto) {
         Paciente paciente = pacienteRepository.findById(dto.idPaciente())
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada para o ID: " + dto.idPaciente()));
-        RegrasClinicas.validarSexarca(dto.sexarca(), paciente.getDataNascimento());
 
         SaudeSexual saude = new SaudeSexual();
         saude.setPaciente(paciente);
@@ -55,7 +53,6 @@ public class SaudeSexualService {
     public SaudeSexualResponseDTO atualizar(Integer idDados, SaudeSexualRequestDTO dto) {
         SaudeSexual saude = saudeSexualRepository.findById(idDados)
                 .orElseThrow(() -> new ResourceNotFoundException("Dados de saúde sexual não encontrados."));
-        RegrasClinicas.validarSexarca(dto.sexarca(), saude.getPaciente().getDataNascimento());
 
         saude.setSexarca(dto.sexarca());
         saude.setMac(dto.mac());
