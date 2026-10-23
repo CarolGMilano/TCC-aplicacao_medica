@@ -118,7 +118,6 @@ export function HistoryTab({ record, onEdit }: HistoryTabProps) {
             <InfoField
               label="Carga tabágica"
               value={smokes ? getSmokingLoad(form) : notApplicable}
-              highlight={smokes}
             />
             <InfoField
               label="Começou aos"

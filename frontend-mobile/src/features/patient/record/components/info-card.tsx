@@ -48,23 +48,15 @@ type InfoFieldProps = {
   value: string;
   // Texto longo (nome, método contraceptivo): ocupa a linha toda.
   full?: boolean;
-  // Dado que o médico precisa ver de relance (ex.: carga tabágica).
-  highlight?: boolean;
 };
 
-export function InfoField({ label, value, full, highlight }: InfoFieldProps) {
+export function InfoField({ label, value, full }: InfoFieldProps) {
   return (
-    <View
-      style={[
-        styles.field,
-        full && styles.fieldFull,
-        highlight && styles.fieldHighlight,
-      ]}
-    >
+    <View style={[styles.field, full && styles.fieldFull]}>
       <ThemedText type="code" themeColor="textSecondary">
         {label}
       </ThemedText>
-      <ThemedText style={[styles.value, highlight && styles.valueHighlight]}>
+      <ThemedText style={styles.value}>
         {value}
       </ThemedText>
     </View>
@@ -131,19 +123,9 @@ const styles = StyleSheet.create({
 
   fieldFull: { width: "100%" },
 
-  fieldHighlight: {
-    borderRadius: 10,
-    backgroundColor: Theme.backgroundAlert,
-  },
-
   value: {
     fontFamily: FontFamilies.primaryMedium,
     fontSize: Typography.sizes.value,
     lineHeight: Typography.lineHeights.body,
-  },
-
-  valueHighlight: {
-    fontFamily: FontFamilies.primarySemiBold,
-    fontSize: Typography.sizes.section,
   },
 });
