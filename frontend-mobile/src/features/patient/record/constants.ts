@@ -2,10 +2,10 @@ import { Theme } from "@/constants/theme";
 
 import type { DataTab, RecordTab, VisitType } from "./types";
 
-// Abas da ficha: Atendimentos abre primeiro, por ser o que mais se usa.
+// Abas da ficha: Histórico clínico à esquerda e Atendimentos à direita.
 export const recordTabs: { id: RecordTab; label: string }[] = [
-  { id: "visits", label: "Atendimentos" },
   { id: "history", label: "Histórico clínico" },
+  { id: "visits", label: "Atendimentos" },
 ];
 
 // Blocos do histórico clínico, na ordem do cadastro.
