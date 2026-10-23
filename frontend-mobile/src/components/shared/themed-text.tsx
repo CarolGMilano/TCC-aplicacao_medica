@@ -50,8 +50,8 @@ export function ThemedText({
   );
 }
 
-// No Android (Expo Go/SDK 57) o peso vem do nome da família (Poppins-Medium,
-// Poppins-SemiBold); fontWeight com fonte customizada é ignorado ou vira Roboto.
+// No Android (Expo Go/SDK 57) o peso vem do nome da família (Atkinson-Medium,
+// Atkinson-SemiBold); fontWeight com fonte customizada é ignorado ou vira Roboto.
 const styles = StyleSheet.create({
   small: {
     fontFamily: FontFamilies.primary,
@@ -89,14 +89,13 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.bodySmall,
     color: Colors.light.primary,
   },
-  // Rótulos em maiúsculas: Poppins média em vez da mono fina, mais legível.
+  // Rótulos dos campos e abas: peso regular, para o valor (médio) se destacar.
   code: {
-    fontFamily: FontFamilies.primaryMedium,
+    fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.notice,
     lineHeight: Typography.lineHeights.caption,
-    letterSpacing: Typography.letterSpacing.tight,
   },
-  // Texto dos botões principais: Poppins seminegrito 16.
+  // Texto dos botões principais: seminegrito 17.
   button: {
     fontFamily: FontFamilies.primarySemiBold,
     fontSize: Typography.sizes.body,

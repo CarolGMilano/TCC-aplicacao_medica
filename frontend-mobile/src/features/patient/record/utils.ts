@@ -95,4 +95,18 @@ export function formatBirthDate(record: PatientRecord) {
   return `${birthDay}/${birthMonth}/${birthYear}`;
 }
 
+const shortMonths = [
+  "jan", "fev", "mar", "abr", "mai", "jun",
+  "jul", "ago", "set", "out", "nov", "dez",
+];
+
+// "12 mar 1984": lido mais rápido que "12/03/1984" e sem confundir dia e mês.
+export function formatBirthDateShort(record: PatientRecord) {
+  const { birthDay, birthMonth, birthYear } = record.form;
+  const month = shortMonths[Number(birthMonth) - 1];
+  return month
+    ? `${Number(birthDay)} ${month} ${birthYear}`
+    : formatBirthDate(record);
+}
+
 export const yesNo = (value: boolean) => (value ? "Sim" : "Não");

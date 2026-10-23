@@ -47,7 +47,8 @@ export function Counter({
             accessibilityLabel={label}
             value={text ?? String(value)}
             keyboardType="number-pad"
-            maxLength={String(max).length}
+            // O campo comporta 2 dígitos; nenhum desses dados passa de 99.
+            maxLength={Math.min(String(max).length, 2)}
             selectTextOnFocus
             onFocus={() => setText(String(value))}
             // Só dígitos; o limite vale ao sair do campo, para o número não

@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { PatientForm } from "../registration/types";
 import { validateStep } from "../registration/utils";
-import { recordTabs, tabSteps } from "./constants";
+import { sectionLabels, tabSteps } from "./constants";
 import { saveTab } from "./services/patient-update-api";
 import type { DataTab, PatientRecord } from "./types";
 
@@ -15,8 +15,7 @@ function validateOtherTabs(record: PatientRecord, form: PatientForm) {
     const error = validateStep(tabSteps[tab], form, record.form);
     const before = validateStep(tabSteps[tab], record.form, record.form);
     if (error && error !== before) {
-      const label = recordTabs.find((item) => item.id === tab)?.label;
-      return `Aba ${label}: ${error}`;
+      return `${sectionLabels[tab]}: ${error}`;
     }
   }
   return null;

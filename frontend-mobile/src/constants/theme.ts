@@ -83,45 +83,47 @@ export const Theme = Colors.light;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
+// Uma família só, a Atkinson Hyperlegible Next: feita para legibilidade, com
+// 1/l/I e 0/O inconfundíveis. A hierarquia vem do peso, não de outra fonte.
+// "detail" (títulos e números de destaque) usa o seminegrito.
 export const FontFamilies = {
-  primary: 'Poppins',
-  primaryMedium: 'Poppins-Medium',
-  primarySemiBold: 'Poppins-SemiBold',
-  detail: 'PT Serif',
+  primary: 'Atkinson',
+  primaryMedium: 'Atkinson-Medium',
+  primarySemiBold: 'Atkinson-SemiBold',
+  detail: 'Atkinson-SemiBold',
 } as const;
 
+// Escala de 6 tamanhos usada no app inteiro:
+// 13 apoio (selos) · 15 rótulos e abas · 17 valores e texto · 20 seções ·
+// 26 títulos e nome da paciente · 40 números do dashboard.
 export const Typography = {
   sizes: {
-    // Menor tamanho do app: selos (12). Rótulos 13-14, apoio 14, valores 16.
-    small: 12,
-    notice: 13,
-    bodySmall: 14,
-    // Voltar/cancelar dos cabeçalhos e subtítulo da paciente.
+    small: 13,
+    notice: 15,
+    bodySmall: 15,
     action: 15,
-    input: 16,
-    // Dados salvos na ficha (modo leitura).
+    input: 17,
     value: 17,
-    // Títulos das seções da ficha, do cadastro e dos registros.
-    section: 19,
-    body: 16,
-    greeting: 25,
-    heading: 30,
-    subtitle: 32,
-    title: 36,
+    section: 20,
+    body: 17,
+    greeting: 26,
+    heading: 26,
+    subtitle: 26,
+    title: 26,
     logo: 42,
-    metric: 43,
-    display: 48,
+    metric: 40,
+    display: 40,
   },
   lineHeights: {
-    compact: 17,
-    caption: 19,
-    input: 22,
+    compact: 18,
+    caption: 21,
+    input: 24,
     body: 24,
-    greeting: 30,
-    title: 42,
+    greeting: 32,
+    title: 32,
     logo: 44,
-    metric: 48,
-    display: 52,
+    metric: 46,
+    display: 46,
   },
   letterSpacing: {
     tight: 0.5,

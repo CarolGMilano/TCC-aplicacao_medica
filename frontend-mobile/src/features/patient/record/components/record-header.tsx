@@ -86,10 +86,9 @@ export function RecordHeader({
               style={[styles.tab, active && styles.tabActive]}
             >
               <ThemedText
-                type="small"
                 numberOfLines={1}
                 style={[styles.tabLabel, active && styles.tabLabelActive]}
-                themeColor={active ? "text" : "textSecondary"}
+                themeColor={active ? "textPrimaryLight" : "textSecondary"}
               >
                 {item.label}
               </ThemedText>
@@ -121,24 +120,23 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
 
+  // Duas abas grandes, metade da largura cada, fáceis de acertar com o dedo.
   tabs: {
     flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
+    padding: Spacing.one,
+    gap: Spacing.one,
+    borderRadius: 26,
+    backgroundColor: Theme.inputBackground,
   },
 
-  // Largura pelo rótulo (não seis partes iguais): "Pessoais" cabe em 360dp.
   tab: {
-    flexGrow: 1,
-    flexShrink: 1,
+    flex: 1,
+    minHeight: 48,
     alignItems: "center",
-    paddingBottom: Spacing.two,
-    borderBottomWidth: 2,
-    borderBottomColor: "transparent",
-    marginBottom: -1,
+    justifyContent: "center",
+    borderRadius: 22,
   },
 
-  // Menor que o corpo para os seis rótulos caberem sem cortar.
   tabLabel: {
     fontFamily: FontFamilies.primaryMedium,
     fontSize: Typography.sizes.notice,
@@ -149,6 +147,6 @@ const styles = StyleSheet.create({
   },
 
   tabActive: {
-    borderBottomColor: Theme.text,
+    backgroundColor: Theme.primary,
   },
 });

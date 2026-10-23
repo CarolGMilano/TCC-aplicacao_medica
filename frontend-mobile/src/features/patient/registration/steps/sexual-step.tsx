@@ -19,6 +19,7 @@ export function SexualStep({ form, update }: StepProps) {
           <Counter
             label="Sexarca"
             value={form.sexarche}
+            editable
             min={minAges.sexarche}
             max={age}
             suffix="anos"

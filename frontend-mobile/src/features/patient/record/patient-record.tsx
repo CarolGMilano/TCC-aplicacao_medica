@@ -20,16 +20,8 @@ import { ThemedView } from "@/components/shared/themed-view";
 import { styles as registrationStyles } from "../registration/styles";
 import { RecordFooter, RecordHeader } from "./components";
 import { fetchPatient } from "./services/patient-record-api";
-import {
-  EditTab,
-  HabitsTab,
-  IstTab,
-  ObstetricTab,
-  PersonalTab,
-  SexualTab,
-  VisitsTab,
-} from "./tabs";
-import type { PatientRecord, RecordTab } from "./types";
+import { EditTab, HistoryTab, VisitsTab } from "./tabs";
+import type { DataTab, PatientRecord, RecordTab } from "./types";
 import { useRecordEdit } from "./use-record-edit";
 import { toPatientRecord } from "./utils";
 
@@ -42,10 +34,12 @@ type PatientRecordScreenProps = {
 export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
   const [record, setRecord] = useState<PatientRecord | null>(null);
   const [error, setError] = useState("");
-  // Busca em andamento: "Editar dados" espera, para o rascunho não partir
-  // da ficha antiga (ex.: com o status de antes da consulta).
+  // Busca em andamento: "Editar" espera, para o rascunho não partir da ficha
+  // antiga (ex.: com o status de antes da consulta).
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<RecordTab>(created ? "visits" : "personal");
+  // Abre em Atendimentos: ver os exames e lançar um novo é o uso mais comum.
+  const [tab, setTab] = useState<RecordTab>("visits");
+  const [editing, setEditing] = useState<DataTab>("personal");
 
   const loadRecord = useCallback(() => {
     let active = true;
@@ -91,6 +85,15 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
 
   const edit = useRecordEdit(record, reload, refresh);
 
+  // Bloco do histórico em edição. Enquanto a ficha recarrega, espera, para o
+  // rascunho não partir de dados antigos.
+  const section = edit.editing ? editing : null;
+  function startEdit(next: DataTab) {
+    if (loading) return;
+    setEditing(next);
+    edit.start();
+  }
+
   // Sai da edição; com alterações feitas, pergunta antes de descartá-las.
   function leaveEdit(then?: () => void) {
     if (!edit.dirty) {
@@ -100,7 +103,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
     }
     Alert.alert(
       "Descartar alterações?",
-      "As alterações desta aba ainda não foram salvas.",
+      "As alterações deste bloco ainda não foram salvas.",
       [
         { text: "Continuar editando", style: "cancel" },
         {
@@ -187,24 +190,16 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
               onBack={goToPatients}
               onTabChange={changeTab}
             />
-            <View>
-              {tab !== "visits" && edit.draft ? (
-                <EditTab tab={tab} form={edit.draft} update={edit.update} />
+            <View style={styles.content}>
+              {/* Editando um bloco: só o formulário dele, com as regras do
+                  cadastro. */}
+              {section && edit.draft ? (
+                <EditTab tab={section} form={edit.draft} update={edit.update} />
               ) : null}
-              {!edit.editing && tab === "personal" && (
-                <PersonalTab record={record} />
+              {!edit.editing && tab === "history" && (
+                <HistoryTab record={record} onEdit={startEdit} />
               )}
-              {!edit.editing && tab === "obstetric" && (
-                <ObstetricTab record={record} />
-              )}
-              {!edit.editing && tab === "sexual" && (
-                <SexualTab record={record} />
-              )}
-              {!edit.editing && tab === "ist" && <IstTab record={record} />}
-              {!edit.editing && tab === "habits" && (
-                <HabitsTab record={record} />
-              )}
-              {tab === "visits" && (
+              {!edit.editing && tab === "visits" && (
                 <VisitsTab
                   patientId={record.id}
                   patientName={record.form.name}
@@ -214,27 +209,23 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
             </View>
           </ScrollView>
 
-          {tab !== "visits" ? (
-            <RecordFooter
-              editing={edit.editing}
-              loading={loading}
-              saving={edit.saving}
-              error={edit.error}
-              onEdit={edit.start}
-              onCancel={() => leaveEdit()}
-              onSave={() => edit.save(tab)}
-              onNewRecord={() =>
-                router.push({
-                  pathname: "/patients/[id]/new-record",
-                  params: {
-                    id: String(record.id),
-                    name: record.form.name,
-                    record: record.form.record,
-                  },
-                })
-              }
-            />
-          ) : null}
+          <RecordFooter
+            editing={edit.editing}
+            saving={edit.saving}
+            error={edit.error}
+            onCancel={() => leaveEdit()}
+            onSave={() => section && edit.save(section)}
+            onNewRecord={() =>
+              router.push({
+                pathname: "/patients/[id]/new-record",
+                params: {
+                  id: String(record.id),
+                  name: record.form.name,
+                  record: record.form.record,
+                },
+              })
+            }
+          />
         </ThemedView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -254,4 +245,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  content: {
+    paddingBottom: Spacing.four,
+  },
 });

@@ -7,23 +7,19 @@ import { styles as registrationStyles } from "../../registration/styles";
 
 type RecordFooterProps = {
   editing: boolean;
-  loading: boolean;
   saving: boolean;
   error: string;
-  onEdit: () => void;
   onCancel: () => void;
   onSave: () => void;
   onNewRecord: () => void;
 };
 
-// Rodapé das abas de dados: "Editar dados" com o "+" de novo registro ao lado,
-// ou "Cancelar" e "Salvar alterações".
+// Rodapé fixo da ficha: "+ Novo registro" sempre à mão nas duas abas; durante
+// a edição de um bloco, "Cancelar" e "Salvar alterações".
 export function RecordFooter({
   editing,
-  loading,
   saving,
   error,
-  onEdit,
   onCancel,
   onSave,
   onNewRecord,
@@ -69,34 +65,20 @@ export function RecordFooter({
           </Pressable>
         </View>
       ) : (
-        <View style={styles.row}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ disabled: loading }}
-            disabled={loading}
-            onPress={onEdit}
-            style={[
-              styles.button,
-              styles.outline,
-              loading && registrationStyles.disabled,
-            ]}
-          >
-            <ThemedText type="button">Editar dados</ThemedText>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Adicionar novo registro"
-            onPress={onNewRecord}
-            style={({ pressed }) => [
-              styles.add,
-              pressed && registrationStyles.pressed,
-            ]}
-          >
-            <ThemedText themeColor="textPrimaryLight" style={styles.addLabel}>
-              +
-            </ThemedText>
-          </Pressable>
-        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Adicionar novo registro"
+          onPress={onNewRecord}
+          style={({ pressed }) => [
+            styles.button,
+            styles.primary,
+            pressed && registrationStyles.pressed,
+          ]}
+        >
+          <ThemedText themeColor="textPrimaryLight" type="button">
+            + Novo registro
+          </ThemedText>
+        </Pressable>
       )}
     </View>
   );
@@ -109,6 +91,8 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
     gap: Spacing.two,
     backgroundColor: Theme.background,
+    borderTopWidth: 1,
+    borderTopColor: Theme.inputBorder,
   },
 
   row: {
@@ -133,20 +117,5 @@ const styles = StyleSheet.create({
   primary: {
     flex: 1.6,
     backgroundColor: Theme.primary,
-  },
-
-  // Círculo do layout, na mesma altura do "Editar dados".
-  add: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: Theme.primary,
-  },
-
-  addLabel: {
-    fontSize: 26,
-    lineHeight: 30,
   },
 });
