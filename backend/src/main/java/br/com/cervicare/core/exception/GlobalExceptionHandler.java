@@ -61,17 +61,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(BusinessRuleException.class)
-    public ResponseEntity<Map<String, Object>> handleBusinessRule(
-            BusinessRuleException ex
-    ) {
-        return buildResponse(
-                HttpStatus.BAD_REQUEST,
-                "regra_clinica",
-                ex.getMessage()
-        );
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(
             MethodArgumentNotValidException ex
