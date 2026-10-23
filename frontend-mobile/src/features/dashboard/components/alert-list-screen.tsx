@@ -18,6 +18,7 @@ import type { DashboardAlert } from "../types";
 
 type AlertListScreenProps = {
   title: string;
+  eyebrow?: string;
   description: string;
   alerts: DashboardAlert[];
   totalPatients: number;
@@ -27,6 +28,7 @@ type AlertListScreenProps = {
 
 export function AlertListScreen({
   title,
+  eyebrow,
   description,
   alerts,
   totalPatients,
@@ -57,7 +59,8 @@ export function AlertListScreen({
             <View style={styles.eyebrow}>
               <ThemedView type="tertiary" style={styles.line} />
               <ThemedText type="code" themeColor="textSecondary">
-                {title === "Ver e tratar" ? "Sem retorno" : "Pós-procedimento"}
+                {eyebrow ??
+                  (title === "Ver e tratar" ? "Sem retorno" : "Pós-procedimento")}
               </ThemedText>
             </View>
             <ThemedText style={styles.title}>{title}</ThemedText>
