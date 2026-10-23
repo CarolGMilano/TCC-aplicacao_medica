@@ -2,15 +2,20 @@ import { Theme } from "@/constants/theme";
 
 import type { DataTab, RecordTab, VisitType } from "./types";
 
-// Abas da ficha, na ordem e com os rótulos curtos do layout.
+// Abas da ficha: Atendimentos abre primeiro, por ser o que mais se usa.
 export const recordTabs: { id: RecordTab; label: string }[] = [
-  { id: "personal", label: "Pessoais" },
-  { id: "obstetric", label: "Gineco" },
-  { id: "sexual", label: "Sexual" },
-  { id: "ist", label: "IST" },
-  { id: "habits", label: "Tabag." },
-  { id: "visits", label: "Atend." },
+  { id: "visits", label: "Atendimentos" },
+  { id: "history", label: "Histórico clínico" },
 ];
+
+// Blocos do histórico clínico, na ordem do cadastro.
+export const sectionLabels: Record<DataTab, string> = {
+  personal: "Identificação",
+  obstetric: "Gineco-obstétrico",
+  sexual: "Vida sexual",
+  ist: "IST",
+  habits: "Tabagismo",
+};
 
 // Etapa do cadastro equivalente a cada aba, para reaproveitar a validação.
 export const tabSteps: Record<DataTab, number> = {

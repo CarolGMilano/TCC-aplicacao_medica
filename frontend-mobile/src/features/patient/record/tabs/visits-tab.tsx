@@ -92,38 +92,13 @@ export function VisitsTab({
     return <ActivityIndicator style={styles.loading} color={Theme.primary} />;
   }
 
-  const newRecordButton = (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel="Adicionar novo registro"
-      onPress={() =>
-        router.push({
-          pathname: "/patients/[id]/new-record",
-          params: {
-            id: String(patientId),
-            name: patientName,
-            record: patientRecord,
-          },
-        })
-      }
-      style={({ pressed }) => [styles.newRecord, pressed && styles.pressed]}
-    >
-      <ThemedText type="button" themeColor="textPrimaryLight">
-        + Novo registro
-      </ThemedText>
-    </Pressable>
-  );
-
-  // Sem nenhum atendimento, o layout mostra só o aviso, sem filtros.
+  // Sem nenhum atendimento, só o aviso; o "+ Novo registro" fica no rodapé.
   if (Object.values(visits).every((list) => list.length === 0)) {
     return (
-      <View style={styles.emptyContainer}>
-        <EmptyState
-          title="Nenhum atendimento ainda"
-          note="Lance a primeira colposcopia, exame, procedimento ou consulta desta paciente."
-        />
-        {newRecordButton}
-      </View>
+      <EmptyState
+        title="Nenhum atendimento ainda"
+        note="Lance a primeira colposcopia, exame, procedimento ou consulta desta paciente."
+      />
     );
   }
 
@@ -213,7 +188,6 @@ export function VisitsTab({
           </View>
         );
       })}
-      {newRecordButton}
     </View>
   );
 }
@@ -274,21 +248,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 22,
     lineHeight: 26,
-  },
-
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "space-between",
-  },
-
-  newRecord: {
-    alignItems: "center",
-    backgroundColor: Theme.primary,
-    borderRadius: 24,
-    marginHorizontal: Spacing.three,
-    marginTop: Spacing.four,
-    marginBottom: Spacing.four,
-    paddingVertical: Spacing.three,
   },
 
   pressed: { opacity: 0.75 },

@@ -32,6 +32,7 @@ export function HabitsStep({ form, update }: StepProps) {
             <Counter
               label="Começou aos"
               value={form.smokingStart}
+            editable
               min={minAges.smoking}
               max={age}
               suffix="anos"
@@ -41,6 +42,7 @@ export function HabitsStep({ form, update }: StepProps) {
               <Counter
                 label="Parou aos"
                 value={form.smokingEnd}
+            editable
                 min={Math.max(minAges.smoking, form.smokingStart)}
                 max={age}
                 suffix="anos"
@@ -52,7 +54,8 @@ export function HabitsStep({ form, update }: StepProps) {
             <Counter
               label="Cigarros por dia"
               value={form.cigarettesPerDay}
-              max={200}
+            editable
+              max={99}
               onChange={(value) => update("cigarettesPerDay", value)}
             />
             <SummaryRow label="Carga tabágica" value={getSmokingLoad(form)} />

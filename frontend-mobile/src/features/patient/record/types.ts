@@ -40,8 +40,8 @@ export type PatientDetail = {
   }[];
 };
 
-export type RecordTab =
-  "personal" | "obstetric" | "sexual" | "ist" | "habits" | "visits";
+// Duas abas: os atendimentos (o que mais se usa) e o histórico clínico.
+export type RecordTab = "visits" | "history";
 
 // Abas sem registro no backend (ex.: paciente cadastrada só com dados pessoais).
 export type MissingSections = {
@@ -68,8 +68,8 @@ export type PatientRecord = {
   missing: MissingSections;
 };
 
-// Abas de dados, que podem ser editadas (todas menos Atendimentos).
-export type DataTab = Exclude<RecordTab, "visits">;
+// Blocos do histórico clínico; cada um é editado e salvo separadamente.
+export type DataTab = "personal" | "obstetric" | "sexual" | "ist" | "habits";
 
 export type TabProps = {
   record: PatientRecord;
