@@ -2,7 +2,6 @@ import { router, useFocusEffect, useNavigation } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
   BackHandler,
   KeyboardAvoidingView,
   Pressable,
@@ -11,6 +10,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { confirmDiscard } from "@/components/shared/discard-dialog";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { PillButton } from "@/components/shared/pill-button";
@@ -101,21 +102,12 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
       then?.();
       return;
     }
-    Alert.alert(
-      "Descartar alterações?",
-      "As alterações deste bloco ainda não foram salvas.",
-      [
-        { text: "Continuar editando", style: "cancel" },
-        {
-          text: "Descartar",
-          style: "destructive",
-          onPress: () => {
-            edit.cancel();
-            then?.();
-          },
-        },
-      ],
-    );
+    confirmDiscard({
+      onDiscard: () => {
+        edit.cancel();
+        then?.();
+      },
+    });
   }
 
   // Trocar de aba descarta a edição em andamento, como no layout.
