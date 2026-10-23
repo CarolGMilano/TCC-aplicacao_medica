@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  Alert,
   BackHandler,
   KeyboardAvoidingView,
   ScrollView,
@@ -59,6 +60,31 @@ export function useReturnToVisits(filter: VisitType) {
   }, [navigation, id, filter]);
 }
 
+// Sair com dados preenchidos (Cancelar, voltar do Android ou gesto) pede
+// confirmação. Enquanto salva (e depois do sucesso), a saída passa direto.
+export function useDiscardGuard(dirty: boolean, saving: boolean) {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (!dirty || saving) return;
+    return navigation.addListener("beforeRemove", (event) => {
+      event.preventDefault();
+      Alert.alert(
+        "Descartar registro?",
+        "Os dados preenchidos ainda não foram salvos.",
+        [
+          { text: "Continuar editando", style: "cancel" },
+          {
+            text: "Descartar",
+            style: "destructive",
+            onPress: () => navigation.dispatch(event.data.action),
+          },
+        ],
+      );
+    });
+  }, [navigation, dirty, saving]);
+}
+
 // Estrutura comum das telas de registro: cabeçalho, campos e rodapé com o
 // erro e o botão. Telas em passos (colposcopia) passam step, onBack e o
 // rótulo do botão de cada passo. Num registro salvo (saved), a faixa do topo
@@ -75,6 +101,7 @@ export function AttendanceForm({
   mode = "new",
   saved,
   sectioned = false,
+  dirty = false,
 }: {
   title: string;
   error?: string;
@@ -89,6 +116,8 @@ export function AttendanceForm({
   // Telas que já dividem os campos em seções (StepSection), como a
   // colposcopia; as outras recebem o mesmo espaçamento aqui.
   sectioned?: boolean;
+  // Algo foi preenchido ou alterado e ainda não foi salvo.
+  dirty?: boolean;
 }) {
   const [doctor, setDoctor] = useState<string | null>(null);
   const isSaved = Boolean(saved);
@@ -106,6 +135,8 @@ export function AttendanceForm({
       active = false;
     };
   }, [isSaved]);
+
+  useDiscardGuard(dirty, saving);
 
   // Voltar do Android: travado enquanto salva; nas telas em passos, volta um
   // passo em vez de fechar (mesmo padrão do cadastro de paciente).

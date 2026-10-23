@@ -1,6 +1,7 @@
 package br.com.cervicare.historico.service;
 
 import br.com.cervicare.core.exception.ResourceNotFoundException;
+import br.com.cervicare.core.validation.RegrasClinicas;
 import br.com.cervicare.historico.domain.HistoricoTabagismo;
 import br.com.cervicare.historico.dto.HistoricoTabagismoRequestDTO;
 import br.com.cervicare.historico.dto.HistoricoTabagismoResponseDTO;
@@ -24,6 +25,8 @@ public class HistoricoTabagismoService {
     public HistoricoTabagismoResponseDTO registrar(HistoricoTabagismoRequestDTO dto) {
         Paciente paciente = pacienteRepository.findById(dto.idPaciente())
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada para o ID: " + dto.idPaciente()));
+        RegrasClinicas.validarTabagismo(dto.fumante(), dto.idadeInicio(), dto.idadeFim(),
+                paciente.getDataNascimento());
 
         HistoricoTabagismo historico = new HistoricoTabagismo();
         historico.setPaciente(paciente);
@@ -53,6 +56,8 @@ public class HistoricoTabagismoService {
     public HistoricoTabagismoResponseDTO atualizar(Integer idHistorico, HistoricoTabagismoRequestDTO dto) {
         HistoricoTabagismo historico = tabagismoRepository.findById(idHistorico)
                 .orElseThrow(() -> new ResourceNotFoundException("Histórico de tabagismo não encontrado."));
+        RegrasClinicas.validarTabagismo(dto.fumante(), dto.idadeInicio(), dto.idadeFim(),
+                historico.getPaciente().getDataNascimento());
 
         historico.setCigarrosDia(dto.cigarrosDia());
         historico.setIdadeInicio(dto.idadeInicio());

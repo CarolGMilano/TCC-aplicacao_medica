@@ -13,9 +13,11 @@ type RecordFooterProps = {
   onEdit: () => void;
   onCancel: () => void;
   onSave: () => void;
+  onNewRecord: () => void;
 };
 
-// Rodapé das abas de dados: "Editar dados", ou "Cancelar" e "Salvar alterações".
+// Rodapé das abas de dados: "Editar dados" com o "+" de novo registro ao lado,
+// ou "Cancelar" e "Salvar alterações".
 export function RecordFooter({
   editing,
   loading,
@@ -24,6 +26,7 @@ export function RecordFooter({
   onEdit,
   onCancel,
   onSave,
+  onNewRecord,
 }: RecordFooterProps) {
   return (
     <View style={styles.footer}>
@@ -66,19 +69,34 @@ export function RecordFooter({
           </Pressable>
         </View>
       ) : (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{ disabled: loading }}
-          disabled={loading}
-          onPress={onEdit}
-          style={[
-            styles.button,
-            styles.outline,
-            loading && registrationStyles.disabled,
-          ]}
-        >
-          <ThemedText type="button">Editar dados</ThemedText>
-        </Pressable>
+        <View style={styles.row}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ disabled: loading }}
+            disabled={loading}
+            onPress={onEdit}
+            style={[
+              styles.button,
+              styles.outline,
+              loading && registrationStyles.disabled,
+            ]}
+          >
+            <ThemedText type="button">Editar dados</ThemedText>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Adicionar novo registro"
+            onPress={onNewRecord}
+            style={({ pressed }) => [
+              styles.add,
+              pressed && registrationStyles.pressed,
+            ]}
+          >
+            <ThemedText themeColor="textPrimaryLight" style={styles.addLabel}>
+              +
+            </ThemedText>
+          </Pressable>
+        </View>
       )}
     </View>
   );
@@ -115,5 +133,20 @@ const styles = StyleSheet.create({
   primary: {
     flex: 1.6,
     backgroundColor: Theme.primary,
+  },
+
+  // Círculo do layout, na mesma altura do "Editar dados".
+  add: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Theme.primary,
+  },
+
+  addLabel: {
+    fontSize: 26,
+    lineHeight: 30,
   },
 });

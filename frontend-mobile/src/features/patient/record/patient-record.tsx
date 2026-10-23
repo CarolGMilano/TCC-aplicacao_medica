@@ -2,6 +2,7 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   BackHandler,
   KeyboardAvoidingView,
   Pressable,
@@ -90,10 +91,33 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
 
   const edit = useRecordEdit(record, reload, refresh);
 
+  // Sai da edição; com alterações feitas, pergunta antes de descartá-las.
+  function leaveEdit(then?: () => void) {
+    if (!edit.dirty) {
+      edit.cancel();
+      then?.();
+      return;
+    }
+    Alert.alert(
+      "Descartar alterações?",
+      "As alterações desta aba ainda não foram salvas.",
+      [
+        { text: "Continuar editando", style: "cancel" },
+        {
+          text: "Descartar",
+          style: "destructive",
+          onPress: () => {
+            edit.cancel();
+            then?.();
+          },
+        },
+      ],
+    );
+  }
+
   // Trocar de aba descarta a edição em andamento, como no layout.
   function changeTab(next: RecordTab) {
-    edit.cancel();
-    setTab(next);
+    leaveEdit(() => setTab(next));
   }
 
   // Durante a edição, o botão voltar do Android só cancela a edição.
@@ -102,7 +126,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
       "hardwareBackPress",
       () => {
         if (!edit.editing) return false;
-        edit.cancel();
+        if (!edit.saving) leaveEdit();
         return true;
       },
     );
@@ -115,7 +139,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
   function goToPatients() {
     if (edit.saving) return;
     if (edit.editing) {
-      edit.cancel();
+      leaveEdit();
       return;
     }
     router.dismissTo("/patients");
@@ -197,8 +221,18 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
               saving={edit.saving}
               error={edit.error}
               onEdit={edit.start}
-              onCancel={edit.cancel}
+              onCancel={() => leaveEdit()}
               onSave={() => edit.save(tab)}
+              onNewRecord={() =>
+                router.push({
+                  pathname: "/patients/[id]/new-record",
+                  params: {
+                    id: String(record.id),
+                    name: record.form.name,
+                    record: record.form.record,
+                  },
+                })
+              }
             />
           ) : null}
         </ThemedView>

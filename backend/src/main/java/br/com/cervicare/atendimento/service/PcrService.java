@@ -4,7 +4,9 @@ import br.com.cervicare.atendimento.domain.PcrDnaHpv;
 import br.com.cervicare.atendimento.dto.PcrRequestDTO;
 import br.com.cervicare.atendimento.dto.PcrResponseDTO;
 import br.com.cervicare.atendimento.repository.PcrDnaHpvRepository;
+import br.com.cervicare.atendimento.domain.enums.ResultadoPcr;
 import br.com.cervicare.core.exception.ResourceNotFoundException;
+import br.com.cervicare.core.validation.RegrasClinicas;
 import br.com.cervicare.medico.domain.Medico;
 import br.com.cervicare.medico.service.MedicoService;
 import br.com.cervicare.paciente.domain.Paciente;
@@ -29,6 +31,7 @@ public class PcrService {
         Paciente paciente = pacienteRepository.findById(dto.idPaciente())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Paciente não encontrada para o ID: " + dto.idPaciente()));
+        validar(dto, paciente);
 
         Medico medico = medicoService.getMedicoLogado();
 
@@ -64,6 +67,7 @@ public class PcrService {
         PcrDnaHpv pcr = pcrRepository.findById(idExame)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Exame PCR não encontrado."));
+        validar(dto, pcr.getPaciente());
 
         pcr.setDataRegistro(dto.dataRegistro());
         pcr.setResultado(dto.resultado());
@@ -74,6 +78,12 @@ public class PcrService {
         PcrDnaHpv atualizado = pcrRepository.save(pcr);
 
         return converterParaDTO(atualizado);
+    }
+
+    private void validar(PcrRequestDTO dto, Paciente paciente) {
+        RegrasClinicas.validarDataExame(dto.dataRegistro(), paciente.getDataNascimento());
+        RegrasClinicas.exigir(dto.resultado() == ResultadoPcr.POSITIVO, dto.tiposHpv(),
+                "Selecione ao menos um tipo de HPV.");
     }
 
     @Transactional

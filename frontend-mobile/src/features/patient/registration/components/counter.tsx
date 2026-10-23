@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
@@ -24,6 +25,9 @@ export function Counter({
   editable = false,
   onChange,
 }: CounterProps) {
+  // Texto em edição enquanto o campo está com foco.
+  const [text, setText] = useState<string | null>(null);
+
   return (
     <View style={styles.row}>
       <ThemedText type="code" themeColor="textSecondary">
@@ -41,13 +45,18 @@ export function Counter({
         {editable ? (
           <TextInput
             accessibilityLabel={label}
-            value={String(value)}
+            value={text ?? String(value)}
             keyboardType="number-pad"
+            maxLength={String(max).length}
             selectTextOnFocus
-            onChangeText={(text) => {
-              const digits = text.replace(/\D/g, "");
-              const nextValue = digits ? Number(digits) : min;
+            onFocus={() => setText(String(value))}
+            // Só dígitos; o limite vale ao sair do campo, para o número não
+            // mudar no meio da digitação (ex.: o "1" de "15" virar o mínimo).
+            onChangeText={(next) => setText(next.replace(/\D/g, ""))}
+            onBlur={() => {
+              const nextValue = text ? Number(text) : value;
               onChange(Math.min(max, Math.max(min, nextValue)));
+              setText(null);
             }}
             style={styles.counterInput}
           />

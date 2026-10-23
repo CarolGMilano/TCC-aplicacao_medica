@@ -4,7 +4,9 @@ import br.com.cervicare.atendimento.domain.Consulta;
 import br.com.cervicare.atendimento.dto.ConsultaRequestDTO;
 import br.com.cervicare.atendimento.dto.ConsultaResponseDTO;
 import br.com.cervicare.atendimento.repository.ConsultaRepository;
+import br.com.cervicare.core.exception.BusinessRuleException;
 import br.com.cervicare.core.exception.ResourceNotFoundException;
+import br.com.cervicare.core.validation.RegrasClinicas;
 import br.com.cervicare.medico.domain.Medico;
 import br.com.cervicare.medico.service.MedicoService;
 import br.com.cervicare.paciente.domain.Paciente;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -27,6 +30,11 @@ public class ConsultaService {
     public ConsultaResponseDTO registrar(ConsultaRequestDTO dto) {
         Paciente paciente = pacienteRepository.findById(dto.idPaciente())
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada para o ID: " + dto.idPaciente()));
+        RegrasClinicas.validarDataExame(dto.dataHora().toLocalDate(), paciente.getDataNascimento());
+        // Alguns minutos de folga para relógios de aparelhos um pouco adiantados.
+        if (dto.dataHora().isAfter(LocalDateTime.now().plusMinutes(5))) {
+            throw new BusinessRuleException("O horário da consulta não pode ser no futuro.");
+        }
 
         Medico medico = medicoService.getMedicoLogado();
 
