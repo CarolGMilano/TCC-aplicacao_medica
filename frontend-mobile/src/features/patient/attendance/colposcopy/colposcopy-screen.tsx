@@ -19,6 +19,7 @@ import {
 import type { Colposcopy } from "../../record/services/visits-api";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput, styles } from "../components";
+import { confirmBeforeSave } from "../confirm-save";
 import { SavedVisit } from "../saved-visit";
 import {
   fromIsoDate,
@@ -77,7 +78,7 @@ export function ColposcopyScreen() {
 // PUT na edição da colposcopia salva).
 function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
   const returnToVisits = useReturnToVisits("colposcopy");
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(() => initialForm(saved));
   const [initial] = useState(() => JSON.stringify(form));
@@ -137,7 +138,25 @@ function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
 
     // Sem lesão, os campos que dependem dela vão vazios, como no web.
     const seeAndTreat = form.lesion && form.seeAndTreat;
+    const invasion = form.lesion && form.lesionGrade === "INVASAO";
+    // Trava o botão já na conferência, para um toque duplo não abrir duas.
     setSaving(true);
+    const confirmed = await confirmBeforeSave({
+      patientId: Number(id),
+      patientName: name,
+      type: "colposcopy",
+      typeLabel: "Colposcopia",
+      dataRegistro,
+      editingId: saved?.idColposcopia,
+      critical:
+        [invasion ? "Invasão" : null, seeAndTreat ? "Ver e tratar" : null]
+          .filter(Boolean)
+          .join(" · ") || null,
+    });
+    if (!confirmed) {
+      setSaving(false);
+      return;
+    }
     try {
       await saveColposcopy(
         {

@@ -6,6 +6,7 @@ import { cytologyLabels } from "../../record/constants";
 import type { Cytology } from "../../record/services/visits-api";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
+import { confirmBeforeSave } from "../confirm-save";
 import { SavedVisit } from "../saved-visit";
 import type { CytologyForm } from "../types";
 import { fromIsoDate, toIsoDate, todayParts } from "../utils";
@@ -13,6 +14,19 @@ import { CytologyDetails } from "../visit-details";
 import { saveCytology } from "./cytology-api";
 
 const results = Object.keys(cytologyLabels);
+
+// HSIL ou pior: pede confirmação antes de salvar.
+const criticalCytology = [
+  "HSIL",
+  "HSIL_COM_CARACTERISTICAS_SUGESTIVAS_DE_INVASAO",
+  "CARCINOMA_DE_CELULAS_ESCAMOSAS",
+  "AGC_FAVORECENDO_NEOPLASIA",
+  "AIS_ENDOCERVICAL",
+  "ADENOCARCINOMA_ENDOCERVICAL",
+  "ADENOCARCINOMA_ENDOMETRIAL",
+  "ADENOCARCINOMA_EXTRAUTERINO",
+  "ADENOCARCINOMA_SOE",
+];
 
 export function CytologyScreen() {
   return (
@@ -31,7 +45,7 @@ export function CytologyScreen() {
 // mesmos campos e regras.
 function CytologyRecord({ saved }: { saved: Cytology | null }) {
   const returnToVisits = useReturnToVisits("cytology");
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
   const [initial] = useState<CytologyForm>(() => {
     if (saved) {
       const [day, month, year] = fromIsoDate(saved.dataRegistro);
@@ -64,7 +78,23 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       setError("Informe uma data válida, entre 01/01/1900 e hoje.");
       return;
     }
+    // Trava o botão já na conferência, para um toque duplo não abrir duas.
     setSaving(true);
+    const confirmed = await confirmBeforeSave({
+      patientId: Number(id),
+      patientName: name,
+      type: "cytology",
+      typeLabel: "Citologia",
+      dataRegistro,
+      editingId: saved?.idExame,
+      critical: criticalCytology.includes(form.result)
+        ? cytologyLabels[form.result]
+        : null,
+    });
+    if (!confirmed) {
+      setSaving(false);
+      return;
+    }
     try {
       await saveCytology(
         {

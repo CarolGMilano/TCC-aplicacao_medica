@@ -6,6 +6,7 @@ import { hpvTypeLabels, pcrResultLabels } from "../../record/constants";
 import type { Pcr } from "../../record/services/visits-api";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
+import { confirmBeforeSave } from "../confirm-save";
 import { SavedVisit } from "../saved-visit";
 import {
   fromIsoDate,
@@ -34,7 +35,7 @@ export function PcrScreen() {
 // PCR salvo, começando com os valores dele.
 function PcrRecord({ saved }: { saved: Pcr | null }) {
   const returnToVisits = useReturnToVisits("pcr");
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
   const [date, setDate] = useState<DateParts>(() =>
     saved ? fromIsoDate(saved.dataRegistro) : todayParts(),
   );
@@ -83,7 +84,20 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
       return;
     }
 
+    // Trava o botão já na conferência, para um toque duplo não abrir duas.
     setSaving(true);
+    const confirmed = await confirmBeforeSave({
+      patientId: Number(id),
+      patientName: name,
+      type: "pcr",
+      typeLabel: "PCR DNA HPV",
+      dataRegistro,
+      editingId: saved?.idExame,
+    });
+    if (!confirmed) {
+      setSaving(false);
+      return;
+    }
     try {
       await savePcr(
         {
