@@ -1,4 +1,5 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { SymbolView } from "expo-symbols";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
@@ -159,10 +160,17 @@ export function VisitsTab({
                   </ThemedText>
                 ) : null}
               </View>
+              {/* Seta, e não "+", para não parecer "adicionar registro". */}
               {list.length ? (
-                <ThemedText themeColor="textSecondary" style={styles.chevron}>
-                  {expanded ? "−" : "+"}
-                </ThemedText>
+                <SymbolView
+                  name={{
+                    ios: expanded ? "chevron.up" : "chevron.down",
+                    android: expanded ? "expand_less" : "expand_more",
+                    web: expanded ? "expand_less" : "expand_more",
+                  }}
+                  tintColor={Theme.textSecondary}
+                  size={24}
+                />
               ) : null}
             </Pressable>
 
@@ -243,12 +251,6 @@ const styles = StyleSheet.create({
     fontFamily: FontFamilies.primaryMedium,
   },
 
-  chevron: {
-    width: 20,
-    textAlign: "center",
-    fontSize: 22,
-    lineHeight: 26,
-  },
 
   pressed: { opacity: 0.75 },
 });
