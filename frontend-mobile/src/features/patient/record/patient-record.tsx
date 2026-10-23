@@ -1,4 +1,4 @@
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useNavigation } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -123,12 +123,14 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
     leaveEdit(() => setTab(next));
   }
 
-  // Durante a edição, o botão voltar do Android só cancela a edição.
+  // Durante a edição, o botão voltar do Android só cancela a edição. O
+  // BackHandler é global: com um registro aberto por cima, a ficha não reage.
+  const navigation = useNavigation();
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
-        if (!edit.editing) return false;
+        if (!navigation.isFocused() || !edit.editing) return false;
         if (!edit.saving) leaveEdit();
         return true;
       },

@@ -108,10 +108,6 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
       setError("Selecione o resultado.");
       return;
     }
-    if (!observation.trim()) {
-      setError("A observação é obrigatória.");
-      return;
-    }
 
     // Trava o botão já na conferência, para um toque duplo não abrir duas.
     setSaving(true);
