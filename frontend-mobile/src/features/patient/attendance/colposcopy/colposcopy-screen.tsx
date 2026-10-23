@@ -109,7 +109,6 @@ function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
   function validateConduct() {
     if (form.lesion && form.seeAndTreat && !form.seeAndTreatReason.trim())
       return "Informe o motivo do ver e tratar.";
-    if (!form.observation.trim()) return "A observação é obrigatória.";
     return null;
   }
 

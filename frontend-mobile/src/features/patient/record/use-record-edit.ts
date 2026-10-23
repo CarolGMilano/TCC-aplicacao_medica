@@ -29,18 +29,28 @@ export function useRecordEdit(
   refresh: () => Promise<void>,
 ) {
   const [draft, setDraft] = useState<PatientForm | null>(null);
+  // Rascunho como começou: só o que o médico mudar depois conta como alteração.
+  const [initial, setInitial] = useState<PatientForm | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   function start() {
     if (!record) return;
     setError("");
-    setDraft(record.form);
+    // Fichas antigas podem ter mais de 99 parceiros (o limite era 999); o
+    // campo só comporta 2 dígitos, então a edição já parte do limite.
+    const form = {
+      ...record.form,
+      partners: Math.min(record.form.partners, 99),
+    };
+    setDraft(form);
+    setInitial(form);
   }
 
   function cancel() {
     setError("");
     setDraft(null);
+    setInitial(null);
   }
 
   const update = <Key extends keyof PatientForm>(
@@ -89,9 +99,7 @@ export function useRecordEdit(
     editing: draft !== null,
     // Algo foi mudado no rascunho: sair pede confirmação antes de descartar.
     dirty:
-      draft !== null &&
-      record !== null &&
-      JSON.stringify(draft) !== JSON.stringify(record.form),
+      draft !== null && JSON.stringify(draft) !== JSON.stringify(initial),
     saving,
     error,
     start,
