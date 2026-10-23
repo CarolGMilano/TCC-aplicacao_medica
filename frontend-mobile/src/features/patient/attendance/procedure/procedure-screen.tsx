@@ -14,6 +14,7 @@ import {
 import type { Procedure } from "../../record/services/visits-api";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
+import { confirmBeforeSave } from "../confirm-save";
 import { SavedVisit } from "../saved-visit";
 import {
   fromIsoDate,
@@ -26,6 +27,16 @@ import { ProcedureDetails } from "../visit-details";
 import { saveProcedure } from "./procedure-api";
 
 const resultPlaceholder = "Selecione um resultado";
+
+// NIC 3 ou pior: pede confirmação antes de salvar.
+const criticalProcedure = [
+  "NIC_3",
+  "ADENOCARCINOMA_IN_SITU",
+  "MICROINVASOR_IA1",
+  "MICROINVASOR_IA2",
+  "CARCINOMA_ESCAMOSO_INVASOR",
+  "ADENOCARCINOMA_INVASOR",
+];
 
 export function ProcedureScreen() {
   return (
@@ -44,7 +55,7 @@ export function ProcedureScreen() {
 // edita o procedimento salvo, começando com os valores dele.
 function ProcedureRecord({ saved }: { saved: Procedure | null }) {
   const returnToVisits = useReturnToVisits("procedures");
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
   const [date, setDate] = useState<DateParts>(() =>
     saved ? fromIsoDate(saved.dataRegistro) : todayParts(),
   );
@@ -102,7 +113,23 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
       return;
     }
 
+    // Trava o botão já na conferência, para um toque duplo não abrir duas.
     setSaving(true);
+    const confirmed = await confirmBeforeSave({
+      patientId: Number(id),
+      patientName: name,
+      type: "procedures",
+      typeLabel: "Procedimento",
+      dataRegistro,
+      editingId: saved?.idProcedimento,
+      critical: criticalProcedure.includes(result)
+        ? procedureResultLabels[result]
+        : null,
+    });
+    if (!confirmed) {
+      setSaving(false);
+      return;
+    }
     try {
       await saveProcedure(
         {

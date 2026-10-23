@@ -18,6 +18,16 @@ import { useWithoutReturn } from "@/features/dashboard/without-return/use-withou
 import { router } from "expo-router";
 import { ThemedText } from "@/components/shared/themed-text";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
+import { statusColors } from "@/features/patient/record/constants";
+import { statusMap } from "@/features/patient/registration/constants";
+
+// O alerta traz o status como enum do backend (ou já como texto, no mock).
+function statusLabel(status: string) {
+  return (
+    Object.keys(statusMap).find((label) => statusMap[label] === status) ??
+    status
+  );
+}
 
 // Total ainda fixo (como o card "Pacientes cadastradas"); usado só no
 // percentual dos alertas.
@@ -62,44 +72,27 @@ export default function DashboardScreen() {
             />
           </View>
 
-          <ThemedView
-            style={styles.totalCard}
-            type="backgroundElement"
-            borderColor="border"
-          >
-            <View style={styles.cardLabel}>
-              <ThemedView type="tertiary" style={styles.line} />
-              <ThemedText type="smallBold" themeColor="textSecondary">
-                Pacientes cadastradas
-              </ThemedText>
+          {/* O que precisa de atenção vem primeiro: um número grande por
+              alerta, em coral quando há pacientes atrasadas. */}
+          <View>
+            <ThemedText style={styles.sectionTitle}>Precisa de atenção</ThemedText>
+            <View style={styles.attentionRow}>
+              <AttentionTile
+                count={withoutReturn.alerts.length}
+                loading={withoutReturn.isLoading}
+                label="Ver e tratar sem retorno"
+                route="/dashboard/without-return"
+              />
+              <AttentionTile
+                count={postProcedure.alerts.length}
+                loading={postProcedure.isLoading}
+                label="Pós-procedimento sem retorno"
+                route="/dashboard/post-procedure"
+              />
             </View>
-            <ThemedText style={styles.total}>248</ThemedText>
-            <View style={styles.cardFooter}>
-              <ThemedText type="small" themeColor="textSecondary">
-                Total na unidade
-              </ThemedText>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Ver lista de pacientes"
-                onPress={() => router.push("/patients")}
-                style={({ pressed }) => [
-                  styles.listLink,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <ThemedText style={styles.linkText}>Ver lista</ThemedText>
-                <SymbolView
-                  name={{
-                    ios: "arrow.right",
-                    android: "arrow_forward",
-                    web: "arrow_forward",
-                  }}
-                  tintColor={Theme.primary}
-                  size={16}
-                />
-              </Pressable>
-            </View>
-          </ThemedView>
+          </View>
+
+          <StatusOverview />
 
           <ReturnCard
             title="Ver e tratar sem retorno"
@@ -117,6 +110,115 @@ export default function DashboardScreen() {
         <BottomNav />
       </ThemedView>
     </SafeAreaView>
+  );
+}
+
+function AttentionTile({
+  count,
+  loading,
+  label,
+  route,
+}: {
+  count: number;
+  loading: boolean;
+  label: string;
+  route: "/dashboard/without-return" | "/dashboard/post-procedure";
+}) {
+  const late = count > 0;
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${label}: ${count} pacientes`}
+      onPress={() => router.push(route)}
+      style={({ pressed }) => [
+        styles.tile,
+        late && styles.tileLate,
+        pressed && styles.pressed,
+      ]}
+    >
+      {loading ? (
+        <ActivityIndicator color={Theme.primary} style={styles.tileLoading} />
+      ) : (
+        <ThemedText
+          style={styles.tileCount}
+          themeColor={late ? "error" : "textSecondary"}
+        >
+          {count}
+        </ThemedText>
+      )}
+      <ThemedText type="small" style={styles.tileLabel}>
+        {label}
+      </ThemedText>
+    </Pressable>
+  );
+}
+
+// Pacientes por situação, ainda com números fixos (como o total), somando
+// TOTAL_PATIENTS. Tocar numa situação abre a lista já filtrada.
+const statusCounts: { status: string; count: number }[] = [
+  { status: "Em investigação", count: 52 },
+  { status: "Aguardando procedimento", count: 38 },
+  { status: "Em tratamento", count: 27 },
+  { status: "Pós-procedimento", count: 41 },
+  { status: "Acompanhamento preventivo", count: 71 },
+  { status: "Alta", count: 19 },
+];
+
+function StatusOverview() {
+  return (
+    <ThemedView
+      type="backgroundElement"
+      borderColor="border"
+      style={styles.statusCard}
+    >
+      <View style={styles.statusHeader}>
+        <ThemedText style={styles.cardTitle}>Pacientes por situação</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">
+          {TOTAL_PATIENTS} no total
+        </ThemedText>
+      </View>
+
+      <View style={styles.bar}>
+        {statusCounts.map(({ status, count }) => (
+          <View
+            key={status}
+            style={{
+              flex: count,
+              backgroundColor: statusColors[status]?.text ?? Theme.border,
+            }}
+          />
+        ))}
+      </View>
+
+      {statusCounts.map(({ status, count }) => (
+        <Pressable
+          key={status}
+          accessibilityRole="button"
+          accessibilityLabel={`${status}: ${count} pacientes`}
+          onPress={() => router.push({ pathname: "/patients", params: { status } })}
+          style={({ pressed }) => [styles.statusRow, pressed && styles.pressed]}
+        >
+          <View
+            style={[
+              styles.statusDot,
+              { backgroundColor: statusColors[status]?.text ?? Theme.border },
+            ]}
+          />
+          <ThemedText style={styles.statusLabel}>{status}</ThemedText>
+          <ThemedText style={styles.statusCount}>{count}</ThemedText>
+          <SymbolView
+            name={{
+              ios: "chevron.right",
+              android: "chevron_right",
+              web: "chevron_right",
+            }}
+            tintColor={Theme.textSecondary}
+            size={16}
+          />
+        </Pressable>
+      ))}
+    </ThemedView>
   );
 }
 
@@ -190,11 +292,16 @@ function ReturnCard({
             <ThemedText style={styles.name}>{alert.nome}</ThemedText>
             <ThemedText type="small" themeColor="muted">
               PRT {alert.prontuario}
+              {alert.status ? ` · ${statusLabel(alert.status)}` : ""}
             </ThemedText>
           </View>
           <View style={styles.daysRow}>
-            <ThemedText themeColor="error" style={styles.days}>
-              {alert.diasAtraso} d
+            {/* Mais de 4 meses de atraso: vermelho; antes disso, amarelo. */}
+            <ThemedText
+              themeColor={alert.diasAtraso > 120 ? "error" : "warning"}
+              style={styles.days}
+            >
+              {alert.diasAtraso} dias
             </ThemedText>
             <SymbolView
               name={{
@@ -251,42 +358,100 @@ const styles = StyleSheet.create({
 
   crm: { marginTop: 3 },
 
-  totalCard: {
+  sectionTitle: {
+    fontFamily: FontFamilies.primarySemiBold,
+    fontSize: Typography.sizes.section,
+    lineHeight: Typography.lineHeights.body,
+    marginBottom: Spacing.two,
+  },
+
+  attentionRow: {
+    flexDirection: "row",
+    gap: Spacing.two + Spacing.one,
+  },
+
+  tile: {
+    flex: 1,
+    minHeight: 116,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Theme.border,
+    backgroundColor: Theme.backgroundElement,
+    padding: Spacing.three,
+    gap: Spacing.one,
+  },
+
+  tileLate: {
+    borderColor: Theme.secondary,
+    backgroundColor: Theme.backgroundAlert,
+  },
+
+  tileCount: {
+    fontFamily: FontFamilies.detail,
+    fontSize: Typography.sizes.metric,
+    lineHeight: Typography.lineHeights.metric,
+  },
+
+  tileLoading: {
+    alignSelf: "flex-start",
+    height: Typography.lineHeights.metric,
+  },
+
+  tileLabel: {
+    fontFamily: FontFamilies.primaryMedium,
+  },
+
+  statusCard: {
     borderWidth: 1,
     borderRadius: 14,
     padding: Spacing.three,
     gap: Spacing.two,
   },
 
-  cardLabel: {
+  statusHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    gap: Spacing.two,
+  },
+
+  cardTitle: {
+    flexShrink: 1,
+    fontFamily: FontFamilies.primarySemiBold,
+  },
+
+  // Barra única dividida pela quantidade de cada situação.
+  bar: {
+    flexDirection: "row",
+    height: 14,
+    borderRadius: 7,
+    overflow: "hidden",
+    gap: 2,
+    marginVertical: Spacing.one,
+  },
+
+  statusRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 9,
+    gap: Spacing.two,
+    minHeight: 44,
+  },
+
+  statusDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+
+  statusLabel: { flex: 1 },
+
+  statusCount: {
+    fontFamily: FontFamilies.primarySemiBold,
   },
 
   line: {
     width: 18,
     height: 3,
-  },
-
-  total: {
-    fontFamily: FontFamilies.detail,
-    fontSize: Typography.sizes.metric,
-    lineHeight: Typography.lineHeights.metric,
-  },
-
-  cardFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 2,
-  },
-
-  listLink: {
-    minHeight: 44,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.one,
   },
 
   linkText: {
