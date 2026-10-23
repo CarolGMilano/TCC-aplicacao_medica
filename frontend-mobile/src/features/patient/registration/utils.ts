@@ -35,7 +35,7 @@ export function getBirthDateError(form: PatientForm) {
   if (date > new Date()) return "A data não pode ser no futuro.";
 
   const age = getAge(form);
-  if (age !== null && age > 120) return "Confira o ano de nascimento.";
+  if (age !== null && age > 110) return "Confira o ano de nascimento.";
   return null;
 }
 
@@ -103,6 +103,27 @@ export function getSmokingLoad(form: PatientForm) {
   return `${String(load).replace(".", ",")} anos-maço`;
 }
 
+const nameParticles = ["da", "das", "de", "do", "dos", "e"];
+
+// "  ana  DE souza " vira "Ana de Souza": sem espaços sobrando e com a mesma
+// capitalização em todas as fichas.
+export function normalizeName(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((word, index) => {
+      const lower = word.toLocaleLowerCase("pt-BR");
+      if (index > 0 && nameParticles.includes(lower)) return lower;
+      return lower.charAt(0).toLocaleUpperCase("pt-BR") + lower.slice(1);
+    })
+    .join(" ");
+}
+
+// Prontuário sem espaços, para "700 001" e "700001" não virarem dois.
+export function normalizeRecord(record: string) {
+  return record.replace(/\s/g, "");
+}
+
 // "Nenhuma" e "Não sabe" excluem as demais opções.
 export function toggleIst(current: string[], ist: string) {
   if (current.includes(ist)) return current.filter((item) => item !== ist);
@@ -131,6 +152,12 @@ export function validateStep(
     case 1:
       if (!form.name.trim()) return "Informe o nome completo.";
       if (/\d/.test(form.name)) return "O nome não pode ter números.";
+      // Fichas antigas com um nome só continuam editáveis.
+      if (
+        form.name.trim().split(/\s+/).length < 2 &&
+        form.name !== saved?.name
+      )
+        return "Informe nome e sobrenome.";
       if (getBirthDateError(form)) return getBirthDateError(form);
       if (age === null) return "Informe uma data de nascimento válida.";
       if (!form.record.trim()) return "Informe o número do prontuário.";

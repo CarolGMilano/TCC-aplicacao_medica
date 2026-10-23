@@ -88,6 +88,11 @@ export function useRecordEdit(
   return {
     draft,
     editing: draft !== null,
+    // Algo foi mudado no rascunho: sair pede confirmação antes de descartar.
+    dirty:
+      draft !== null &&
+      record !== null &&
+      JSON.stringify(draft) !== JSON.stringify(record.form),
     saving,
     error,
     start,

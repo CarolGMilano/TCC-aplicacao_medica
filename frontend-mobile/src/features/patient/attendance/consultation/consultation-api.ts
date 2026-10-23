@@ -1,6 +1,7 @@
 import { getToken } from "@/features/auth/auth-session";
 import { apiFetch } from "@/features/auth/services/auth-api";
 
+import { readRuleMessage } from "../attendance-api";
 import { saveMockConsultation } from "../mocks";
 import type { ConsultationRequest } from "../types";
 
@@ -25,5 +26,7 @@ export async function createConsultation(request: ConsultationRequest) {
   if (response.status === 401 || response.status === 403) {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
-  throw new Error("Não foi possível salvar a consulta.");
+  throw new Error(
+    (await readRuleMessage(response)) ?? "Não foi possível salvar a consulta.",
+  );
 }

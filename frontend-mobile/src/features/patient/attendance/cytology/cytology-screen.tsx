@@ -32,7 +32,7 @@ export function CytologyScreen() {
 function CytologyRecord({ saved }: { saved: Cytology | null }) {
   const returnToVisits = useReturnToVisits("cytology");
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [form, setForm] = useState<CytologyForm>(() => {
+  const [initial] = useState<CytologyForm>(() => {
     if (saved) {
       const [day, month, year] = fromIsoDate(saved.dataRegistro);
       return {
@@ -43,9 +43,13 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
         observation: saved.observacao ?? "",
       };
     }
+    // Sem resultado pré-selecionado: o médico precisa escolher, para um
+    // resultado esquecido não ser salvo como outro.
     const [day, month, year] = todayParts();
-    return { day, month, year, result: "ADENOCARCINOMA_SOE", observation: "" };
+    return { day, month, year, result: "", observation: "" };
   });
+  const [form, setForm] = useState(initial);
+  const dirty = JSON.stringify(form) !== JSON.stringify(initial);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -94,6 +98,7 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       error={error}
       saving={saving}
       onSave={save}
+      dirty={dirty}
     >
       <DateInput
         label="Data do registro"
@@ -104,7 +109,7 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       />
       <OptionRow
         label="Resultado"
-        value={cytologyLabels[form.result] ?? form.result}
+        value={form.result ? (cytologyLabels[form.result] ?? form.result) : ""}
         options={results.map((result) => cytologyLabels[result])}
         onChange={(value) => {
           const result = results.find((item) => cytologyLabels[item] === value);

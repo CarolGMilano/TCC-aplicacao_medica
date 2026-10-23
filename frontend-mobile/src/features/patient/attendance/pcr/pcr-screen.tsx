@@ -38,11 +38,18 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
   const [date, setDate] = useState<DateParts>(() =>
     saved ? fromIsoDate(saved.dataRegistro) : todayParts(),
   );
-  const [result, setResult] = useState(saved?.resultado ?? "NEGATIVO");
+  // Registro novo começa sem resultado: um "Negativo" pré-marcado poderia
+  // ser salvo sem o médico ter escolhido.
+  const [result, setResult] = useState(saved?.resultado ?? "");
   const [hpvTypes, setHpvTypes] = useState<string[]>(saved?.tiposHpv ?? []);
   const [observation, setObservation] = useState(saved?.observacao ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [initial] = useState(() =>
+    JSON.stringify({ date, result, hpvTypes, observation }),
+  );
+  const dirty =
+    JSON.stringify({ date, result, hpvTypes, observation }) !== initial;
 
   const positive = result === "POSITIVO";
 
@@ -61,6 +68,10 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
     const dataRegistro = toIsoDate(date);
     if (!dataRegistro) {
       setError("Informe uma data válida, entre 01/01/1900 e hoje.");
+      return;
+    }
+    if (!result) {
+      setError("Selecione o resultado do PCR.");
       return;
     }
     if (positive && hpvTypes.length === 0) {
@@ -106,6 +117,7 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
       error={error}
       saving={saving}
       onSave={save}
+      dirty={dirty}
     >
       <DateInput
         label="Data do registro"

@@ -1,4 +1,3 @@
-import { SymbolView } from "expo-symbols";
 import { useState, type ReactNode } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 
@@ -32,7 +31,7 @@ function parseDate(text: string): DateValue {
 }
 
 // Campo de data igual aos outros campos: um só, com máscara dd/mm/aaaa,
-// teclado numérico e um ícone de calendário (só visual).
+// teclado numérico. Sem ícone de calendário: não há seletor por trás dele.
 export function DateField({
   label,
   value,
@@ -65,15 +64,6 @@ export function DateField({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           style={styles.input}
-        />
-        <SymbolView
-          name={{
-            ios: "calendar",
-            android: "calendar_today",
-            web: "calendar_today",
-          }}
-          tintColor={Theme.textSecondary}
-          size={18}
         />
       </View>
       {hint ? (

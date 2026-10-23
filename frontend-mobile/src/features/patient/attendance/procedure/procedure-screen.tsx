@@ -62,6 +62,16 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
   const [observation, setObservation] = useState(saved?.observacao ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const snapshot = JSON.stringify({
+    date,
+    type,
+    fragments,
+    endocervical,
+    ectocervical,
+    result,
+    observation,
+  });
+  const [initial] = useState(snapshot);
 
   // Biópsia não tem margens; nas EZT as duas são obrigatórias.
   const hasMargins = type !== "BIOPSIA";
@@ -129,6 +139,7 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
       error={error}
       saving={saving}
       onSave={save}
+      dirty={snapshot !== initial}
     >
       <DateInput
         label="Data do registro"
@@ -150,6 +161,7 @@ function ProcedureRecord({ saved }: { saved: Procedure | null }) {
         label="Fragmentos"
         value={fragments}
         min={1}
+        max={20}
         onChange={clearError(setFragments)}
       />
       {hasMargins ? (

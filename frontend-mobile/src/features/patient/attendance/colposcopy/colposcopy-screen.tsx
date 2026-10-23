@@ -80,6 +80,8 @@ function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(() => initialForm(saved));
+  const [initial] = useState(() => JSON.stringify(form));
+  const dirty = JSON.stringify(form) !== initial;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const conductShownAt = useRef(0);
@@ -184,6 +186,7 @@ function ColposcopyRecord({ saved }: { saved: Colposcopy | null }) {
       onSave={handleButton}
       step={{ current: step, total: 2 }}
       sectioned
+      dirty={dirty}
       onBack={step === 2 ? backToFindings : undefined}
       buttonLabel={
         step === 1

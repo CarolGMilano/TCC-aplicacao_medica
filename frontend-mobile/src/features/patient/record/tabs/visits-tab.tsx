@@ -2,7 +2,7 @@ import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
-import { Spacing, Theme } from "@/constants/theme";
+import { FontFamilies, Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { EmptyState, VisitItem } from "../components";
@@ -40,8 +40,9 @@ export function VisitsTab({
   // Ao voltar de um novo registro, a ficha recebe o tipo salvo em "filter"
   // e um "saved" diferente a cada salvamento.
   const params = useLocalSearchParams<{ filter?: string; saved?: string }>();
-  const [filter, setFilter] = useState<VisitType>(
-    isVisitType(params.filter) ? params.filter : "consultations",
+  // Seções abertas. Ao voltar de um registro salvo, a do tipo salvo abre.
+  const [open, setOpen] = useState<VisitType[]>(
+    isVisitType(params.filter) ? [params.filter] : [],
   );
 
   // A ficha já está aberta quando o parâmetro chega: ajusta durante a
@@ -49,11 +50,14 @@ export function VisitsTab({
   const [handledSave, setHandledSave] = useState(params.saved);
   if (params.saved !== handledSave) {
     setHandledSave(params.saved);
-    if (params.saved && isVisitType(params.filter)) setFilter(params.filter);
+    const saved = params.filter;
+    if (params.saved && isVisitType(saved) && !open.includes(saved)) {
+      setOpen([...open, saved]);
+    }
   }
 
-  // Limpa os parâmetros depois de usá-los, para a aba voltar a abrir em
-  // "Consultas" quando for montada de novo.
+  // Limpa os parâmetros depois de usá-los, para a aba não reabrir a seção
+  // quando for montada de novo.
   useEffect(() => {
     if (params.saved) router.setParams({ filter: undefined, saved: undefined });
   }, [params.saved]);
@@ -123,61 +127,100 @@ export function VisitsTab({
     );
   }
 
-  const list = visits[filter];
+  function toggle(type: VisitType) {
+    setOpen((current) =>
+      current.includes(type)
+        ? current.filter((item) => item !== type)
+        : [...current, type],
+    );
+  }
 
+  // Uma seção fixa por tipo, na ordem do fluxo de atendimento. O cabeçalho
+  // já mostra a quantidade e o último resultado; tocando, abre a lista.
   return (
-    <View>
-      <View style={styles.filters}>
-        {visitFilters.map((item) => {
-          const active = item.id === filter;
+    <View style={styles.sections}>
+      {visitFilters.map((item) => {
+        const list = visits[item.id];
+        const latest = list[0];
+        const expanded = open.includes(item.id) && list.length > 0;
+        const alert = list.some((visit) => visit.highlight);
 
-          return (
+        return (
+          <View key={item.id} style={styles.section}>
             <Pressable
-              key={item.id}
-              accessibilityRole="radio"
-              accessibilityState={{ checked: active }}
-              onPress={() => setFilter(item.id)}
-              style={[styles.filter, active && styles.filterActive]}
+              accessibilityRole="button"
+              accessibilityState={{
+                expanded,
+                disabled: list.length === 0,
+              }}
+              accessibilityLabel={`${item.label}: ${countLabel(list.length)}`}
+              disabled={list.length === 0}
+              onPress={() => toggle(item.id)}
+              style={({ pressed }) => [
+                styles.sectionHeader,
+                alert && styles.sectionAlert,
+                pressed && styles.pressed,
+              ]}
             >
-              <ThemedText
-                type="code"
-                themeColor={active ? "textPrimaryLight" : "textSecondary"}
-              >
-                {item.label}
-              </ThemedText>
+              <View style={styles.sectionText}>
+                <View style={styles.sectionTitleRow}>
+                  <ThemedText
+                    style={styles.sectionTitle}
+                    themeColor={list.length ? "text" : "textSecondary"}
+                  >
+                    {item.label}
+                  </ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {countLabel(list.length)}
+                  </ThemedText>
+                </View>
+                {latest ? (
+                  <ThemedText
+                    type="small"
+                    themeColor={latest.highlight ? "error" : "textSecondary"}
+                    numberOfLines={1}
+                  >
+                    Último: {latest.title} · {latest.date}
+                  </ThemedText>
+                ) : null}
+              </View>
+              {list.length ? (
+                <ThemedText themeColor="textSecondary" style={styles.chevron}>
+                  {expanded ? "−" : "+"}
+                </ThemedText>
+              ) : null}
             </Pressable>
-          );
-        })}
-      </View>
 
-      <ThemedText type="code" themeColor="textSecondary" style={styles.count}>
-        {list.length ? `${list.length} REGISTRO(S)` : "SEM REGISTROS"}
-      </ThemedText>
-
-      {list.length ? (
-        list.map((visit) => (
-          <VisitItem
-            key={visit.id}
-            visit={visit}
-            onPress={() =>
-              router.push({
-                pathname: visitRoutes[filter],
-                params: {
-                  id: String(patientId),
-                  name: patientName,
-                  record: patientRecord,
-                  recordId: String(visit.id),
-                },
-              })
-            }
-          />
-        ))
-      ) : (
-        <EmptyState title="Nenhum registro nesta aba" />
-      )}
+            {expanded
+              ? list.map((visit) => (
+                  <VisitItem
+                    key={visit.id}
+                    visit={visit}
+                    onPress={() =>
+                      router.push({
+                        pathname: visitRoutes[item.id],
+                        params: {
+                          id: String(patientId),
+                          name: patientName,
+                          record: patientRecord,
+                          recordId: String(visit.id),
+                        },
+                      })
+                    }
+                  />
+                ))
+              : null}
+          </View>
+        );
+      })}
       {newRecordButton}
     </View>
   );
+}
+
+function countLabel(count: number) {
+  if (count === 0) return "Nenhum registro";
+  return count === 1 ? "1 registro" : `${count} registros`;
 }
 
 const styles = StyleSheet.create({
@@ -185,30 +228,52 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.five,
   },
 
-  filters: {
+  sections: {
+    paddingTop: Spacing.two,
+  },
+
+  section: {
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.border,
+  },
+
+  // Borda sempre presente (transparente) para o texto não pular ao destacar.
+  sectionHeader: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: Spacing.one,
-    paddingHorizontal: Spacing.three,
-    paddingTop: Spacing.three,
-  },
-
-  filter: {
-    borderWidth: 1,
-    borderColor: Theme.border,
-    borderRadius: 16,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.one,
-  },
-
-  filterActive: {
-    backgroundColor: Theme.primary,
-    borderColor: Theme.primary,
-  },
-
-  count: {
+    alignItems: "center",
+    gap: Spacing.two,
+    minHeight: 64,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
+    borderLeftWidth: 3,
+    borderLeftColor: "transparent",
+  },
+
+  sectionAlert: {
+    borderLeftColor: Theme.secondary,
+  },
+
+  sectionText: {
+    flex: 1,
+    gap: Spacing.half,
+  },
+
+  sectionTitleRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+    gap: Spacing.two,
+  },
+
+  sectionTitle: {
+    fontFamily: FontFamilies.primaryMedium,
+  },
+
+  chevron: {
+    width: 20,
+    textAlign: "center",
+    fontSize: 22,
+    lineHeight: 26,
   },
 
   emptyContainer: {

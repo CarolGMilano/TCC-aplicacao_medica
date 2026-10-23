@@ -5,6 +5,7 @@ import br.com.cervicare.atendimento.domain.enums.GrauLesao;
 import br.com.cervicare.atendimento.domain.enums.ZonaTransformacao;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
@@ -13,6 +14,7 @@ public record ColposcopiaRequestDTO(
         Integer idPaciente,
 
         @NotNull(message = "A data do registro é obrigatória")
+        @PastOrPresent(message = "A data do registro não pode ser no futuro")
         LocalDate dataRegistro,
 
         @NotNull(message = "A informação de estrogenização é obrigatória")

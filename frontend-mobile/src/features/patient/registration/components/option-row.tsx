@@ -60,7 +60,13 @@ export function OptionRow({
             style={styles.optionField}
             onPress={() => setIsOpen(true)}
           >
-            <ThemedText style={styles.optionValue}>{value}</ThemedText>
+            {/* Sem valor escolhido: convite em vez de um resultado padrão. */}
+            <ThemedText
+              style={styles.optionValue}
+              themeColor={value ? undefined : "textSecondary"}
+            >
+              {value || "Selecione"}
+            </ThemedText>
             <View style={styles.chevron} />
           </Pressable>
         )}

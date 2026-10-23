@@ -4,7 +4,9 @@ import br.com.cervicare.atendimento.domain.Procedimento;
 import br.com.cervicare.atendimento.dto.ProcedimentoRequestDTO;
 import br.com.cervicare.atendimento.dto.ProcedimentoResponseDTO;
 import br.com.cervicare.atendimento.repository.ProcedimentoRepository;
+import br.com.cervicare.atendimento.domain.enums.TipoProcedimento;
 import br.com.cervicare.core.exception.ResourceNotFoundException;
+import br.com.cervicare.core.validation.RegrasClinicas;
 import br.com.cervicare.medico.domain.Medico;
 import br.com.cervicare.medico.service.MedicoService;
 import br.com.cervicare.paciente.domain.Paciente;
@@ -28,6 +30,7 @@ public class ProcedimentoService {
     public ProcedimentoResponseDTO registrar(ProcedimentoRequestDTO dto) {
         Paciente paciente = pacienteRepository.findById(dto.idPaciente())
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada para o ID: " + dto.idPaciente()));
+        validar(dto, paciente);
 
         Medico medico = medicoService.getMedicoLogado();
 
@@ -64,6 +67,7 @@ public class ProcedimentoService {
     public ProcedimentoResponseDTO atualizar(Integer idProcedimento, ProcedimentoRequestDTO dto) {
         Procedimento procedimento = procedimentoRepository.findById(idProcedimento)
                 .orElseThrow(() -> new ResourceNotFoundException("Procedimento não encontrado."));
+        validar(dto, procedimento.getPaciente());
 
         procedimento.setDataRegistro(dto.dataRegistro());
         procedimento.setTipo(dto.tipo());
@@ -76,6 +80,14 @@ public class ProcedimentoService {
 
         Procedimento atualizado = procedimentoRepository.save(procedimento);
         return converterParaDTO(atualizado);
+    }
+
+    // Biópsia não tem margens; nas EZT as duas são obrigatórias.
+    private void validar(ProcedimentoRequestDTO dto, Paciente paciente) {
+        RegrasClinicas.validarDataExame(dto.dataRegistro(), paciente.getDataNascimento());
+        boolean ezt = dto.tipo() != null && dto.tipo() != TipoProcedimento.BIOPSIA;
+        RegrasClinicas.exigir(ezt, dto.margemEndocervical(), "Selecione a margem endocervical.");
+        RegrasClinicas.exigir(ezt, dto.margemEctocervical(), "Selecione a margem ectocervical.");
     }
 
     @Transactional

@@ -1,6 +1,7 @@
 package br.com.cervicare.historico.service;
 
 import br.com.cervicare.core.exception.ResourceNotFoundException;
+import br.com.cervicare.core.validation.RegrasClinicas;
 import br.com.cervicare.historico.domain.DadosGinecoObstetricos;
 import br.com.cervicare.historico.dto.DadosGinecoObstetricosRequestDTO;
 import br.com.cervicare.historico.dto.DadosGinecoObstetricosResponseDTO;
@@ -24,6 +25,7 @@ public class DadosGinecoObstetricosService {
     public DadosGinecoObstetricosResponseDTO registrar(DadosGinecoObstetricosRequestDTO dto) {
         Paciente paciente = pacienteRepository.findById(dto.idPaciente())
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada para o ID: " + dto.idPaciente()));
+        RegrasClinicas.validarGineco(dto.menarca(), dto.menopausa(), paciente.getDataNascimento());
 
         DadosGinecoObstetricos dados = new DadosGinecoObstetricos();
         dados.setPaciente(paciente);
@@ -55,6 +57,7 @@ public class DadosGinecoObstetricosService {
     public DadosGinecoObstetricosResponseDTO atualizar(Integer idDados, DadosGinecoObstetricosRequestDTO dto) {
         DadosGinecoObstetricos dados = dadosRepository.findById(idDados)
                 .orElseThrow(() -> new ResourceNotFoundException("Dados gineco-obstétricos não encontrados."));
+        RegrasClinicas.validarGineco(dto.menarca(), dto.menopausa(), dados.getPaciente().getDataNascimento());
 
         dados.setNumGestacao(dto.numGestacao());
         dados.setNumPartoNormal(dto.numPartoNormal());

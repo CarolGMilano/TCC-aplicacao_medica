@@ -5,6 +5,7 @@ import br.com.cervicare.atendimento.dto.ColposcopiaRequestDTO;
 import br.com.cervicare.atendimento.dto.ColposcopiaResponseDTO;
 import br.com.cervicare.atendimento.repository.ColposcopiaRepository;
 import br.com.cervicare.core.exception.ResourceNotFoundException;
+import br.com.cervicare.core.validation.RegrasClinicas;
 import br.com.cervicare.medico.domain.Medico;
 import br.com.cervicare.medico.service.MedicoService;
 import br.com.cervicare.paciente.domain.Paciente;
@@ -28,6 +29,7 @@ public class ColposcopiaService {
     public ColposcopiaResponseDTO registrar(ColposcopiaRequestDTO dto) {
         Paciente paciente = pacienteRepository.findById(dto.idPaciente())
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente não encontrada para o ID: " + dto.idPaciente()));
+        validar(dto, paciente);
 
         Medico medico = medicoService.getMedicoLogado();
 
@@ -68,6 +70,7 @@ public class ColposcopiaService {
     public ColposcopiaResponseDTO atualizar(Integer idColposcopia, ColposcopiaRequestDTO dto) {
         Colposcopia colposcopia = colposcopiaRepository.findById(idColposcopia)
                 .orElseThrow(() -> new ResourceNotFoundException("Exame de colposcopia não encontrado."));
+        validar(dto, colposcopia.getPaciente());
 
         colposcopia.setDataRegistro(dto.dataRegistro());
         colposcopia.setEstrogenizacao(dto.estrogenizacao());
@@ -84,6 +87,14 @@ public class ColposcopiaService {
 
         Colposcopia atualizada = colposcopiaRepository.save(colposcopia);
         return converterParaDTO(atualizada);
+    }
+
+    private void validar(ColposcopiaRequestDTO dto, Paciente paciente) {
+        RegrasClinicas.validarDataExame(dto.dataRegistro(), paciente.getDataNascimento());
+        boolean lesao = Boolean.TRUE.equals(dto.lesao());
+        RegrasClinicas.exigir(lesao, dto.grauLesao(), "Selecione um grau de lesão.");
+        RegrasClinicas.exigir(Boolean.TRUE.equals(dto.verETratar()), dto.verETratarMotivo(),
+                "Informe o motivo do ver e tratar.");
     }
 
     @Transactional

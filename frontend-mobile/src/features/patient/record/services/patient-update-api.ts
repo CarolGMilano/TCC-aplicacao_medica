@@ -1,6 +1,7 @@
 import { getToken } from "@/features/auth/auth-session";
 import { apiFetch } from "@/features/auth/services/auth-api";
 
+import { readRuleMessage } from "../../attendance/attendance-api";
 import { toPatientRegistration } from "../../registration/services/patient-registration-api";
 import type { PatientForm } from "../../registration/types";
 import type { DataTab, PatientDetail, PatientRecord } from "../types";
@@ -42,7 +43,9 @@ async function send(method: string, path: string, body?: object) {
     throw new Error("Já existe uma paciente com este prontuário.");
   }
 
-  throw new Error("Não foi possível salvar as alterações.");
+  throw new Error(
+    (await readRuleMessage(response)) ?? "Não foi possível salvar as alterações.",
+  );
 }
 
 // Com id, atualiza o registro existente; sem id, cria o primeiro.
