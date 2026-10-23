@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from "react";
 import {
-  Alert,
   BackHandler,
   KeyboardAvoidingView,
   ScrollView,
@@ -16,6 +15,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { confirmDiscard } from "@/components/shared/discard-dialog";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
@@ -69,18 +70,11 @@ export function useDiscardGuard(dirty: boolean, saving: boolean) {
     if (!dirty || saving) return;
     return navigation.addListener("beforeRemove", (event) => {
       event.preventDefault();
-      Alert.alert(
-        "Descartar registro?",
-        "Os dados preenchidos ainda não foram salvos.",
-        [
-          { text: "Continuar editando", style: "cancel" },
-          {
-            text: "Descartar",
-            style: "destructive",
-            onPress: () => navigation.dispatch(event.data.action),
-          },
-        ],
-      );
+      confirmDiscard({
+        title: "Descartar registro?",
+        message: "Os dados preenchidos ainda não foram salvos.",
+        onDiscard: () => navigation.dispatch(event.data.action),
+      });
     });
   }, [navigation, dirty, saving]);
 }

@@ -8,6 +8,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { DiscardDialogHost } from "@/components/shared/discard-dialog";
 import { AnimatedSplashOverlay } from "@/components/ui/animated-icon";
 import { Theme } from "@/constants/theme";
 
@@ -52,6 +53,7 @@ export default function RootLayout() {
         <Stack.Screen name="patients/[id]/new-record" />
         <Stack.Screen name="new-patient" />
       </Stack>
+      <DiscardDialogHost />
     </ThemeProvider>
   );
 }
