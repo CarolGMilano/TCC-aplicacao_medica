@@ -48,9 +48,15 @@ export function PatientListItem({ patient }: PatientListItemProps) {
         <ThemedText type="small" themeColor="textSecondary">
           {patient.age} anos · PRT {patient.record}
         </ThemedText>
-        <ThemedText type="small" themeColor="textSecondary" style={styles.date}>
+        {/* Curto para caber numa linha ao lado do prontuário. */}
+        <ThemedText
+          type="small"
+          themeColor="textSecondary"
+          style={styles.date}
+          numberOfLines={1}
+        >
           {patient.lastVisit
-            ? `Última consulta em ${patient.lastVisit}`
+            ? `Últ. consulta ${patient.lastVisit}`
             : "Sem consultas"}
         </ThemedText>
       </View>
