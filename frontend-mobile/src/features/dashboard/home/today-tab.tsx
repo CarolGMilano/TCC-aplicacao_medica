@@ -56,7 +56,7 @@ export function TodayTab() {
         />
         <Tile
           value={waiting.total}
-          label="aguardando procedimento"
+          label="aguardando proced."
           tone="warning"
           loading={waiting.isLoading}
           onPress={() =>
