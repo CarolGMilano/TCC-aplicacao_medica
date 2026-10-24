@@ -38,8 +38,8 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
   // Busca em andamento: "Editar" espera, para o rascunho não partir da ficha
   // antiga (ex.: com o status de antes da consulta).
   const [loading, setLoading] = useState(false);
-  // Abre em Atendimentos: ver os exames e lançar um novo é o uso mais comum.
-  const [tab, setTab] = useState<RecordTab>("visits");
+  // Abre no Histórico clínico; recém-cadastrada abre em Atendimentos.
+  const [tab, setTab] = useState<RecordTab>(created ? "visits" : "history");
   const [editing, setEditing] = useState<DataTab>("personal");
 
   const loadRecord = useCallback(() => {

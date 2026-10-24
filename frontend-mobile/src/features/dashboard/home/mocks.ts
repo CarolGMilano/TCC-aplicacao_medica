@@ -56,5 +56,5 @@ export const indicators = {
     { label: "HPV 16/18", count: 7, color: Theme.error },
     { label: "Outros", count: 9, color: Theme.warning },
   ],
-  seeAndTreat: { done: 9, compromisedMargin: "11%" },
+  seeAndTreat: { done: 9 },
 };

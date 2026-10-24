@@ -30,11 +30,7 @@ export function IndicatorsTab() {
       </Card>
 
       <Card title="Ver e tratar">
-        <StatRow label="Realizados" value={seeAndTreat.done} />
-        <StatRow
-          label="Margem comprometida"
-          value={seeAndTreat.compromisedMargin}
-        />
+        <StatRow label="Realizados no mês" value={seeAndTreat.done} />
       </Card>
     </View>
   );
