@@ -4,22 +4,45 @@ import { Modal, Pressable, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/shared/themed-text";
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 
-type DiscardRequest = {
-  title?: string;
-  message?: string;
-  onDiscard: () => void;
+type DialogAction = { label: string; onPress?: () => void };
+
+type DialogRequest = {
+  title: string;
+  message: string;
+  // Botão verde cheio (a ação principal) e, embaixo, o botão só de texto.
+  primary: DialogAction;
+  secondary: DialogAction & { danger?: boolean };
+  // Tocar fora ou no voltar do Android.
+  onDismiss?: () => void;
 };
 
-// Um diálogo só para o app: as telas chamam confirmDiscard (como faziam com
-// o Alert.alert) e o DiscardDialogHost, montado no layout, desenha o aviso.
-let listener: ((request: DiscardRequest | null) => void) | null = null;
+// Um diálogo só para o app: as telas chamam showDialog/confirmDiscard (como
+// faziam com o Alert.alert) e o DiscardDialogHost, montado no layout, desenha.
+let listener: ((request: DialogRequest | null) => void) | null = null;
 
-export function confirmDiscard(request: DiscardRequest) {
+export function showDialog(request: DialogRequest) {
   listener?.(request);
 }
 
+export function confirmDiscard({
+  title = "Descartar alterações?",
+  message = "As mudanças deste bloco ainda não foram salvas.",
+  onDiscard,
+}: {
+  title?: string;
+  message?: string;
+  onDiscard: () => void;
+}) {
+  showDialog({
+    title,
+    message,
+    primary: { label: "Continuar editando" },
+    secondary: { label: "Descartar", danger: true, onPress: onDiscard },
+  });
+}
+
 export function DiscardDialogHost() {
-  const [request, setRequest] = useState<DiscardRequest | null>(null);
+  const [request, setRequest] = useState<DialogRequest | null>(null);
 
   useEffect(() => {
     listener = setRequest;
@@ -28,7 +51,10 @@ export function DiscardDialogHost() {
     };
   }, []);
 
-  const close = () => setRequest(null);
+  function run(action?: () => void) {
+    setRequest(null);
+    action?.();
+  }
 
   return (
     <Modal
@@ -36,34 +62,36 @@ export function DiscardDialogHost() {
       animationType="fade"
       statusBarTranslucent
       visible={request !== null}
-      onRequestClose={close}
+      onRequestClose={() => run(request?.onDismiss)}
     >
       <View style={styles.backdrop}>
         <View style={styles.card}>
-          <ThemedText style={styles.title}>
-            {request?.title ?? "Descartar alterações?"}
-          </ThemedText>
+          <ThemedText style={styles.title}>{request?.title}</ThemedText>
           <ThemedText themeColor="textSecondary" style={styles.message}>
-            {request?.message ??
-              "As mudanças deste bloco ainda não foram salvas."}
+            {request?.message}
           </ThemedText>
           <Pressable
             accessibilityRole="button"
-            onPress={close}
+            onPress={() => run(request?.primary.onPress)}
             style={({ pressed }) => [styles.primary, pressed && styles.pressed]}
           >
-            <ThemedText style={styles.primaryText}>Continuar editando</ThemedText>
+            <ThemedText style={styles.primaryText}>
+              {request?.primary.label}
+            </ThemedText>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            onPress={() => {
-              const onDiscard = request?.onDiscard;
-              close();
-              onDiscard?.();
-            }}
-            style={({ pressed }) => [styles.discard, pressed && styles.pressed]}
+            onPress={() => run(request?.secondary.onPress)}
+            style={({ pressed }) => [styles.secondary, pressed && styles.pressed]}
           >
-            <ThemedText style={styles.discardText}>Descartar</ThemedText>
+            <ThemedText
+              style={[
+                styles.secondaryText,
+                request?.secondary.danger && styles.danger,
+              ]}
+            >
+              {request?.secondary.label}
+            </ThemedText>
           </Pressable>
         </View>
       </View>
@@ -101,14 +129,15 @@ const styles = StyleSheet.create({
     color: Theme.textPrimaryLight,
     fontFamily: FontFamilies.primarySemiBold,
   },
-  discard: {
+  secondary: {
     minHeight: 48,
     alignItems: "center",
     justifyContent: "center",
   },
-  discardText: {
-    color: Theme.error,
+  secondaryText: {
+    color: Theme.textSecondary,
     fontFamily: FontFamilies.primarySemiBold,
   },
+  danger: { color: Theme.error },
   pressed: { opacity: 0.7 },
 });
