@@ -20,11 +20,6 @@ export const statusCounts = [
   { status: "Alta", count: 28 },
 ];
 
-export const todayRecords = {
-  count: 6,
-  recent: ["Maria S. Costa", "Joana P. Lima", "Rita A. Souza", "Lúcia M. Reis"],
-};
-
 export const changedWithoutNextStep = [
   { name: "Clara M. Duarte", detail: "Citologia ASC-US · 2 meses", days: "64 dias" },
   { name: "Sônia R. Prado", detail: "PCR HPV 16/18 · 1 mês", days: "38 dias" },
