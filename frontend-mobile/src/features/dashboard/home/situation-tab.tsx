@@ -39,7 +39,10 @@ export function SituationTab() {
 
   return (
     <View style={dashboardStyles.tab}>
-      <Card title={`${TOTAL_PATIENTS} pacientes por situação`}>
+      <Card
+        title={`${TOTAL_PATIENTS} pacientes por situação`}
+        subtitle="Situação atual de cada paciente na ficha. Toque para ver a lista."
+      >
         <Bars
           items={statusCounts.map(({ status, count }) => ({
             label: status,
@@ -68,16 +71,19 @@ export function SituationTab() {
         />
       </TileRow>
 
-      <Card title="Alterados sem próximo passo" tag="regra a validar">
+      <Card
+        title="Exame alterado sem conduta"
+        subtitle="Último resultado alterado e nenhum atendimento registrado depois dele."
+      >
         {changedWithoutNextStep.map((item) => (
           <PatientRow key={item.name} {...item} tone="warning" />
         ))}
       </Card>
 
-      <Card title="Rastreio atrasado" tag="regra a validar">
-        <ThemedText type="small" themeColor="textSecondary">
-          Sem exame há mais de
-        </ThemedText>
+      <Card
+        title="Sem exame recente"
+        subtitle="Pacientes cujo último exame foi há mais de:"
+      >
         <Segments options={yearOptions} value={years} onChange={setYears} />
         {late.length === 0 ? (
           <ThemedText themeColor="textSecondary">

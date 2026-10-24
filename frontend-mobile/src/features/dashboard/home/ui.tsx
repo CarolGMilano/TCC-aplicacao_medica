@@ -11,23 +11,16 @@ import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 export function Card({
   title,
   subtitle,
-  tag,
   children,
 }: {
   title: string;
   subtitle?: string;
-  tag?: string;
   children: ReactNode;
 }) {
   return (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <ThemedText style={styles.cardTitle}>{title}</ThemedText>
-        {tag ? (
-          <View style={styles.tag}>
-            <ThemedText style={styles.tagText}>{tag}</ThemedText>
-          </View>
-        ) : null}
       </View>
       {subtitle ? (
         <ThemedText type="small" themeColor="textSecondary">
@@ -283,18 +276,6 @@ const styles = StyleSheet.create({
   cardTitle: {
     flexShrink: 1,
     fontFamily: FontFamilies.primarySemiBold,
-  },
-  tag: {
-    borderRadius: 10,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.half,
-    backgroundColor: Theme.investigationLight,
-  },
-  tagText: {
-    color: Theme.investigationDark,
-    fontFamily: FontFamilies.primaryMedium,
-    fontSize: Typography.sizes.small,
-    lineHeight: Typography.lineHeights.compact,
   },
   tileRow: {
     flexDirection: "row",
