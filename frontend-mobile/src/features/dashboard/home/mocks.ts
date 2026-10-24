@@ -30,15 +30,6 @@ export const changedWithoutNextStep = [
   { name: "Sônia R. Prado", detail: "PCR HPV 16/18 · 1 mês", days: "38 dias" },
 ];
 
-// Anos desde o último exame; a aba Situação filtra pelo prazo escolhido.
-export const lateScreening = [
-  { name: "Helena B. Nunes", lastExam: "03/2022", years: 4 },
-  { name: "Vera L. Matos", lastExam: "08/2023", years: 3 },
-  { name: "Paula C. Freitas", lastExam: "02/2024", years: 2 },
-  { name: "Irene S. Barros", lastExam: "06/2025", years: 1 },
-  { name: "Cecília A. Rocha", lastExam: "09/2025", years: 1 },
-];
-
 // Pacientes com consulta ou exame registrado no período.
 export const attended = { day: 9, week: 41, month: 168 };
 

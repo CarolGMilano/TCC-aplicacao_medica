@@ -1,18 +1,14 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 import { ThemedText } from "@/components/shared/themed-text";
 import { Theme } from "@/constants/theme";
+import { usePatientList } from "@/features/patient/list/use-patient-list";
 import { statusColors } from "@/features/patient/record/constants";
 
 import { useReturns } from "../returns/use-returns";
-import {
-  TOTAL_PATIENTS,
-  changedWithoutNextStep,
-  lateScreening,
-  statusCounts,
-} from "./mocks";
+import { TOTAL_PATIENTS, changedWithoutNextStep, statusCounts } from "./mocks";
 import {
   Bars,
   Card,
@@ -22,6 +18,7 @@ import {
   TileRow,
   dashboardStyles,
 } from "./ui";
+import { daysSince, openPatient } from "./utils";
 
 // Prazo sem exame para o rastreio atrasado; o padrão é 1 ano.
 type Years = "1" | "2" | "3";
@@ -35,7 +32,19 @@ const yearOptions: { id: Years; label: string }[] = [
 export function SituationTab() {
   const returns = useReturns();
   const [years, setYears] = useState<Years>("1");
-  const late = lateScreening.filter((item) => item.years >= Number(years));
+  const all = usePatientList("Todas", "");
+
+  // Pela última consulta registrada; quem nunca teve consulta fica de fora.
+  const late = all.patients
+    .map((patient) => ({ ...patient, days: daysSince(patient.lastVisit) }))
+    .filter((patient) => patient.days !== null && patient.days > Number(years) * 365)
+    .sort((a, b) => (b.days ?? 0) - (a.days ?? 0));
+
+  // Resultados ainda fictícios, presos a pacientes reais para abrir a ficha.
+  const changed = changedWithoutNextStep.map((item, index) => ({
+    ...item,
+    patient: all.patients[index],
+  }));
 
   return (
     <View style={dashboardStyles.tab}>
@@ -75,8 +84,14 @@ export function SituationTab() {
         title="Exame alterado sem retorno"
         subtitle="Último resultado alterado e nenhum atendimento registrado depois dele."
       >
-        {changedWithoutNextStep.map((item) => (
-          <PatientRow key={item.name} {...item} tone="warning" />
+        {changed.map(({ patient, ...item }) => (
+          <PatientRow
+            key={item.name}
+            {...item}
+            name={patient?.name ?? item.name}
+            tone="warning"
+            onPress={patient ? () => openPatient(patient.id) : undefined}
+          />
         ))}
       </Card>
 
@@ -84,20 +99,28 @@ export function SituationTab() {
         title={`Último exame há mais de ${years === "1" ? "1 ano" : `${years} anos`}`}
       >
         <Segments options={yearOptions} value={years} onChange={setYears} />
-        {late.length === 0 ? (
+        {all.isLoading ? (
+          <ActivityIndicator color={Theme.primary} />
+        ) : all.error ? (
+          <ThemedText themeColor="error">{all.error}</ThemedText>
+        ) : late.length === 0 ? (
           <ThemedText themeColor="textSecondary">
             Nenhuma paciente nesse prazo.
           </ThemedText>
         ) : (
-          late.map((item) => (
-            <PatientRow
-              key={item.name}
-              name={item.name}
-              detail={`Último exame em ${item.lastExam}`}
-              days={item.years === 1 ? "1 ano" : `${item.years} anos`}
-              tone="warning"
-            />
-          ))
+          late.slice(0, 5).map((patient) => {
+            const lateYears = Math.floor((patient.days ?? 0) / 365);
+            return (
+              <PatientRow
+                key={patient.id}
+                name={patient.name}
+                detail={`Última consulta em ${patient.lastVisit}`}
+                days={lateYears === 1 ? "1 ano" : `${lateYears} anos`}
+                tone="warning"
+                onPress={() => openPatient(patient.id)}
+              />
+            );
+          })
         )}
       </Card>
     </View>
