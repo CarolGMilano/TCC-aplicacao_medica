@@ -2,6 +2,8 @@
 
 Projeto de TCC para o desenvolvimento de um sistema web e mobile voltado ao acompanhamento de pacientes em investigação ou tratamento do câncer do colo do útero, com gerenciamento de informações e visualização de indicadores.
 
+> **Para rodar o app mobile no Mac (com emulador), veja [COMO-RODAR-NO-MAC.md](COMO-RODAR-NO-MAC.md).**
+
 ## Estrutura do projeto
 
 * **frontend-mobile** — Aplicação mobile.
