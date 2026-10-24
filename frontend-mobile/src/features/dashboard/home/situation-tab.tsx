@@ -72,7 +72,7 @@ export function SituationTab() {
       </TileRow>
 
       <Card
-        title="Exame alterado sem conduta"
+        title="Exame alterado sem retorno"
         subtitle="Último resultado alterado e nenhum atendimento registrado depois dele."
       >
         {changedWithoutNextStep.map((item) => (
@@ -81,8 +81,7 @@ export function SituationTab() {
       </Card>
 
       <Card
-        title="Sem exame recente"
-        subtitle="Pacientes cujo último exame foi há mais de:"
+        title={`Último exame há mais de ${years === "1" ? "1 ano" : `${years} anos`}`}
       >
         <Segments options={yearOptions} value={years} onChange={setYears} />
         {late.length === 0 ? (
