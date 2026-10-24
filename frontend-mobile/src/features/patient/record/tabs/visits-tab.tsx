@@ -3,7 +3,7 @@ import { SymbolView } from "expo-symbols";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
-import { FontFamilies, Spacing, Theme } from "@/constants/theme";
+import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { EmptyState, VisitItem } from "../components";
@@ -134,6 +134,7 @@ export function VisitsTab({
               onPress={() => toggle(item.id)}
               style={({ pressed }) => [
                 styles.sectionHeader,
+                expanded && styles.sectionHeaderOpen,
                 alert && styles.sectionAlert,
                 pressed && styles.pressed,
               ]}
@@ -146,9 +147,21 @@ export function VisitsTab({
                   >
                     {item.label}
                   </ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    {countLabel(list.length)}
-                  </ThemedText>
+                  <View
+                    style={[
+                      styles.count,
+                      list.length > 0 && styles.countFilled,
+                      alert && styles.countAlert,
+                    ]}
+                  >
+                    <ThemedText
+                      type="small"
+                      style={styles.countText}
+                      themeColor={alert ? "error" : "textSecondary"}
+                    >
+                      {countLabel(list.length)}
+                    </ThemedText>
+                  </View>
                 </View>
                 {latest ? (
                   <ThemedText
@@ -210,13 +223,20 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.five,
   },
 
+  // Cada tipo é um card: o cabeçalho em destaque e, aberto, os registros
+  // logo abaixo, dentro do mesmo card.
   sections: {
-    paddingTop: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.three,
+    gap: Spacing.two + Spacing.one,
   },
 
   section: {
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.border,
+    borderWidth: 1,
+    borderColor: Theme.border,
+    borderRadius: 14,
+    overflow: "hidden",
+    backgroundColor: Theme.backgroundElement,
   },
 
   // Borda sempre presente (transparente) para o texto não pular ao destacar.
@@ -224,11 +244,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: Spacing.two,
-    minHeight: 64,
+    minHeight: 72,
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderLeftWidth: 3,
+    paddingVertical: Spacing.two + Spacing.one,
+    borderLeftWidth: 4,
     borderLeftColor: "transparent",
+  },
+
+  sectionHeaderOpen: {
+    backgroundColor: Theme.cardDetail,
   },
 
   sectionAlert: {
@@ -237,20 +261,34 @@ const styles = StyleSheet.create({
 
   sectionText: {
     flex: 1,
-    gap: Spacing.half,
+    gap: Spacing.one,
   },
 
   sectionTitleRow: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center",
     justifyContent: "space-between",
     gap: Spacing.two,
   },
 
   sectionTitle: {
-    fontFamily: FontFamilies.primaryMedium,
+    flexShrink: 1,
+    fontFamily: FontFamilies.primarySemiBold,
+    fontSize: Typography.sizes.section,
+    lineHeight: Typography.lineHeights.body + 2,
   },
 
+  count: {
+    borderRadius: 12,
+    paddingHorizontal: Spacing.two + Spacing.half,
+    paddingVertical: Spacing.half,
+  },
+
+  countFilled: { backgroundColor: Theme.inputBackground },
+
+  countAlert: { backgroundColor: Theme.administratorLight },
+
+  countText: { fontFamily: FontFamilies.primaryMedium },
 
   pressed: { opacity: 0.75 },
 });
