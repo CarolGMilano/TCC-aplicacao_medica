@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { indicators } from "./mocks";
-import { Bars, Card, StatRow, Tile, TileRow, dashboardStyles } from "./ui";
+import { Bars, Card, StatRow, dashboardStyles } from "./ui";
 
 export function IndicatorsTab() {
   const { exams, cytology, pcr, seeAndTreat } = indicators;
@@ -14,10 +14,12 @@ export function IndicatorsTab() {
         {indicators.period}
       </ThemedText>
 
-      <TileRow>
-        <Tile value={exams.value} label={`exames no mês · ${exams.change}`} />
-        <Tile value={indicators.changedPercent} label="alterados" tone="warning" />
-      </TileRow>
+      <Card title="Exames no mês">
+        <ThemedText style={dashboardStyles.bigValue}>{exams.value}</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary">
+          {exams.change}
+        </ThemedText>
+      </Card>
 
       <Card title="Citologia por resultado">
         <Bars items={cytology} />
@@ -25,10 +27,6 @@ export function IndicatorsTab() {
 
       <Card title="PCR DNA-HPV">
         <Bars items={pcr} />
-      </Card>
-
-      <Card title="Tempo até a colposcopia">
-        <StatRow label="Média" value={`${indicators.colposcopyDays} dias`} />
       </Card>
 
       <Card title="Ver e tratar">
