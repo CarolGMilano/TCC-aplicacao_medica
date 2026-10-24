@@ -37,14 +37,10 @@ export function useRecordEdit(
   function start() {
     if (!record) return;
     setError("");
-    // Fichas antigas podem ter mais de 99 parceiros (o limite era 999); o
-    // campo só comporta 2 dígitos, então a edição já parte do limite.
-    const form = {
-      ...record.form,
-      partners: Math.min(record.form.partners, 99),
-    };
-    setDraft(form);
-    setInitial(form);
+    // Fichas antigas podem ter mais de 99 parceiros (o limite era 999): o
+    // valor salvo é mantido; só o "+" e a digitação respeitam o limite.
+    setDraft(record.form);
+    setInitial(record.form);
   }
 
   function cancel() {
