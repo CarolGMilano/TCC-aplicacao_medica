@@ -236,13 +236,22 @@ export function Segments<T extends string>({
   );
 }
 
-export function Chips({ items }: { items: string[] }) {
+export function Chips({
+  items,
+}: {
+  items: { key: string; label: string; onPress: () => void }[];
+}) {
   return (
     <View style={styles.chips}>
       {items.map((item) => (
-        <View key={item} style={styles.chip}>
-          <ThemedText type="small">{item}</ThemedText>
-        </View>
+        <Pressable
+          key={item.key}
+          accessibilityRole="button"
+          onPress={item.onPress}
+          style={({ pressed }) => [styles.chip, pressed && styles.pressed]}
+        >
+          <ThemedText type="small">{item.label}</ThemedText>
+        </Pressable>
       ))}
     </View>
   );

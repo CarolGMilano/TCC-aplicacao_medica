@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { confirmDiscard } from "@/components/shared/discard-dialog";
+import { addRecentPatient } from "@/features/patient/recent/recent-patients";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { PillButton } from "@/components/shared/pill-button";
@@ -48,7 +49,10 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
 
     fetchPatient(id)
       .then((detail) => {
-        if (active) setRecord(toPatientRecord(detail));
+        if (!active) return;
+        const loaded = toPatientRecord(detail);
+        setRecord(loaded);
+        addRecentPatient({ id: loaded.id, name: loaded.form.name });
       })
       .catch((requestError: unknown) => {
         if (!active) return;
@@ -130,16 +134,17 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
     return () => subscription.remove();
   });
 
-  // Volta para a lista que já está na pilha, sem abrir outra. Se a ficha veio
-  // de outra tela (ex.: "Ver todas" do Dashboard), a lista entra no lugar dela.
-  // Durante a edição, só cancela, como o voltar do Android; salvando, espera.
-  function goToPatients() {
+  // Volta para a tela de onde a ficha foi aberta (Dashboard, lista...).
+  // Recém-cadastrada vai para a lista, sem voltar ao cadastro. Durante a
+  // edição, só cancela, como o voltar do Android; salvando, espera.
+  function goBack() {
     if (edit.saving) return;
     if (edit.editing) {
       leaveEdit();
       return;
     }
-    router.dismissTo("/patients");
+    if (!created && router.canGoBack()) router.back();
+    else router.dismissTo("/patients");
   }
 
   if (!record) {
@@ -154,7 +159,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
               <Pressable onPress={reload} accessibilityRole="button">
                 <ThemedText type="code">Tentar de novo</ThemedText>
               </Pressable>
-              <PillButton label="Pacientes" onPress={goToPatients} />
+              <PillButton label="Voltar" onPress={goBack} />
             </>
           ) : (
             <ActivityIndicator color={Theme.primary} />
@@ -181,7 +186,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
               tab={tab}
               created={created}
               editing={edit.editing}
-              onBack={goToPatients}
+              onBack={goBack}
               onTabChange={changeTab}
             />
             <View style={styles.content}>

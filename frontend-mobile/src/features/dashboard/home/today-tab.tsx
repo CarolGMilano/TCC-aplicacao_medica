@@ -5,9 +5,10 @@ import { ActivityIndicator, View } from "react-native";
 import { ThemedText } from "@/components/shared/themed-text";
 import { Theme } from "@/constants/theme";
 import { usePatientList } from "@/features/patient/list/use-patient-list";
+import { useRecentPatients } from "@/features/patient/recent/recent-patients";
 
 import { delayTone, useReturns } from "../returns/use-returns";
-import { TOTAL_PATIENTS, attended, todayRecords } from "./mocks";
+import { TOTAL_PATIENTS, attended } from "./mocks";
 import {
   Card,
   Chips,
@@ -33,6 +34,7 @@ const periods: { id: Period; label: string }[] = [
 export function TodayTab() {
   const [period, setPeriod] = useState<Period>("day");
   const returns = useReturns();
+  const recent = useRecentPatients();
   const waiting = usePatientList(WAITING, "");
 
   const waitingList = waiting.filteredPatients
@@ -135,11 +137,20 @@ export function TodayTab() {
         )}
       </Card>
 
-      <Card
-        title={`Hoje · ${todayRecords.count} registros`}
-        subtitle="Abertas recentemente"
-      >
-        <Chips items={todayRecords.recent} />
+      <Card title="Fichas abertas recentemente">
+        {recent.length === 0 ? (
+          <ThemedText themeColor="textSecondary">
+            As fichas que você abrir aparecem aqui.
+          </ThemedText>
+        ) : (
+          <Chips
+            items={recent.map((patient) => ({
+              key: String(patient.id),
+              label: patient.name,
+              onPress: () => openPatient(patient.id),
+            }))}
+          />
+        )}
       </Card>
     </View>
   );

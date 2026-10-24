@@ -36,7 +36,7 @@ export function RecordHeader({
   return (
     <View style={registrationStyles.header}>
       <View style={[registrationStyles.headerTop, styles.headerTop]}>
-        <PillButton label="Pacientes" onPress={onBack} />
+        <PillButton label="Voltar" onPress={onBack} />
         {editing || created ? (
           <Chip
             label={editing ? "Editando" : "Cadastrada"}
