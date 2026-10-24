@@ -39,7 +39,10 @@ export function Counter({
           label="−"
           accessibilityLabel={`Diminuir ${label.toLowerCase()}`}
           disabled={value <= min}
-          onPress={() => onChange(Math.max(min, value - 1))}
+          onPress={() => {
+            setText(null);
+            onChange(Math.max(min, value - 1));
+          }}
         />
 
         {editable ? (
@@ -51,14 +54,16 @@ export function Counter({
             maxLength={Math.min(String(max).length, 2)}
             selectTextOnFocus
             onFocus={() => setText(String(value))}
-            // Só dígitos; o limite vale ao sair do campo, para o número não
-            // mudar no meio da digitação (ex.: o "1" de "15" virar o mínimo).
-            onChangeText={(next) => setText(next.replace(/\D/g, ""))}
-            onBlur={() => {
-              const nextValue = text ? Number(text) : value;
-              onChange(Math.min(max, Math.max(min, nextValue)));
-              setText(null);
+            // Só dígitos. O formulário recebe cada número já dentro do limite
+            // (assim "Próximo" com o campo em foco usa o valor digitado), mas
+            // o campo mostra o texto digitado até sair dele, para o "1" de
+            // "15" não virar o mínimo no meio da digitação.
+            onChangeText={(next) => {
+              const digits = next.replace(/\D/g, "");
+              setText(digits);
+              if (digits) onChange(Math.min(max, Math.max(min, Number(digits))));
             }}
+            onBlur={() => setText(null)}
             style={styles.counterInput}
           />
         ) : (
@@ -70,7 +75,10 @@ export function Counter({
           accessibilityLabel={`Aumentar ${label.toLowerCase()}`}
           active
           disabled={value >= max}
-          onPress={() => onChange(Math.min(max, value + 1))}
+          onPress={() => {
+            setText(null);
+            onChange(Math.min(max, value + 1));
+          }}
         />
 
         {/* Espaço fixo para a unidade, para os contadores ficarem alinhados

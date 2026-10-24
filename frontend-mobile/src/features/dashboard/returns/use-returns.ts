@@ -22,7 +22,16 @@ export function useReturns() {
           ...alert,
           reason: "Pós-procedimento sem retorno",
         })),
-      ].sort((a, b) => b.diasAtraso - a.diasAtraso),
+      ]
+        .sort((a, b) => b.diasAtraso - a.diasAtraso)
+        // Uma linha por paciente: com os dois alertas, fica o maior atraso e
+        // os dois motivos.
+        .reduce<ReturnAlert[]>((merged, alert) => {
+          const same = merged.find((item) => item.idPaciente === alert.idPaciente);
+          if (same) same.reason = `${same.reason} · ${alert.reason}`;
+          else merged.push({ ...alert });
+          return merged;
+        }, []),
     [withoutReturn.alerts, postProcedure.alerts],
   );
 

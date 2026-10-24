@@ -34,11 +34,11 @@ export function SituationTab() {
   const [years, setYears] = useState<Years>("1");
   const all = usePatientList("Todas", "");
 
-  // Pela última consulta registrada; quem nunca teve consulta fica de fora.
+  // Pela última consulta registrada; quem nunca teve consulta vem primeiro.
   const late = all.patients
     .map((patient) => ({ ...patient, days: daysSince(patient.lastVisit) }))
-    .filter((patient) => patient.days !== null && patient.days > Number(years) * 365)
-    .sort((a, b) => (b.days ?? 0) - (a.days ?? 0));
+    .filter((patient) => patient.days === null || patient.days > Number(years) * 365)
+    .sort((a, b) => (b.days ?? Infinity) - (a.days ?? Infinity));
 
   // Resultados ainda fictícios, presos a pacientes reais para abrir a ficha.
   const changed = changedWithoutNextStep.map((item, index) => ({
@@ -114,8 +114,18 @@ export function SituationTab() {
               <PatientRow
                 key={patient.id}
                 name={patient.name}
-                detail={`Última consulta em ${patient.lastVisit}`}
-                days={lateYears === 1 ? "1 ano" : `${lateYears} anos`}
+                detail={
+                  patient.days === null
+                    ? "Nenhuma consulta registrada"
+                    : `Última consulta em ${patient.lastVisit}`
+                }
+                days={
+                  patient.days === null
+                    ? "Nunca"
+                    : lateYears === 1
+                      ? "1 ano"
+                      : `${lateYears} anos`
+                }
                 tone="warning"
                 onPress={() => openPatient(patient.id)}
               />

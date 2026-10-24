@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal, Pressable, StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/shared/themed-text";
@@ -43,15 +43,23 @@ export function confirmDiscard({
 
 export function DiscardDialogHost() {
   const [request, setRequest] = useState<DialogRequest | null>(null);
+  const current = useRef<DialogRequest | null>(null);
 
   useEffect(() => {
-    listener = setRequest;
+    // Um pedido novo por cima de outro fecha o anterior como "dispensado",
+    // para quem espera a resposta (ex.: confirmBeforeSave) não ficar travado.
+    listener = (next) => {
+      current.current?.onDismiss?.();
+      current.current = next;
+      setRequest(next);
+    };
     return () => {
       listener = null;
     };
   }, []);
 
   function run(action?: () => void) {
+    current.current = null;
     setRequest(null);
     action?.();
   }

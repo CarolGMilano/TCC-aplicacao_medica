@@ -32,13 +32,13 @@ export async function confirmBeforeSave({
   const date = formatDate(dataRegistro);
   let duplicate = false;
 
-  if (editingId === undefined) {
-    try {
-      const lists = await fetchVisits(patientId);
-      duplicate = lists[type].some((visit) => visit.date.startsWith(date));
-    } catch {
-      // Sem a lista, segue sem o aviso; o salvamento não depende dele.
-    }
+  try {
+    const lists = await fetchVisits(patientId);
+    duplicate = lists[type].some(
+      (visit) => visit.id !== editingId && visit.date.startsWith(date),
+    );
+  } catch {
+    // Sem a lista, segue sem o aviso; o salvamento não depende dele.
   }
 
   if (!critical && !duplicate) return true;

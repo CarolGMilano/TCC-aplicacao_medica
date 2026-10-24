@@ -1,4 +1,9 @@
-import { router, useFocusEffect, useNavigation } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -41,6 +46,15 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
   const [loading, setLoading] = useState(false);
   // Abre no Histórico clínico; recém-cadastrada abre em Atendimentos.
   const [tab, setTab] = useState<RecordTab>(created ? "visits" : "history");
+  // Voltando de um registro salvo ("saved" muda a cada salvamento), mostra
+  // Atendimentos, mesmo que o "+ Novo registro" tenha sido tocado no
+  // Histórico clínico.
+  const { saved } = useLocalSearchParams<{ saved?: string }>();
+  const [handledSave, setHandledSave] = useState(saved);
+  if (saved !== handledSave) {
+    setHandledSave(saved);
+    if (saved) setTab("visits");
+  }
   const [editing, setEditing] = useState<DataTab>("personal");
 
   const loadRecord = useCallback(() => {
