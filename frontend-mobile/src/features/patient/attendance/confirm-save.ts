@@ -1,4 +1,4 @@
-import { Alert } from "react-native";
+import { showDialog } from "@/components/shared/discard-dialog";
 
 import { fetchVisits, formatDate } from "../record/services/visits-api";
 import type { VisitType } from "../record/types";
@@ -53,14 +53,12 @@ export async function confirmBeforeSave({
   ].filter(Boolean);
 
   return new Promise<boolean>((resolve) => {
-    Alert.alert(
-      critical ? "Confirmar resultado" : "Possível registro duplicado",
-      lines.join("\n\n"),
-      [
-        { text: "Revisar", style: "cancel", onPress: () => resolve(false) },
-        { text: "Salvar", onPress: () => resolve(true) },
-      ],
-      { cancelable: true, onDismiss: () => resolve(false) },
-    );
+    showDialog({
+      title: critical ? "Confirmar resultado" : "Possível registro duplicado",
+      message: lines.join("\n\n"),
+      primary: { label: "Salvar", onPress: () => resolve(true) },
+      secondary: { label: "Revisar", onPress: () => resolve(false) },
+      onDismiss: () => resolve(false),
+    });
   });
 }

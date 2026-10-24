@@ -159,7 +159,8 @@ function NewConsultation() {
           ? error.message
           : "Não foi possível salvar a consulta.",
       );
-    } finally {
+      // Só no erro: liberar a trava antes de a tela fechar fazia o aviso de
+      // descarte aparecer depois de salvar.
       setSaving(false);
     }
   }
