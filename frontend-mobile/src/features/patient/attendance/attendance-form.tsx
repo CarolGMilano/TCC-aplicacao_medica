@@ -96,6 +96,7 @@ export function AttendanceForm({
   saved,
   sectioned = false,
   dirty = false,
+  complete = true,
 }: {
   title: string;
   error?: string;
@@ -112,6 +113,8 @@ export function AttendanceForm({
   sectioned?: boolean;
   // Algo foi preenchido ou alterado e ainda não foi salvo.
   dirty?: boolean;
+  // Campos obrigatórios preenchidos: sem isso, o botão fica desabilitado.
+  complete?: boolean;
 }) {
   const [doctor, setDoctor] = useState<string | null>(null);
   const isSaved = Boolean(saved);
@@ -205,7 +208,7 @@ export function AttendanceForm({
               <SaveButton
                 label={saving ? "Salvando..." : buttonLabel}
                 onPress={onSave}
-                disabled={saving}
+                disabled={saving || !complete}
                 outline={mode === "view"}
               />
             ) : null}

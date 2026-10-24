@@ -86,6 +86,14 @@ export function PatientRegistration() {
     return () => subscription.remove();
   });
 
+  // Como na especificação, "Continuar"/"Cadastrar" só libera com a etapa
+  // válida; o motivo aparece acima do botão.
+  const pending =
+    step < totalSteps
+      ? validateStep(step, form)
+      : (validateForm(form)?.error ?? null);
+  const blocked = isSubmitting || pending !== null;
+
   async function handleContinue() {
     // O botão fica no mesmo lugar em todas as etapas: sem isso, o 2º toque
     // pularia uma etapa ou cadastraria sem passar pela revisão.
@@ -149,9 +157,7 @@ export function PatientRegistration() {
             <RegistrationHeader
               step={step}
               title={stepTitles[step - 1]}
-              subtitle={
-                step === 1 ? "Nova paciente" : form.name.trim()
-              }
+              subtitle={step === 1 ? "Nova paciente" : form.name.trim()}
               cancel={leavesOnBack}
               onBack={goBack}
             />
@@ -169,25 +175,25 @@ export function PatientRegistration() {
           </ScrollView>
 
           <View style={styles.footer}>
-            {error ? (
+            {error || pending ? (
               <ThemedText
-                themeColor="error"
+                themeColor={error ? "error" : "textSecondary"}
                 type="small"
                 accessibilityLiveRegion="polite"
                 style={styles.error}
               >
-                {error}
+                {error || pending}
               </ThemedText>
             ) : null}
             <Pressable
               accessibilityRole="button"
-              accessibilityState={{ disabled: isSubmitting }}
-              disabled={isSubmitting}
+              accessibilityState={{ disabled: blocked }}
+              disabled={blocked}
               onPress={handleContinue}
               style={({ pressed }) => [
                 styles.continue,
                 pressed && styles.pressed,
-                isSubmitting && styles.disabled,
+                blocked && styles.disabled,
               ]}
             >
               <ThemedText type="button" themeColor="textPrimaryLight">

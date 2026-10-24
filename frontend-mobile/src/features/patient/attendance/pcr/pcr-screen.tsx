@@ -65,6 +65,11 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
     );
   }
 
+  // Resultado, tipos de HPV (se positivo) e observação são obrigatórios.
+  const complete = Boolean(
+    result && (!positive || hpvTypes.length > 0) && observation.trim(),
+  );
+
   async function save() {
     const dataRegistro = toIsoDate(date);
     if (!dataRegistro) {
@@ -77,6 +82,10 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
     }
     if (positive && hpvTypes.length === 0) {
       setError("Selecione ao menos um tipo de HPV.");
+      return;
+    }
+    if (!observation.trim()) {
+      setError("Informe a observação do PCR.");
       return;
     }
 
@@ -128,6 +137,7 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
       saving={saving}
       onSave={save}
       dirty={dirty}
+      complete={complete}
     >
       <DateInput
         label="Data do registro"

@@ -67,9 +67,18 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // Data, resultado e observação são obrigatórios (especificação).
+  const complete = Boolean(
+    form.day &&
+    form.month &&
+    form.year &&
+    form.result &&
+    form.observation.trim(),
+  );
+
   async function save() {
-    if (!form.day || !form.month || !form.year || !form.result) {
-      setError("Preencha a data e o resultado.");
+    if (!complete) {
+      setError("Preencha a data, o resultado e a observação.");
       return;
     }
     // Completa o dia e o mês com zero ("5" vira "05"), senão o backend recusa.
@@ -101,7 +110,7 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
           idPaciente: Number(id),
           dataRegistro,
           resultado: form.result,
-          observacao: form.observation.trim() || "",
+          observacao: form.observation.trim(),
         },
         saved?.idExame,
       );
@@ -129,6 +138,7 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       saving={saving}
       onSave={save}
       dirty={dirty}
+      complete={complete}
     >
       <DateInput
         label="Data do registro"

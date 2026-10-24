@@ -1,9 +1,14 @@
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
-import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
+import { FontFamilies, Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import { EmptyState, VisitItem } from "../components";
@@ -41,9 +46,9 @@ export function VisitsTab({
   // Ao voltar de um novo registro, a ficha recebe o tipo salvo em "filter"
   // e um "saved" diferente a cada salvamento.
   const params = useLocalSearchParams<{ filter?: string; saved?: string }>();
-  // Seções abertas. Ao voltar de um registro salvo, a do tipo salvo abre.
-  const [open, setOpen] = useState<VisitType[]>(
-    isVisitType(params.filter) ? [params.filter] : [],
+  // Tipo filtrado. Ao voltar de um registro salvo, mostra o tipo salvo.
+  const [filter, setFilter] = useState<VisitType>(
+    isVisitType(params.filter) ? params.filter : "consultations",
   );
 
   // A ficha já está aberta quando o parâmetro chega: ajusta durante a
@@ -52,9 +57,7 @@ export function VisitsTab({
   if (params.saved !== handledSave) {
     setHandledSave(params.saved);
     const saved = params.filter;
-    if (params.saved && isVisitType(saved) && !open.includes(saved)) {
-      setOpen([...open, saved]);
-    }
+    if (params.saved && isVisitType(saved)) setFilter(saved);
   }
 
   // Limpa os parâmetros depois de usá-los, para a aba não reabrir a seção
@@ -103,112 +106,68 @@ export function VisitsTab({
     );
   }
 
-  function toggle(type: VisitType) {
-    setOpen((current) =>
-      current.includes(type)
-        ? current.filter((item) => item !== type)
-        : [...current, type],
-    );
-  }
+  const list = visits[filter];
 
-  // Uma seção fixa por tipo, na ordem do fluxo de atendimento. O cabeçalho
-  // já mostra a quantidade e o último resultado; tocando, abre a lista.
+  // Filtro por tipo, como na especificação, e a lista do tipo escolhido.
   return (
-    <View style={styles.sections}>
-      {visitFilters.map((item) => {
-        const list = visits[item.id];
-        const latest = list[0];
-        const expanded = open.includes(item.id) && list.length > 0;
-        const alert = list.some((visit) => visit.highlight);
-
-        return (
-          <View key={item.id} style={styles.section}>
+    <View style={styles.container}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.filtersScroll}
+        contentContainerStyle={styles.filters}
+      >
+        {visitFilters.map((item) => {
+          const active = item.id === filter;
+          const alert = visits[item.id].some((visit) => visit.highlight);
+          return (
             <Pressable
+              key={item.id}
               accessibilityRole="button"
-              accessibilityState={{
-                expanded,
-                disabled: list.length === 0,
-              }}
-              accessibilityLabel={`${item.label}: ${countLabel(list.length)}`}
-              disabled={list.length === 0}
-              onPress={() => toggle(item.id)}
-              style={({ pressed }) => [
-                styles.sectionHeader,
-                expanded && styles.sectionHeaderOpen,
-                alert && styles.sectionAlert,
-                pressed && styles.pressed,
-              ]}
+              accessibilityState={{ selected: active }}
+              accessibilityLabel={`${item.label}: ${countLabel(visits[item.id].length)}`}
+              onPress={() => setFilter(item.id)}
+              style={[styles.filter, active && styles.filterActive]}
             >
-              <View style={styles.sectionText}>
-                <View style={styles.sectionTitleRow}>
-                  <ThemedText
-                    style={styles.sectionTitle}
-                    themeColor={list.length ? "text" : "textSecondary"}
-                  >
-                    {item.label}
-                  </ThemedText>
-                  <View
-                    style={[
-                      styles.count,
-                      list.length > 0 && styles.countFilled,
-                      alert && styles.countAlert,
-                    ]}
-                  >
-                    <ThemedText
-                      type="small"
-                      style={styles.countText}
-                      themeColor={alert ? "error" : "textSecondary"}
-                    >
-                      {countLabel(list.length)}
-                    </ThemedText>
-                  </View>
-                </View>
-                {latest ? (
-                  <ThemedText
-                    type="small"
-                    themeColor={latest.highlight ? "error" : "textSecondary"}
-                    numberOfLines={1}
-                  >
-                    Último: {latest.title} · {latest.date}
-                  </ThemedText>
-                ) : null}
-              </View>
-              {/* Seta, e não "+", para não parecer "adicionar registro". */}
-              {list.length ? (
-                <SymbolView
-                  name={{
-                    ios: expanded ? "chevron.up" : "chevron.down",
-                    android: expanded ? "expand_less" : "expand_more",
-                    web: expanded ? "expand_less" : "expand_more",
-                  }}
-                  tintColor={Theme.textSecondary}
-                  size={24}
-                />
-              ) : null}
+              <ThemedText
+                type="small"
+                style={styles.filterText}
+                themeColor={
+                  active ? "textPrimaryLight" : alert ? "error" : "text"
+                }
+              >
+                {item.label} · {visits[item.id].length}
+              </ThemedText>
             </Pressable>
+          );
+        })}
+      </ScrollView>
 
-            {expanded
-              ? list.map((visit) => (
-                  <VisitItem
-                    key={visit.id}
-                    visit={visit}
-                    onPress={() =>
-                      router.push({
-                        pathname: visitRoutes[item.id],
-                        params: {
-                          id: String(patientId),
-                          name: patientName,
-                          record: patientRecord,
-                          recordId: String(visit.id),
-                        },
-                      })
-                    }
-                  />
-                ))
-              : null}
-          </View>
-        );
-      })}
+      <View style={styles.list}>
+        {list.length === 0 ? (
+          <ThemedText themeColor="textSecondary" style={styles.empty}>
+            Nenhum registro deste tipo.
+          </ThemedText>
+        ) : (
+          list.map((visit) => (
+            <VisitItem
+              key={visit.id}
+              visit={visit}
+              onPress={() =>
+                router.push({
+                  pathname: visitRoutes[filter],
+                  params: {
+                    id: String(patientId),
+                    name: patientName,
+                    record: patientRecord,
+                    recordId: String(visit.id),
+                  },
+                })
+              }
+            />
+          ))
+        )}
+      </View>
     </View>
   );
 }
@@ -223,15 +182,32 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.five,
   },
 
-  // Cada tipo é um card: o cabeçalho em destaque e, aberto, os registros
-  // logo abaixo, dentro do mesmo card.
-  sections: {
-    paddingHorizontal: Spacing.three,
+  container: {
     paddingTop: Spacing.three,
-    gap: Spacing.two + Spacing.one,
+    gap: Spacing.three,
   },
 
-  section: {
+  filtersScroll: { flexGrow: 0 },
+
+  filters: {
+    gap: Spacing.two,
+    paddingHorizontal: Spacing.three,
+  },
+
+  filter: {
+    minHeight: 40,
+    paddingHorizontal: Spacing.three,
+    borderRadius: 20,
+    justifyContent: "center",
+    backgroundColor: Theme.inputBackground,
+  },
+
+  filterActive: { backgroundColor: Theme.primary },
+
+  filterText: { fontFamily: FontFamilies.primaryMedium },
+
+  list: {
+    marginHorizontal: Spacing.three,
     borderWidth: 1,
     borderColor: Theme.border,
     borderRadius: 14,
@@ -239,56 +215,5 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.backgroundElement,
   },
 
-  // Borda sempre presente (transparente) para o texto não pular ao destacar.
-  sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.two,
-    minHeight: 72,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two + Spacing.one,
-    borderLeftWidth: 4,
-    borderLeftColor: "transparent",
-  },
-
-  sectionHeaderOpen: {
-    backgroundColor: Theme.cardDetail,
-  },
-
-  sectionAlert: {
-    borderLeftColor: Theme.secondary,
-  },
-
-  sectionText: {
-    flex: 1,
-    gap: Spacing.one,
-  },
-
-  sectionTitleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: Spacing.two,
-  },
-
-  sectionTitle: {
-    flexShrink: 1,
-    fontFamily: FontFamilies.primarySemiBold,
-    fontSize: Typography.sizes.section,
-    lineHeight: Typography.lineHeights.body + 2,
-  },
-
-  count: {
-    borderRadius: 12,
-    paddingHorizontal: Spacing.two + Spacing.half,
-    paddingVertical: Spacing.half,
-  },
-
-  countFilled: { backgroundColor: Theme.inputBackground },
-
-  countAlert: { backgroundColor: Theme.administratorLight },
-
-  countText: { fontFamily: FontFamilies.primaryMedium },
-
-  pressed: { opacity: 0.75 },
+  empty: { padding: Spacing.three },
 });

@@ -17,7 +17,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { confirmDiscard } from "@/components/shared/discard-dialog";
-import { addRecentPatient } from "@/features/patient/recent/recent-patients";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { PillButton } from "@/components/shared/pill-button";
@@ -25,7 +24,9 @@ import { ThemedText } from "@/components/shared/themed-text";
 import { ThemedView } from "@/components/shared/themed-view";
 
 import { styles as registrationStyles } from "../registration/styles";
+import { validateStep } from "../registration/utils";
 import { RecordFooter, RecordHeader } from "./components";
+import { tabSteps } from "./constants";
 import { fetchPatient } from "./services/patient-record-api";
 import { EditTab, HistoryTab, VisitsTab } from "./tabs";
 import type { DataTab, PatientRecord, RecordTab } from "./types";
@@ -34,7 +35,7 @@ import { toPatientRecord } from "./utils";
 
 type PatientRecordScreenProps = {
   id: string;
-  // Recém-cadastrada: abre em Atendimentos com o selo "Cadastrada".
+  // Recém-cadastrada: abre em Dados clínicos com o selo "Cadastrada".
   created: boolean;
 };
 
@@ -44,18 +45,16 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
   // Busca em andamento: "Editar" espera, para o rascunho não partir da ficha
   // antiga (ex.: com o status de antes da consulta).
   const [loading, setLoading] = useState(false);
-  // Abre no Histórico clínico; recém-cadastrada abre em Atendimentos.
-  const [tab, setTab] = useState<RecordTab>(created ? "visits" : "history");
+  // Abre em Dados pessoais; recém-cadastrada abre em Dados clínicos.
+  const [tab, setTab] = useState<RecordTab>(created ? "clinical" : "personal");
   // Voltando de um registro salvo ("saved" muda a cada salvamento), mostra
-  // Atendimentos, mesmo que o "+ Novo registro" tenha sido tocado no
-  // Histórico clínico.
+  // Dados clínicos, mesmo que o ＋ tenha sido tocado em outra aba.
   const { saved } = useLocalSearchParams<{ saved?: string }>();
   const [handledSave, setHandledSave] = useState(saved);
   if (saved !== handledSave) {
     setHandledSave(saved);
-    if (saved) setTab("visits");
+    if (saved) setTab("clinical");
   }
-  const [editing, setEditing] = useState<DataTab>("personal");
 
   const loadRecord = useCallback(() => {
     let active = true;
@@ -63,10 +62,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
 
     fetchPatient(id)
       .then((detail) => {
-        if (!active) return;
-        const loaded = toPatientRecord(detail);
-        setRecord(loaded);
-        addRecentPatient({ id: loaded.id, name: loaded.form.name });
+        if (active) setRecord(toPatientRecord(detail));
       })
       .catch((requestError: unknown) => {
         if (!active) return;
@@ -106,10 +102,10 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
 
   // Bloco do histórico em edição. Enquanto a ficha recarrega, espera, para o
   // rascunho não partir de dados antigos.
-  const section = edit.editing ? editing : null;
-  function startEdit(next: DataTab) {
+  const section: DataTab | null =
+    edit.editing && tab !== "clinical" ? tab : null;
+  function startEdit() {
     if (loading) return;
-    setEditing(next);
     edit.start();
   }
 
@@ -209,10 +205,10 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
               {section && edit.draft ? (
                 <EditTab tab={section} form={edit.draft} update={edit.update} />
               ) : null}
-              {!edit.editing && tab === "history" && (
-                <HistoryTab record={record} onEdit={startEdit} />
+              {!edit.editing && tab !== "clinical" && (
+                <HistoryTab record={record} tab={tab} />
               )}
-              {!edit.editing && tab === "visits" && (
+              {!edit.editing && tab === "clinical" && (
                 <VisitsTab
                   patientId={record.id}
                   patientName={record.form.name}
@@ -228,6 +224,20 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
             error={edit.error}
             onCancel={() => leaveEdit()}
             onSave={() => section && edit.save(section)}
+            onEdit={tab === "clinical" ? undefined : startEdit}
+            // Mesmas regras do salvar: bloco ainda sem registro não conta
+            // os valores iniciais como gravados.
+            invalid={
+              section !== null &&
+              edit.draft !== null &&
+              validateStep(
+                tabSteps[section],
+                edit.draft,
+                section !== "personal" && record.missing[section]
+                  ? undefined
+                  : record.form,
+              ) !== null
+            }
             onNewRecord={() =>
               router.push({
                 pathname: "/patients/[id]/new-record",

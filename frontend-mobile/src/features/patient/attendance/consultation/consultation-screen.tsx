@@ -24,11 +24,7 @@ import { SavedVisit } from "../saved-visit";
 import { ConsultationDetails } from "../visit-details";
 import type { ConsultationForm } from "../types";
 import { toIsoDate, todayParts } from "../utils";
-import {
-  FieldRow,
-  FormFields,
-  OptionRow,
-} from "../../registration/components";
+import { FieldRow, FormFields, OptionRow } from "../../registration/components";
 import { statusMap, statusOptions } from "../../registration/constants";
 import { styles as registrationStyles } from "../../registration/styles";
 import { statusColors } from "../../record/constants";
@@ -197,9 +193,7 @@ function NewConsultation() {
             <LabeledInput
               label="Observação"
               value={form.observation}
-              onChangeText={(observation) =>
-                setForm({ ...form, observation })
-              }
+              onChangeText={(observation) => setForm({ ...form, observation })}
               multiline
               placeholder="Descreva a consulta..."
             />
@@ -218,7 +212,7 @@ function NewConsultation() {
           <SaveButton
             label="Salvar consulta"
             onPress={save}
-            disabled={saving}
+            disabled={saving || !form.time || !form.observation.trim()}
           />
         </View>
       </KeyboardAvoidingView>

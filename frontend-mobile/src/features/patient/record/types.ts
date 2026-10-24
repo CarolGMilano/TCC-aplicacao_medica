@@ -41,7 +41,8 @@ export type PatientDetail = {
 };
 
 // Duas abas: os atendimentos (o que mais se usa) e o histórico clínico.
-export type RecordTab = "visits" | "history";
+// Abas da ficha: os cinco blocos do cadastro e os dados clínicos.
+export type RecordTab = DataTab | "clinical";
 
 // Abas sem registro no backend (ex.: paciente cadastrada só com dados pessoais).
 export type MissingSections = {

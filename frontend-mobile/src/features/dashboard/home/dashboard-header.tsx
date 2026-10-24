@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
@@ -8,22 +8,8 @@ import { logout } from "@/features/auth/auth-session";
 
 import { doctor } from "./mocks";
 
-export type DashboardTab = "today" | "situation" | "indicators";
-
-const tabs: { id: DashboardTab; label: string }[] = [
-  { id: "today", label: "Hoje" },
-  { id: "situation", label: "Situação" },
-  { id: "indicators", label: "Indicadores" },
-];
-
-// Cabeçalho fixo: só o conteúdo da aba rola por baixo dele.
-export function DashboardHeader({
-  tab,
-  onChangeTab,
-}: {
-  tab: DashboardTab;
-  onChangeTab: (tab: DashboardTab) => void;
-}) {
+// Cabeçalho fixo: só a lista rola por baixo dele.
+export function DashboardHeader() {
   return (
     <View style={styles.container}>
       <View style={styles.top}>
@@ -49,27 +35,6 @@ export function DashboardHeader({
           }}
         />
       </View>
-
-      <View style={styles.segmented} accessibilityRole="tablist">
-        {tabs.map(({ id, label }) => {
-          const active = id === tab;
-          return (
-            <Pressable
-              key={id}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: active }}
-              onPress={() => onChangeTab(id)}
-              style={[styles.segment, active && styles.segmentActive]}
-            >
-              <ThemedText
-                style={[styles.segmentText, active && styles.segmentTextActive]}
-              >
-                {label}
-              </ThemedText>
-            </Pressable>
-          );
-        })}
-      </View>
     </View>
   );
 }
@@ -94,27 +59,5 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.greeting,
     lineHeight: Typography.lineHeights.greeting,
     marginTop: Spacing.one,
-  },
-  segmented: {
-    flexDirection: "row",
-    borderRadius: 22,
-    padding: Spacing.one,
-    backgroundColor: Theme.inputBackground,
-  },
-  segment: {
-    flex: 1,
-    minHeight: 40,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  segmentActive: { backgroundColor: Theme.primary },
-  segmentText: {
-    fontFamily: FontFamilies.primaryMedium,
-    fontSize: Typography.sizes.action,
-  },
-  segmentTextActive: {
-    color: Theme.textPrimaryLight,
-    fontFamily: FontFamilies.primarySemiBold,
   },
 });

@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
 import { PillButton } from "@/components/shared/pill-button";
@@ -73,7 +73,13 @@ export function RecordHeader({
         ) : null}
       </View>
 
-      <View style={styles.tabs} accessibilityRole="tablist">
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        accessibilityRole="tablist"
+        style={styles.tabsScroll}
+        contentContainerStyle={styles.tabs}
+      >
         {recordTabs.map((item) => {
           const active = item.id === tab;
 
@@ -95,7 +101,7 @@ export function RecordHeader({
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -120,21 +126,23 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
 
-  // Duas abas grandes, metade da largura cada, fáceis de acertar com o dedo.
+  // Seis abas em pílulas que rolam na horizontal, até a borda da tela.
+  tabsScroll: {
+    marginHorizontal: -Spacing.three,
+  },
+
   tabs: {
-    flexDirection: "row",
-    padding: Spacing.one,
-    gap: Spacing.one,
-    borderRadius: 26,
-    backgroundColor: Theme.inputBackground,
+    gap: Spacing.two,
+    paddingHorizontal: Spacing.three,
   },
 
   tab: {
-    flex: 1,
-    minHeight: 48,
+    minHeight: 44,
+    paddingHorizontal: Spacing.three,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 22,
+    backgroundColor: Theme.inputBackground,
   },
 
   tabLabel: {

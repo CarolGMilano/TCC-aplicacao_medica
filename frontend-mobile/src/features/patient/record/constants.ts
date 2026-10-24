@@ -2,10 +2,15 @@ import { Theme } from "@/constants/theme";
 
 import type { DataTab, RecordTab, VisitType } from "./types";
 
-// Abas da ficha: Histórico clínico à esquerda e Atendimentos à direita.
+// Abas da ficha, na ordem da especificação: os blocos do cadastro e, por
+// último, os dados clínicos (atendimentos).
 export const recordTabs: { id: RecordTab; label: string }[] = [
-  { id: "history", label: "Histórico clínico" },
-  { id: "visits", label: "Atendimentos" },
+  { id: "personal", label: "Dados pessoais" },
+  { id: "obstetric", label: "Dados gineco-obstétricos" },
+  { id: "sexual", label: "Saúde sexual" },
+  { id: "ist", label: "Histórico de IST" },
+  { id: "habits", label: "Histórico tabagista" },
+  { id: "clinical", label: "Dados clínicos" },
 ];
 
 // Blocos do histórico clínico, na ordem do cadastro.
