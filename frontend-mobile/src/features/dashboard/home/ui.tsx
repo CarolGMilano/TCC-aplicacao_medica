@@ -41,6 +41,14 @@ export function Card({
 
 type Tone = "error" | "warning" | "text";
 
+const toneColors: Record<Tone, string> = {
+  error: Theme.error,
+  warning: Theme.warning,
+  text: Theme.primary,
+};
+
+// Indicador em destaque: rótulo em cima (até 2 linhas, mesma altura em
+// todos) e o número embaixo; a cor fica só no filete e no número.
 export function Tile({
   value,
   label,
@@ -60,23 +68,27 @@ export function Tile({
       accessibilityLabel={`${label}: ${value}`}
       disabled={!onPress}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.tile,
-        tone === "error" && styles.tileError,
-        tone === "warning" && styles.tileWarning,
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.tile, pressed && styles.pressed]}
     >
+      <View style={[styles.tileAccent, { backgroundColor: toneColors[tone] }]} />
+      <ThemedText
+        type="small"
+        themeColor="textSecondary"
+        numberOfLines={2}
+        style={styles.tileLabel}
+      >
+        {label}
+      </ThemedText>
       {loading ? (
         <ActivityIndicator color={Theme.primary} style={styles.tileLoading} />
       ) : (
-        <ThemedText style={styles.tileValue} themeColor={tone}>
+        <ThemedText
+          style={styles.tileValue}
+          themeColor={tone === "text" ? "text" : tone}
+        >
           {value}
         </ThemedText>
       )}
-      <ThemedText type="small" style={styles.tileLabel}>
-        {label}
-      </ThemedText>
     </Pressable>
   );
 }
@@ -196,6 +208,41 @@ export function SeeAll({ count, onPress }: { count: number; onPress: () => void 
   );
 }
 
+// Filtro em pílulas (Hoje · Semana · Mês, 1 ano · 2 anos ...).
+export function Segments<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: { id: T; label: string }[];
+  value: T;
+  onChange: (value: T) => void;
+}) {
+  return (
+    <View style={styles.segments}>
+      {options.map((option) => {
+        const active = option.id === value;
+        return (
+          <Pressable
+            key={option.id}
+            accessibilityRole="button"
+            accessibilityState={{ selected: active }}
+            onPress={() => onChange(option.id)}
+            style={[styles.segment, active && styles.segmentActive]}
+          >
+            <ThemedText
+              type="small"
+              style={[styles.segmentText, active && styles.segmentTextActive]}
+            >
+              {option.label}
+            </ThemedText>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 export function Chips({ items }: { items: string[] }) {
   return (
     <View style={styles.chips}>
@@ -210,6 +257,11 @@ export function Chips({ items }: { items: string[] }) {
 
 export const dashboardStyles = StyleSheet.create({
   tab: { gap: Spacing.three },
+  bigValue: {
+    fontFamily: FontFamilies.detail,
+    fontSize: Typography.sizes.metric,
+    lineHeight: Typography.lineHeights.metric,
+  },
   message: { paddingVertical: Spacing.two },
 });
 
@@ -250,32 +302,56 @@ const styles = StyleSheet.create({
   },
   tile: {
     flex: 1,
-    minHeight: 104,
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: Theme.border,
     backgroundColor: Theme.backgroundElement,
-    padding: Spacing.two + Spacing.one,
-    gap: Spacing.one,
+    paddingHorizontal: Spacing.two + Spacing.half,
+    paddingBottom: Spacing.two + Spacing.one,
+    paddingTop: Spacing.three,
+    overflow: "hidden",
   },
-  tileError: {
-    borderColor: Theme.secondary,
-    backgroundColor: Theme.backgroundAlert,
+  tileAccent: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 3,
   },
-  tileWarning: {
-    borderColor: Theme.tertiary,
-    backgroundColor: Theme.residentLight,
+  tileLabel: {
+    fontFamily: FontFamilies.primaryMedium,
+    minHeight: Typography.lineHeights.compact * 2,
+    lineHeight: Typography.lineHeights.compact,
   },
   tileValue: {
     fontFamily: FontFamilies.detail,
     fontSize: Typography.sizes.heading + 4,
     lineHeight: Typography.lineHeights.title + 4,
+    marginTop: Spacing.one,
   },
   tileLoading: {
     alignSelf: "flex-start",
     height: Typography.lineHeights.title + 4,
+    marginTop: Spacing.one,
   },
-  tileLabel: { fontFamily: FontFamilies.primaryMedium },
+  segments: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.two,
+  },
+  segment: {
+    minHeight: 36,
+    borderRadius: 18,
+    paddingHorizontal: Spacing.three,
+    justifyContent: "center",
+    backgroundColor: Theme.inputBackground,
+  },
+  segmentActive: { backgroundColor: Theme.primary },
+  segmentText: { fontFamily: FontFamilies.primaryMedium },
+  segmentTextActive: {
+    color: Theme.textPrimaryLight,
+    fontFamily: FontFamilies.primarySemiBold,
+  },
   bars: { gap: Spacing.two + Spacing.one },
   barItem: { gap: Spacing.one },
   barLabels: {

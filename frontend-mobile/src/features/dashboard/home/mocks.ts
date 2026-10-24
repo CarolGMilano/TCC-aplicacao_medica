@@ -30,32 +30,21 @@ export const changedWithoutNextStep = [
   { name: "Sônia R. Prado", detail: "PCR HPV 16/18 · 1 mês", days: "38 dias" },
 ];
 
+// Anos desde o último exame; a aba Situação filtra pelo prazo escolhido.
 export const lateScreening = [
-  { name: "Helena B. Nunes", detail: "Último exame em 03/2022", days: "4 anos" },
-  { name: "Vera L. Matos", detail: "Último exame em 08/2023", days: "3 anos" },
+  { name: "Helena B. Nunes", lastExam: "03/2022", years: 4 },
+  { name: "Vera L. Matos", lastExam: "08/2023", years: 3 },
+  { name: "Paula C. Freitas", lastExam: "02/2024", years: 2 },
+  { name: "Irene S. Barros", lastExam: "06/2025", years: 1 },
+  { name: "Cecília A. Rocha", lastExam: "09/2025", years: 1 },
 ];
 
-export const priorityGroup = [
-  { label: "Imunossuprimidas", value: 14 },
-  { label: "Gestantes", value: 6 },
-  { label: "Menores de 25 anos", value: 11 },
-];
-
-export const riskFactors = [
-  { label: "Fumantes", value: 37 },
-  { label: "HPV 16/18", value: 22 },
-  { label: "Outras ISTs", value: 19 },
-];
-
-export const monthMovement = [
-  { label: "Mudaram de situação", value: 31 },
-  { label: "Receberam alta", value: 7 },
-];
+// Pacientes com consulta ou exame registrado no período.
+export const attended = { day: 9, week: 41, month: 168 };
 
 export const indicators = {
   period: "Outubro 2026 · comparado a setembro",
-  exams: { value: 86, change: "↑ 12%" },
-  changedPercent: "18%",
+  exams: { value: 86, change: "↑ 12% em relação a setembro" },
   cytology: [
     { label: "Normal", count: 61, color: Theme.primary },
     { label: "ASC-US", count: 12, color: Theme.tertiary },
@@ -67,6 +56,5 @@ export const indicators = {
     { label: "HPV 16/18", count: 7, color: Theme.error },
     { label: "Outros", count: 9, color: Theme.warning },
   ],
-  colposcopyDays: 34,
   seeAndTreat: { done: 9, compromisedMargin: "11%" },
 };
