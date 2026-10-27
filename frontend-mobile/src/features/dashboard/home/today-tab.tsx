@@ -1,37 +1,52 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 
 import { ThemedText } from "@/components/shared/themed-text";
 import { Theme } from "@/constants/theme";
 import { usePatientList } from "@/features/patient/list/use-patient-list";
 import { statusColors } from "@/features/patient/record/constants";
+import { statusMap } from "@/features/patient/registration/constants";
 
 import { useReturns } from "../returns/use-returns";
-import { TOTAL_PATIENTS, attended, statusCounts } from "./mocks";
+import {
+  fetchAttended,
+  fetchStatusCounts,
+  fetchTotalPatients,
+} from "../services/indicators-api";
 import { Bars, Card, Segments, Tile, TileRow, dashboardStyles } from "./ui";
+import { useRequest } from "./use-request";
 
 const WAITING = "Aguardando procedimento";
 
-type Period = "day" | "week" | "month";
+type Period = "hoje" | "semana" | "mes";
 
 const periods: { id: Period; label: string }[] = [
-  { id: "day", label: "Hoje" },
-  { id: "week", label: "Semana" },
-  { id: "month", label: "Mês" },
+  { id: "hoje", label: "Hoje" },
+  { id: "semana", label: "Semana" },
+  { id: "mes", label: "Mês" },
 ];
 
+// Texto da tela para o status do backend (EM_INVESTIGACAO -> Em investigação).
+const statusLabels = Object.fromEntries(
+  Object.entries(statusMap).map(([label, value]) => [value, label]),
+);
+
 export function TodayTab() {
-  const [period, setPeriod] = useState<Period>("day");
+  const [period, setPeriod] = useState<Period>("hoje");
   const returns = useReturns();
   const waiting = usePatientList(WAITING, "");
+  const total = useRequest(fetchTotalPatients);
+  const attended = useRequest(fetchAttended);
+  const byStatus = useRequest(fetchStatusCounts);
 
   return (
     <View style={dashboardStyles.tab}>
       <TileRow>
         <Tile
-          value={TOTAL_PATIENTS}
+          value={total.data ?? "—"}
           label="Pacientes"
+          loading={total.isLoading}
           onPress={() => router.push("/patients")}
         />
         <Tile
@@ -52,27 +67,45 @@ export function TodayTab() {
 
       <Card title="Pacientes atendidas">
         <Segments options={periods} value={period} onChange={setPeriod} />
-        <ThemedText style={dashboardStyles.bigValue}>
-          {attended[period]}
-        </ThemedText>
+        {attended.isLoading ? (
+          <ActivityIndicator color={Theme.primary} />
+        ) : attended.error ? (
+          <ThemedText themeColor="error">{attended.error}</ThemedText>
+        ) : (
+          <ThemedText style={dashboardStyles.bigValue}>
+            {attended.data?.[period] ?? 0}
+          </ThemedText>
+        )}
         <ThemedText type="small" themeColor="textSecondary">
           Com consulta ou exame registrado no período
         </ThemedText>
       </Card>
 
       <Card
-        title={`${TOTAL_PATIENTS} pacientes por situação`}
+        title={`${byStatus.data?.total ?? ""} pacientes por situação`.trim()}
         subtitle="Situação atual de cada paciente na ficha. Toque para ver a lista."
       >
-        <Bars
-          items={statusCounts.map(({ status, count }) => ({
-            label: status,
-            count,
-            color: statusColors[status]?.text ?? Theme.border,
-            onPress: () =>
-              router.push({ pathname: "/patients", params: { status } }),
-          }))}
-        />
+        {byStatus.isLoading ? (
+          <ActivityIndicator color={Theme.primary} />
+        ) : byStatus.error ? (
+          <ThemedText themeColor="error">{byStatus.error}</ThemedText>
+        ) : (
+          <Bars
+            items={(byStatus.data?.situacoes ?? []).map(({ status, total }) => {
+              const label = statusLabels[status] ?? status;
+              return {
+                label,
+                count: total,
+                color: statusColors[label]?.text ?? Theme.border,
+                onPress: () =>
+                  router.push({
+                    pathname: "/patients",
+                    params: { status: label },
+                  }),
+              };
+            })}
+          />
+        )}
       </Card>
     </View>
   );

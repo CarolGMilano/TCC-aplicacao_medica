@@ -3,10 +3,11 @@ import { ActivityIndicator } from "react-native";
 
 import { ThemedText } from "@/components/shared/themed-text";
 import { Theme } from "@/constants/theme";
-import { usePatientList } from "@/features/patient/list/use-patient-list";
 
+import { fetchNoRecentExam } from "../services/indicators-api";
 import { Card, PatientRow, Segments } from "./ui";
-import { daysSince, openPatient } from "./utils";
+import { useRequest } from "./use-request";
+import { openPatient } from "./utils";
 
 // Prazo sem exame; o padrão é 1 ano.
 type Years = "1" | "2" | "3";
@@ -17,56 +18,61 @@ const yearOptions: { id: Years; label: string }[] = [
   { id: "3", label: "3 anos" },
 ];
 
-// "Último exame há mais de N anos", na tela de pacientes sem retorno.
+// "2022-03-14" -> "14/03/2022".
+function formatDate(value: string) {
+  const [year, month, day] = value.split("-");
+  return `${day}/${month}/${year}`;
+}
+
+function yearsSince(value: string) {
+  const years = Math.floor(
+    (Date.now() - new Date(`${value}T00:00:00`).getTime()) /
+      (365.25 * 86_400_000),
+  );
+  return years === 1 ? "1 ano" : `${years} anos`;
+}
+
+// "Último exame há mais de N anos" (citologia ou PCR), na tela de pacientes
+// sem retorno. Quem nunca fez exame vem primeiro.
 export function LateExamCard() {
   const [years, setYears] = useState<Years>("1");
-  const all = usePatientList("Todas", "");
-
-  // Pela última consulta registrada; quem nunca teve consulta vem primeiro.
-  const late = all.patients
-    .map((patient) => ({ ...patient, days: daysSince(patient.lastVisit) }))
-    .filter(
-      (patient) => patient.days === null || patient.days > Number(years) * 365,
-    )
-    .sort((a, b) => (b.days ?? Infinity) - (a.days ?? Infinity));
+  const { data, error, isLoading } = useRequest(
+    () => fetchNoRecentExam(Number(years)),
+    years,
+  );
 
   return (
     <Card
       title={`Último exame há mais de ${years === "1" ? "1 ano" : `${years} anos`}`}
     >
       <Segments options={yearOptions} value={years} onChange={setYears} />
-      {all.isLoading ? (
+      {isLoading ? (
         <ActivityIndicator color={Theme.primary} />
-      ) : all.error ? (
-        <ThemedText themeColor="error">{all.error}</ThemedText>
-      ) : late.length === 0 ? (
+      ) : error ? (
+        <ThemedText themeColor="error">{error}</ThemedText>
+      ) : !data || data.length === 0 ? (
         <ThemedText themeColor="textSecondary">
           Nenhuma paciente nesse prazo.
         </ThemedText>
       ) : (
-        late.slice(0, 5).map((patient) => {
-          const lateYears = Math.floor((patient.days ?? 0) / 365);
-          return (
+        data
+          .slice(0, 5)
+          .map((patient) => (
             <PatientRow
-              key={patient.id}
-              name={patient.name}
+              key={patient.idPaciente}
+              name={patient.nome}
               detail={
-                patient.days === null
-                  ? "Nenhuma consulta registrada"
-                  : `Última consulta em ${patient.lastVisit}`
+                patient.ultimoExame
+                  ? `Último exame em ${formatDate(patient.ultimoExame)}`
+                  : "Nenhum exame registrado"
               }
               days={
-                patient.days === null
-                  ? "Nunca"
-                  : lateYears === 1
-                    ? "1 ano"
-                    : `${lateYears} anos`
+                patient.ultimoExame ? yearsSince(patient.ultimoExame) : "Nunca"
               }
               tone="warning"
-              onPress={() => openPatient(patient.id)}
+              onPress={() => openPatient(patient.idPaciente)}
             />
-          );
-        })
+          ))
       )}
     </Card>
   );
