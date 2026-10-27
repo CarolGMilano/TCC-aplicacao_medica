@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import type { ReactNode } from "react";
 
 import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
@@ -19,6 +20,8 @@ import type { DashboardAlert } from "../types";
 type AlertListScreenProps = {
   title: string;
   eyebrow?: string;
+  // Conteúdo extra depois da lista (ex.: "Último exame há mais de 1 ano").
+  footer?: ReactNode;
   description: string;
   alerts: DashboardAlert[];
   totalPatients: number;
@@ -29,6 +32,7 @@ type AlertListScreenProps = {
 export function AlertListScreen({
   title,
   eyebrow,
+  footer,
   description,
   alerts,
   totalPatients,
@@ -60,7 +64,9 @@ export function AlertListScreen({
               <ThemedView type="tertiary" style={styles.line} />
               <ThemedText type="code" themeColor="textSecondary">
                 {eyebrow ??
-                  (title === "Ver e tratar" ? "Sem retorno" : "Pós-procedimento")}
+                  (title === "Ver e tratar"
+                    ? "Sem retorno"
+                    : "Pós-procedimento")}
               </ThemedText>
             </View>
             <ThemedText style={styles.title}>{title}</ThemedText>
@@ -131,6 +137,7 @@ export function AlertListScreen({
               </Pressable>
             ))
           )}
+          {footer}
         </ScrollView>
       </ThemedView>
     </SafeAreaView>

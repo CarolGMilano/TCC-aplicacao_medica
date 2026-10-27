@@ -17,7 +17,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { confirmDiscard } from "@/components/shared/discard-dialog";
-import { addRecentPatient } from "@/features/patient/recent/recent-patients";
 
 import { Spacing, Theme } from "@/constants/theme";
 import { PillButton } from "@/components/shared/pill-button";
@@ -63,10 +62,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
 
     fetchPatient(id)
       .then((detail) => {
-        if (!active) return;
-        const loaded = toPatientRecord(detail);
-        setRecord(loaded);
-        addRecentPatient({ id: loaded.id, name: loaded.form.name });
+        if (active) setRecord(toPatientRecord(detail));
       })
       .catch((requestError: unknown) => {
         if (!active) return;

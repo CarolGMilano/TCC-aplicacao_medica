@@ -20,11 +20,6 @@ export const statusCounts = [
   { status: "Alta", count: 28 },
 ];
 
-export const changedWithoutNextStep = [
-  { name: "Clara M. Duarte", detail: "Citologia ASC-US · 2 meses", days: "64 dias" },
-  { name: "Sônia R. Prado", detail: "PCR HPV 16/18 · 1 mês", days: "38 dias" },
-];
-
 // Pacientes com consulta ou exame registrado no período.
 export const attended = { day: 9, week: 41, month: 168 };
 

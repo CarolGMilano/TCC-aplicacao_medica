@@ -10,7 +10,6 @@ import {
   type DashboardTab,
 } from "@/features/dashboard/home/dashboard-header";
 import { IndicatorsTab } from "@/features/dashboard/home/indicators-tab";
-import { SituationTab } from "@/features/dashboard/home/situation-tab";
 import { TodayTab } from "@/features/dashboard/home/today-tab";
 
 // Cabeçalho e barra de baixo fixos; só o meio (a aba escolhida) rola.
@@ -30,13 +29,7 @@ export default function DashboardScreen() {
           ]}
           showsVerticalScrollIndicator={false}
         >
-          {tab === "today" ? (
-            <TodayTab />
-          ) : tab === "situation" ? (
-            <SituationTab />
-          ) : (
-            <IndicatorsTab />
-          )}
+          {tab === "today" ? <TodayTab /> : <IndicatorsTab />}
         </ScrollView>
         <BottomNav />
       </ThemedView>

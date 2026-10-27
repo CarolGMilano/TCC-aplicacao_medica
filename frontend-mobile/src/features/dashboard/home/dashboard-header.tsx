@@ -8,12 +8,11 @@ import { logout } from "@/features/auth/auth-session";
 
 import { doctor } from "./mocks";
 
-export type DashboardTab = "today" | "situation" | "indicators";
+export type DashboardTab = "today" | "indicators";
 
 const tabs: { id: DashboardTab; label: string }[] = [
-  { id: "today", label: "Hoje" },
-  { id: "situation", label: "Situação" },
-  { id: "indicators", label: "Indicadores" },
+  { id: "today", label: "Indicadores" },
+  { id: "indicators", label: "Exames" },
 ];
 
 // Cabeçalho fixo: só o conteúdo da aba rola por baixo dele.

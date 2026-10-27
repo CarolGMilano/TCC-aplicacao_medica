@@ -1,25 +1,15 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { View } from "react-native";
 
 import { ThemedText } from "@/components/shared/themed-text";
 import { Theme } from "@/constants/theme";
 import { usePatientList } from "@/features/patient/list/use-patient-list";
-import { useRecentPatients } from "@/features/patient/recent/recent-patients";
+import { statusColors } from "@/features/patient/record/constants";
 
-import { delayTone, useReturns } from "../returns/use-returns";
-import { TOTAL_PATIENTS, attended } from "./mocks";
-import {
-  Card,
-  Chips,
-  PatientRow,
-  SeeAll,
-  Segments,
-  Tile,
-  TileRow,
-  dashboardStyles,
-} from "./ui";
-import { daysSince, openPatient } from "./utils";
+import { useReturns } from "../returns/use-returns";
+import { TOTAL_PATIENTS, attended, statusCounts } from "./mocks";
+import { Bars, Card, Segments, Tile, TileRow, dashboardStyles } from "./ui";
 
 const WAITING = "Aguardando procedimento";
 
@@ -34,12 +24,7 @@ const periods: { id: Period; label: string }[] = [
 export function TodayTab() {
   const [period, setPeriod] = useState<Period>("day");
   const returns = useReturns();
-  const recent = useRecentPatients();
   const waiting = usePatientList(WAITING, "");
-
-  const waitingList = waiting.filteredPatients
-    .map((patient) => ({ ...patient, days: daysSince(patient.lastVisit) }))
-    .sort((a, b) => (b.days ?? -1) - (a.days ?? -1));
 
   return (
     <View style={dashboardStyles.tab}>
@@ -77,80 +62,19 @@ export function TodayTab() {
         </ThemedText>
       </Card>
 
-      <Card title="Precisam de retorno">
-        {returns.isLoading ? (
-          <ActivityIndicator color={Theme.primary} />
-        ) : returns.error ? (
-          <ThemedText themeColor="error">{returns.error}</ThemedText>
-        ) : returns.alerts.length === 0 ? (
-          <ThemedText themeColor="textSecondary">
-            Nenhuma paciente atrasada.
-          </ThemedText>
-        ) : (
-          <>
-            {returns.alerts.slice(0, 4).map((alert) => (
-              <PatientRow
-                key={`${alert.idPaciente}-${alert.tipoAlerta}`}
-                name={alert.nome}
-                detail={alert.reason}
-                days={`${alert.diasAtraso} dias`}
-                tone={delayTone(alert.diasAtraso)}
-                onPress={() => openPatient(alert.idPaciente)}
-              />
-            ))}
-            <SeeAll
-              count={returns.alerts.length}
-              onPress={() => router.push("/dashboard/returns")}
-            />
-          </>
-        )}
-      </Card>
-
-      <Card title="Aguardando procedimento">
-        {waiting.isLoading ? (
-          <ActivityIndicator color={Theme.primary} />
-        ) : waiting.error ? (
-          <ThemedText themeColor="error">{waiting.error}</ThemedText>
-        ) : waitingList.length === 0 ? (
-          <ThemedText themeColor="textSecondary">
-            Nenhuma paciente aguardando.
-          </ThemedText>
-        ) : (
-          <>
-            {waitingList.slice(0, 3).map((patient) => (
-              <PatientRow
-                key={patient.id}
-                name={patient.name}
-                detail={`PRT ${patient.record}`}
-                days={patient.days === null ? "Sem consultas" : `${patient.days} dias`}
-                tone="warning"
-                onPress={() => openPatient(patient.id)}
-              />
-            ))}
-            <SeeAll
-              count={waiting.total}
-              onPress={() =>
-                router.push({ pathname: "/patients", params: { status: WAITING } })
-              }
-            />
-          </>
-        )}
-      </Card>
-
-      <Card title="Fichas abertas recentemente">
-        {recent.length === 0 ? (
-          <ThemedText themeColor="textSecondary">
-            As fichas que você abrir aparecem aqui.
-          </ThemedText>
-        ) : (
-          <Chips
-            items={recent.map((patient) => ({
-              key: String(patient.id),
-              label: patient.name,
-              onPress: () => openPatient(patient.id),
-            }))}
-          />
-        )}
+      <Card
+        title={`${TOTAL_PATIENTS} pacientes por situação`}
+        subtitle="Situação atual de cada paciente na ficha. Toque para ver a lista."
+      >
+        <Bars
+          items={statusCounts.map(({ status, count }) => ({
+            label: status,
+            count,
+            color: statusColors[status]?.text ?? Theme.border,
+            onPress: () =>
+              router.push({ pathname: "/patients", params: { status } }),
+          }))}
+        />
       </Card>
     </View>
   );
