@@ -38,7 +38,7 @@ export function AlertListScreen({
   title,
   eyebrow,
   accent = Theme.tertiary,
-  daysLabel = (alert) => `${daysLabel(alert)}`,
+  daysLabel = (alert) => `${alert.diasAtraso} dias`,
   footer,
   description,
   alerts,
@@ -138,7 +138,7 @@ export function AlertListScreen({
                       themeColor={alert.diasAtraso > 120 ? "error" : "warning"}
                       style={styles.days}
                     >
-                      {alert.diasAtraso} dias
+                      {daysLabel(alert)}
                     </ThemedText>
                     <SymbolView
                       name={{
