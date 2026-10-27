@@ -79,6 +79,11 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
       setError("Selecione ao menos um tipo de HPV.");
       return;
     }
+    // Observação obrigatória, como na especificação.
+    if (!observation.trim()) {
+      setError("Observações é obrigatório.");
+      return;
+    }
 
     // Trava o botão já na conferência, para um toque duplo não abrir duas.
     setSaving(true);

@@ -72,6 +72,11 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       setError("Preencha a data e o resultado.");
       return;
     }
+    // Observação obrigatória, como na especificação.
+    if (!form.observation.trim()) {
+      setError("Observações é obrigatório.");
+      return;
+    }
     // Completa o dia e o mês com zero ("5" vira "05"), senão o backend recusa.
     const dataRegistro = toIsoDate([form.day, form.month, form.year]);
     if (!dataRegistro) {
@@ -101,7 +106,7 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
           idPaciente: Number(id),
           dataRegistro,
           resultado: form.result,
-          observacao: form.observation.trim() || "",
+          observacao: form.observation.trim(),
         },
         saved?.idExame,
       );
