@@ -99,45 +99,55 @@ export function AlertListScreen({
               Nenhuma paciente encontrada.
             </ThemedText>
           ) : (
-            alerts.map((alert) => (
-              <Pressable
-                key={`${alert.idPaciente}-${alert.tipoAlerta}`}
-                accessibilityRole="button"
-                onPress={() =>
-                  router.push({
-                    pathname: "/patients/[id]",
-                    params: { id: String(alert.idPaciente) },
-                  })
-                }
-                style={({ pressed }) => [
-                  styles.patientRow,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <View style={styles.identity}>
-                  <ThemedText style={styles.name}>{alert.nome}</ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    PRT {alert.prontuario}
-                  </ThemedText>
-                </View>
-                <View style={styles.delay}>
-                  <ThemedText themeColor="error" style={styles.days}>
-                    {alert.diasAtraso} d
-                  </ThemedText>
-                  <SymbolView
-                    name={{
-                      ios: "chevron.right",
-                      android: "chevron_right",
-                      web: "chevron_right",
-                    }}
-                    tintColor={Theme.textSecondary}
-                    size={16}
-                  />
-                </View>
-              </Pressable>
-            ))
+            // Uma lista só, dentro de um card, como no protótipo.
+            <View style={styles.listCard}>
+              {alerts.map((alert, index) => (
+                <Pressable
+                  key={`${alert.idPaciente}-${alert.tipoAlerta}`}
+                  accessibilityRole="button"
+                  onPress={() =>
+                    router.push({
+                      pathname: "/patients/[id]",
+                      params: { id: String(alert.idPaciente) },
+                    })
+                  }
+                  style={({ pressed }) => [
+                    styles.patientRow,
+                    index > 0 && styles.divider,
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <View style={styles.identity}>
+                    <ThemedText style={styles.name}>{alert.nome}</ThemedText>
+                    <ThemedText type="small" themeColor="textSecondary">
+                      {"reason" in alert && typeof alert.reason === "string"
+                        ? alert.reason
+                        : `PRT ${alert.prontuario}`}
+                    </ThemedText>
+                  </View>
+                  <View style={styles.delay}>
+                    {/* Mais de 4 meses de atraso: vermelho; antes, amarelo. */}
+                    <ThemedText
+                      themeColor={alert.diasAtraso > 120 ? "error" : "warning"}
+                      style={styles.days}
+                    >
+                      {alert.diasAtraso} dias
+                    </ThemedText>
+                    <SymbolView
+                      name={{
+                        ios: "chevron.right",
+                        android: "chevron_right",
+                        web: "chevron_right",
+                      }}
+                      tintColor={Theme.textSecondary}
+                      size={16}
+                    />
+                  </View>
+                </Pressable>
+              ))}
+            </View>
           )}
-          {footer}
+          {footer ? <View style={styles.footer}>{footer}</View> : null}
         </ScrollView>
       </ThemedView>
     </SafeAreaView>
@@ -189,16 +199,18 @@ const styles = StyleSheet.create({
     marginTop: Spacing.one,
   },
 
-  // Mesmo cartão da lista de pacientes.
-  patientRow: {
+  listCard: {
     marginHorizontal: Spacing.three,
-    marginBottom: Spacing.two,
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three - Spacing.one,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: Theme.inputBorder,
+    borderColor: Theme.border,
     backgroundColor: Theme.backgroundElement,
+  },
+
+  patientRow: {
+    minHeight: 64,
+    paddingVertical: Spacing.two + Spacing.one,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -210,6 +222,16 @@ const styles = StyleSheet.create({
   identity: {
     flexShrink: 1,
     gap: Spacing.half,
+  },
+
+  divider: {
+    borderTopWidth: 1,
+    borderTopColor: Theme.border,
+  },
+
+  footer: {
+    marginHorizontal: Spacing.three,
+    marginTop: Spacing.three,
   },
 
   name: { fontFamily: FontFamilies.primaryMedium },
