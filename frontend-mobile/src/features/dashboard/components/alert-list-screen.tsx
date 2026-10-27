@@ -20,6 +20,11 @@ import type { DashboardAlert } from "../types";
 type AlertListScreenProps = {
   title: string;
   eyebrow?: string;
+  // Cor do filete ao lado do eyebrow: a mesma do card do dashboard que abriu
+  // a tela (vermelho em "Sem retorno", amarelo em "Aguardando").
+  accent?: string;
+  // Texto no lugar de "N dias" (ex.: "Sem consultas").
+  daysLabel?: (alert: DashboardAlert) => string;
   // Conteúdo extra depois da lista (ex.: "Último exame há mais de 1 ano").
   footer?: ReactNode;
   description: string;
@@ -32,6 +37,8 @@ type AlertListScreenProps = {
 export function AlertListScreen({
   title,
   eyebrow,
+  accent = Theme.tertiary,
+  daysLabel = (alert) => `${daysLabel(alert)}`,
   footer,
   description,
   alerts,
@@ -61,7 +68,7 @@ export function AlertListScreen({
 
           <View style={styles.heading}>
             <View style={styles.eyebrow}>
-              <ThemedView type="tertiary" style={styles.line} />
+              <View style={[styles.line, { backgroundColor: accent }]} />
               <ThemedText type="code" themeColor="textSecondary">
                 {eyebrow ??
                   (title === "Ver e tratar"

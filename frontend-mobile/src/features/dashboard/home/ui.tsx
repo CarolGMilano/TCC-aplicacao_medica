@@ -63,7 +63,9 @@ export function Tile({
       onPress={onPress}
       style={({ pressed }) => [styles.tile, pressed && styles.pressed]}
     >
-      <View style={[styles.tileAccent, { backgroundColor: toneColors[tone] }]} />
+      <View
+        style={[styles.tileAccent, { backgroundColor: toneColors[tone] }]}
+      />
       <ThemedText
         type="small"
         themeColor="textSecondary"
@@ -98,7 +100,13 @@ export type BarItem = {
 };
 
 // Barras horizontais proporcionais ao maior valor da lista.
-export function Bars({ items, suffix = "" }: { items: BarItem[]; suffix?: string }) {
+export function Bars({
+  items,
+  suffix = "",
+}: {
+  items: BarItem[];
+  suffix?: string;
+}) {
   const max = Math.max(...items.map((item) => item.count), 1);
 
   return (
@@ -137,7 +145,13 @@ export function Bars({ items, suffix = "" }: { items: BarItem[]; suffix?: string
 }
 
 // Linha "rótulo ........ valor", para contagens simples.
-export function StatRow({ label, value }: { label: string; value: string | number }) {
+export function StatRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) {
   return (
     <View style={styles.statRow}>
       <ThemedText style={styles.statLabel}>{label}</ThemedText>
@@ -189,7 +203,13 @@ export function PatientRow({
   );
 }
 
-export function SeeAll({ count, onPress }: { count: number; onPress: () => void }) {
+export function SeeAll({
+  count,
+  onPress,
+}: {
+  count: number;
+  onPress: () => void;
+}) {
   return (
     <Pressable
       accessibilityRole="button"

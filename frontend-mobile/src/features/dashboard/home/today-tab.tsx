@@ -46,9 +46,7 @@ export function TodayTab() {
           label="Aguardando procedimento"
           tone="warning"
           loading={waiting.isLoading}
-          onPress={() =>
-            router.push({ pathname: "/patients", params: { status: WAITING } })
-          }
+          onPress={() => router.push("/dashboard/waiting")}
         />
       </TileRow>
 

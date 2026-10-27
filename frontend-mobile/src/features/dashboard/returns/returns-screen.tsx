@@ -1,3 +1,5 @@
+import { Theme } from "@/constants/theme";
+
 import { AlertListScreen } from "../components/alert-list-screen";
 import { LateExamCard } from "../home/late-exam-card";
 import { TOTAL_PATIENTS } from "../home/mocks";
@@ -11,6 +13,7 @@ export function ReturnsScreen() {
       error={error}
       isLoading={isLoading}
       eyebrow="Sem retorno"
+      accent={Theme.error}
       title="Precisam de retorno"
       totalPatients={TOTAL_PATIENTS}
       description="Ver e tratar há mais de 2 meses ou EZT/biópsia há mais de 3 meses sem nova consulta."

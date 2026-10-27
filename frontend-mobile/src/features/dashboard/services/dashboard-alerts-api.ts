@@ -13,12 +13,17 @@ function authHeaders() {
 
 export const USE_MOCK_DASHBOARD_ALERTS = false;
 
-export async function fetchWithoutReturnAlerts(): Promise<WithoutReturnAlert[]> {
+export async function fetchWithoutReturnAlerts(): Promise<
+  WithoutReturnAlert[]
+> {
   if (USE_MOCK_DASHBOARD_ALERTS) {
     return mockWithoutReturnAlerts.map((alert) => ({ ...alert }));
   }
 
-  const response = await apiFetch("/api/dashboard/alertas/ver-e-tratar", authHeaders());
+  const response = await apiFetch(
+    "/api/dashboard/alertas/ver-e-tratar",
+    authHeaders(),
+  );
   if (!response.ok) {
     throw new Error("Não foi possível carregar as pacientes sem retorno.");
   }
