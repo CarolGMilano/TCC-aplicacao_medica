@@ -1,4 +1,9 @@
-import { router, useFocusEffect } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -11,6 +16,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { confirmDiscard } from "@/components/shared/discard-dialog";
+
 import { Spacing, Theme } from "@/constants/theme";
 import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
@@ -19,16 +26,8 @@ import { ThemedView } from "@/components/shared/themed-view";
 import { styles as registrationStyles } from "../registration/styles";
 import { RecordFooter, RecordHeader } from "./components";
 import { fetchPatient } from "./services/patient-record-api";
-import {
-  EditTab,
-  HabitsTab,
-  IstTab,
-  ObstetricTab,
-  PersonalTab,
-  SexualTab,
-  VisitsTab,
-} from "./tabs";
-import type { PatientRecord, RecordTab } from "./types";
+import { EditTab, HistoryTab, VisitsTab } from "./tabs";
+import type { DataTab, PatientRecord, RecordTab } from "./types";
 import { useRecordEdit } from "./use-record-edit";
 import { toPatientRecord } from "./utils";
 
@@ -41,10 +40,21 @@ type PatientRecordScreenProps = {
 export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
   const [record, setRecord] = useState<PatientRecord | null>(null);
   const [error, setError] = useState("");
-  // Busca em andamento: "Editar dados" espera, para o rascunho não partir
-  // da ficha antiga (ex.: com o status de antes da consulta).
+  // Busca em andamento: "Editar" espera, para o rascunho não partir da ficha
+  // antiga (ex.: com o status de antes da consulta).
   const [loading, setLoading] = useState(false);
-  const [tab, setTab] = useState<RecordTab>(created ? "visits" : "personal");
+  // Abre no Histórico clínico; recém-cadastrada abre em Atendimentos.
+  const [tab, setTab] = useState<RecordTab>(created ? "visits" : "history");
+  // Voltando de um registro salvo ("saved" muda a cada salvamento), mostra
+  // Atendimentos, mesmo que o "+ Novo registro" tenha sido tocado no
+  // Histórico clínico.
+  const { saved } = useLocalSearchParams<{ saved?: string }>();
+  const [handledSave, setHandledSave] = useState(saved);
+  if (saved !== handledSave) {
+    setHandledSave(saved);
+    if (saved) setTab("visits");
+  }
+  const [editing, setEditing] = useState<DataTab>("personal");
 
   const loadRecord = useCallback(() => {
     let active = true;
@@ -90,35 +100,61 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
 
   const edit = useRecordEdit(record, reload, refresh);
 
-  // Trocar de aba descarta a edição em andamento, como no layout.
-  function changeTab(next: RecordTab) {
-    edit.cancel();
-    setTab(next);
+  // Bloco do histórico em edição. Enquanto a ficha recarrega, espera, para o
+  // rascunho não partir de dados antigos.
+  const section = edit.editing ? editing : null;
+  function startEdit(next: DataTab) {
+    if (loading) return;
+    setEditing(next);
+    edit.start();
   }
 
-  // Durante a edição, o botão voltar do Android só cancela a edição.
+  // Sai da edição; com alterações feitas, pergunta antes de descartá-las.
+  function leaveEdit(then?: () => void) {
+    if (!edit.dirty) {
+      edit.cancel();
+      then?.();
+      return;
+    }
+    confirmDiscard({
+      onDiscard: () => {
+        edit.cancel();
+        then?.();
+      },
+    });
+  }
+
+  // Trocar de aba descarta a edição em andamento, como no layout.
+  function changeTab(next: RecordTab) {
+    leaveEdit(() => setTab(next));
+  }
+
+  // Durante a edição, o botão voltar do Android só cancela a edição. O
+  // BackHandler é global: com um registro aberto por cima, a ficha não reage.
+  const navigation = useNavigation();
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
-        if (!edit.editing) return false;
-        edit.cancel();
+        if (!navigation.isFocused() || !edit.editing) return false;
+        if (!edit.saving) leaveEdit();
         return true;
       },
     );
     return () => subscription.remove();
   });
 
-  // Volta para a lista que já está na pilha, sem abrir outra. Se a ficha veio
-  // de outra tela (ex.: "Ver todas" do Dashboard), a lista entra no lugar dela.
-  // Durante a edição, só cancela, como o voltar do Android; salvando, espera.
-  function goToPatients() {
+  // Volta para a tela de onde a ficha foi aberta (Dashboard, lista...).
+  // Recém-cadastrada vai para a lista, sem voltar ao cadastro. Durante a
+  // edição, só cancela, como o voltar do Android; salvando, espera.
+  function goBack() {
     if (edit.saving) return;
     if (edit.editing) {
-      edit.cancel();
+      leaveEdit();
       return;
     }
-    router.dismissTo("/patients");
+    if (!created && router.canGoBack()) router.back();
+    else router.dismissTo("/patients");
   }
 
   if (!record) {
@@ -133,7 +169,7 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
               <Pressable onPress={reload} accessibilityRole="button">
                 <ThemedText type="code">Tentar de novo</ThemedText>
               </Pressable>
-              <PillButton label="Pacientes" onPress={goToPatients} />
+              <PillButton label="Voltar" onPress={goBack} />
             </>
           ) : (
             <ActivityIndicator color={Theme.primary} />
@@ -160,27 +196,19 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
               tab={tab}
               created={created}
               editing={edit.editing}
-              onBack={goToPatients}
+              onBack={goBack}
               onTabChange={changeTab}
             />
-            <View>
-              {tab !== "visits" && edit.draft ? (
-                <EditTab tab={tab} form={edit.draft} update={edit.update} />
+            <View style={styles.content}>
+              {/* Editando um bloco: só o formulário dele, com as regras do
+                  cadastro. */}
+              {section && edit.draft ? (
+                <EditTab tab={section} form={edit.draft} update={edit.update} />
               ) : null}
-              {!edit.editing && tab === "personal" && (
-                <PersonalTab record={record} />
+              {!edit.editing && tab === "history" && (
+                <HistoryTab record={record} onEdit={startEdit} />
               )}
-              {!edit.editing && tab === "obstetric" && (
-                <ObstetricTab record={record} />
-              )}
-              {!edit.editing && tab === "sexual" && (
-                <SexualTab record={record} />
-              )}
-              {!edit.editing && tab === "ist" && <IstTab record={record} />}
-              {!edit.editing && tab === "habits" && (
-                <HabitsTab record={record} />
-              )}
-              {tab === "visits" && (
+              {!edit.editing && tab === "visits" && (
                 <VisitsTab
                   patientId={record.id}
                   patientName={record.form.name}
@@ -190,17 +218,23 @@ export function PatientRecordScreen({ id, created }: PatientRecordScreenProps) {
             </View>
           </ScrollView>
 
-          {tab !== "visits" ? (
-            <RecordFooter
-              editing={edit.editing}
-              loading={loading}
-              saving={edit.saving}
-              error={edit.error}
-              onEdit={edit.start}
-              onCancel={edit.cancel}
-              onSave={() => edit.save(tab)}
-            />
-          ) : null}
+          <RecordFooter
+            editing={edit.editing}
+            saving={edit.saving}
+            error={edit.error}
+            onCancel={() => leaveEdit()}
+            onSave={() => section && edit.save(section)}
+            onNewRecord={() =>
+              router.push({
+                pathname: "/patients/[id]/new-record",
+                params: {
+                  id: String(record.id),
+                  name: record.form.name,
+                  record: record.form.record,
+                },
+              })
+            }
+          />
         </ThemedView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -220,4 +254,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  content: {
+    paddingBottom: Spacing.four,
+  },
 });

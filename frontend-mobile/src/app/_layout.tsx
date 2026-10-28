@@ -1,14 +1,14 @@
 import { DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import {
-  Poppins_400Regular,
-  Poppins_500Medium,
-  Poppins_600SemiBold,
-} from "@expo-google-fonts/poppins";
-import { PTSerif_400Regular } from "@expo-google-fonts/pt-serif";
+  AtkinsonHyperlegibleNext_400Regular,
+  AtkinsonHyperlegibleNext_500Medium,
+  AtkinsonHyperlegibleNext_600SemiBold,
+} from "@expo-google-fonts/atkinson-hyperlegible-next";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { DiscardDialogHost } from "@/components/shared/discard-dialog";
 import { AnimatedSplashOverlay } from "@/components/ui/animated-icon";
 import { Theme } from "@/constants/theme";
 
@@ -23,12 +23,11 @@ const navigationTheme = {
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
-    Poppins: Poppins_400Regular,
+    Atkinson: AtkinsonHyperlegibleNext_400Regular,
     // Pesos registrados com nome próprio: no Android, fontWeight não
     // escolhe o arquivo certo de uma fonte customizada.
-    "Poppins-Medium": Poppins_500Medium,
-    "Poppins-SemiBold": Poppins_600SemiBold,
-    "PT Serif": PTSerif_400Regular,
+    "Atkinson-Medium": AtkinsonHyperlegibleNext_500Medium,
+    "Atkinson-SemiBold": AtkinsonHyperlegibleNext_600SemiBold,
   });
 
   useEffect(() => {
@@ -54,6 +53,7 @@ export default function RootLayout() {
         <Stack.Screen name="patients/[id]/new-record" />
         <Stack.Screen name="new-patient" />
       </Stack>
+      <DiscardDialogHost />
     </ThemeProvider>
   );
 }

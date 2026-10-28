@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { useState } from "react";
 import {
@@ -25,8 +25,14 @@ import { usePatientList } from "./use-patient-list";
 const filterOptions = ["Todas", ...statusOptions];
 
 export function PatientList() {
+  // O Dashboard abre a lista já filtrada ao tocar numa situação.
+  const params = useLocalSearchParams<{ status?: string }>();
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("Todas");
+  const [status, setStatus] = useState(
+    params.status && filterOptions.includes(params.status)
+      ? params.status
+      : "Todas",
+  );
   const [filterOpen, setFilterOpen] = useState(false);
   const bottomNavHeight = useBottomNavHeight();
   const {

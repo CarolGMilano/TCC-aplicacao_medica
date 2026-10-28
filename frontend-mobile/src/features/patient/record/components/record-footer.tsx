@@ -7,23 +7,22 @@ import { styles as registrationStyles } from "../../registration/styles";
 
 type RecordFooterProps = {
   editing: boolean;
-  loading: boolean;
   saving: boolean;
   error: string;
-  onEdit: () => void;
   onCancel: () => void;
   onSave: () => void;
+  onNewRecord: () => void;
 };
 
-// Rodapé das abas de dados: "Editar dados", ou "Cancelar" e "Salvar alterações".
+// Rodapé fixo da ficha: "+ Novo registro" sempre à mão nas duas abas; durante
+// a edição de um bloco, "Cancelar" e "Salvar alterações".
 export function RecordFooter({
   editing,
-  loading,
   saving,
   error,
-  onEdit,
   onCancel,
   onSave,
+  onNewRecord,
 }: RecordFooterProps) {
   return (
     <View style={styles.footer}>
@@ -68,16 +67,17 @@ export function RecordFooter({
       ) : (
         <Pressable
           accessibilityRole="button"
-          accessibilityState={{ disabled: loading }}
-          disabled={loading}
-          onPress={onEdit}
-          style={[
+          accessibilityLabel="Adicionar novo registro"
+          onPress={onNewRecord}
+          style={({ pressed }) => [
             styles.button,
-            styles.outline,
-            loading && registrationStyles.disabled,
+            styles.primary,
+            pressed && registrationStyles.pressed,
           ]}
         >
-          <ThemedText type="button">Editar dados</ThemedText>
+          <ThemedText themeColor="textPrimaryLight" type="button">
+            + Novo registro
+          </ThemedText>
         </Pressable>
       )}
     </View>
@@ -91,6 +91,8 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
     gap: Spacing.two,
     backgroundColor: Theme.background,
+    borderTopWidth: 1,
+    borderTopColor: Theme.inputBorder,
   },
 
   row: {

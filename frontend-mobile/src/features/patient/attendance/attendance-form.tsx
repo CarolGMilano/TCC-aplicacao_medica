@@ -16,6 +16,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { confirmDiscard } from "@/components/shared/discard-dialog";
+
 import { Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
@@ -59,6 +61,24 @@ export function useReturnToVisits(filter: VisitType) {
   }, [navigation, id, filter]);
 }
 
+// Sair com dados preenchidos (Cancelar, voltar do Android ou gesto) pede
+// confirmação. Enquanto salva (e depois do sucesso), a saída passa direto.
+export function useDiscardGuard(dirty: boolean, saving: boolean) {
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (!dirty || saving) return;
+    return navigation.addListener("beforeRemove", (event) => {
+      event.preventDefault();
+      confirmDiscard({
+        title: "Descartar registro?",
+        message: "Os dados preenchidos ainda não foram salvos.",
+        onDiscard: () => navigation.dispatch(event.data.action),
+      });
+    });
+  }, [navigation, dirty, saving]);
+}
+
 // Estrutura comum das telas de registro: cabeçalho, campos e rodapé com o
 // erro e o botão. Telas em passos (colposcopia) passam step, onBack e o
 // rótulo do botão de cada passo. Num registro salvo (saved), a faixa do topo
@@ -75,6 +95,7 @@ export function AttendanceForm({
   mode = "new",
   saved,
   sectioned = false,
+  dirty = false,
 }: {
   title: string;
   error?: string;
@@ -89,6 +110,8 @@ export function AttendanceForm({
   // Telas que já dividem os campos em seções (StepSection), como a
   // colposcopia; as outras recebem o mesmo espaçamento aqui.
   sectioned?: boolean;
+  // Algo foi preenchido ou alterado e ainda não foi salvo.
+  dirty?: boolean;
 }) {
   const [doctor, setDoctor] = useState<string | null>(null);
   const isSaved = Boolean(saved);
@@ -106,6 +129,8 @@ export function AttendanceForm({
       active = false;
     };
   }, [isSaved]);
+
+  useDiscardGuard(dirty, saving);
 
   // Voltar do Android: travado enquanto salva; nas telas em passos, volta um
   // passo em vez de fechar (mesmo padrão do cadastro de paciente).

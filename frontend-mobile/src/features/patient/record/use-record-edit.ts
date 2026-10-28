@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { PatientForm } from "../registration/types";
 import { validateStep } from "../registration/utils";
-import { recordTabs, tabSteps } from "./constants";
+import { sectionLabels, tabSteps } from "./constants";
 import { saveTab } from "./services/patient-update-api";
 import type { DataTab, PatientRecord } from "./types";
 
@@ -15,8 +15,7 @@ function validateOtherTabs(record: PatientRecord, form: PatientForm) {
     const error = validateStep(tabSteps[tab], form, record.form);
     const before = validateStep(tabSteps[tab], record.form, record.form);
     if (error && error !== before) {
-      const label = recordTabs.find((item) => item.id === tab)?.label;
-      return `Aba ${label}: ${error}`;
+      return `${sectionLabels[tab]}: ${error}`;
     }
   }
   return null;
@@ -30,18 +29,24 @@ export function useRecordEdit(
   refresh: () => Promise<void>,
 ) {
   const [draft, setDraft] = useState<PatientForm | null>(null);
+  // Rascunho como começou: só o que o médico mudar depois conta como alteração.
+  const [initial, setInitial] = useState<PatientForm | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   function start() {
     if (!record) return;
     setError("");
+    // Fichas antigas podem ter mais de 99 parceiros (o limite era 999): o
+    // valor salvo é mantido; só o "+" e a digitação respeitam o limite.
     setDraft(record.form);
+    setInitial(record.form);
   }
 
   function cancel() {
     setError("");
     setDraft(null);
+    setInitial(null);
   }
 
   const update = <Key extends keyof PatientForm>(
@@ -88,6 +93,9 @@ export function useRecordEdit(
   return {
     draft,
     editing: draft !== null,
+    // Algo foi mudado no rascunho: sair pede confirmação antes de descartar.
+    dirty:
+      draft !== null && JSON.stringify(draft) !== JSON.stringify(initial),
     saving,
     error,
     start,

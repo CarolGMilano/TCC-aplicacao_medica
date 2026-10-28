@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-  Alert,
   BackHandler,
   KeyboardAvoidingView,
   Pressable,
@@ -9,6 +8,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { confirmDiscard } from "@/components/shared/discard-dialog";
 
 import { PillButton } from "@/components/shared/pill-button";
 import { ThemedText } from "@/components/shared/themed-text";
@@ -74,18 +75,11 @@ export function PatientRegistration() {
           return true;
         }
         if (JSON.stringify(form) === JSON.stringify(initialForm)) return false;
-        Alert.alert(
-          "Descartar o cadastro?",
-          "Os dados preenchidos serão perdidos.",
-          [
-            { text: "Continuar editando", style: "cancel" },
-            {
-              text: "Descartar",
-              style: "destructive",
-              onPress: () => router.back(),
-            },
-          ],
-        );
+        confirmDiscard({
+          title: "Descartar o cadastro?",
+          message: "Os dados preenchidos serão perdidos.",
+          onDiscard: () => router.back(),
+        });
         return true;
       },
     );

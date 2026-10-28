@@ -12,8 +12,9 @@ type PatientListItemProps = {
   patient: PatientListItemType;
 };
 
-// Cartão da paciente: nome e idade/prontuário à esquerda; à direita o status
-// numa linha só e a última consulta. O nome encolhe antes do selo.
+// Cartão da paciente em duas linhas fixas: nome e status; idade/prontuário e
+// última consulta. O selo fica sempre à direita, no topo; o nome quebra antes
+// de empurrá-lo.
 export function PatientListItem({ patient }: PatientListItemProps) {
   const colors = statusColors[patient.status];
 
@@ -29,25 +30,33 @@ export function PatientListItem({ patient }: PatientListItemProps) {
       }
       style={({ pressed }) => [styles.card, pressed && styles.pressed]}
     >
-      <View style={styles.identity}>
+      <View style={styles.line}>
         <ThemedText style={styles.name} numberOfLines={2}>
           {patient.name}
         </ThemedText>
+        {colors ? (
+          <View style={styles.status}>
+            <Chip
+              label={patient.status}
+              color={colors.text}
+              background={colors.background}
+            />
+          </View>
+        ) : null}
+      </View>
+      <View style={styles.line}>
         <ThemedText type="small" themeColor="textSecondary">
           {patient.age} anos · PRT {patient.record}
         </ThemedText>
-      </View>
-      <View style={styles.details}>
-        {colors ? (
-          <Chip
-            label={patient.status}
-            color={colors.text}
-            background={colors.background}
-          />
-        ) : null}
-        <ThemedText type="small" themeColor="textSecondary" style={styles.date}>
+        {/* Curto para caber numa linha ao lado do prontuário. */}
+        <ThemedText
+          type="small"
+          themeColor="textSecondary"
+          style={styles.date}
+          numberOfLines={1}
+        >
           {patient.lastVisit
-            ? `Última consulta em ${patient.lastVisit}`
+            ? `Últ. consulta ${patient.lastVisit}`
             : "Sem consultas"}
         </ThemedText>
       </View>
@@ -65,27 +74,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Theme.inputBorder,
     backgroundColor: Theme.backgroundElement,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: Spacing.three,
-  },
-
-  identity: {
-    flex: 1,
-    gap: Spacing.half,
-  },
-
-  name: {
-    fontFamily: FontFamilies.primaryMedium,
-  },
-
-  details: {
-    flexShrink: 0,
-    alignItems: "flex-end",
     gap: Spacing.one + Spacing.half,
   },
 
-  date: { textAlign: "right" },
+  line: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: Spacing.two,
+  },
+
+  name: {
+    flex: 1,
+    fontFamily: FontFamilies.primaryMedium,
+  },
+
+  // O Chip se alinha ao início por padrão; aqui ele fica preso à direita.
+  status: {
+    flexShrink: 0,
+    alignItems: "flex-end",
+  },
+
+  date: { flexShrink: 1, textAlign: "right" },
 
   pressed: { opacity: 0.7 },
 });

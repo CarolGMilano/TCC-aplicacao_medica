@@ -39,5 +39,20 @@ export async function saveAttendance<Request>(
   if (response.status === 401 || response.status === 403) {
     throw new Error("Sua sessão expirou. Faça login novamente.");
   }
-  throw new Error(errorMessage);
+  throw new Error((await readRuleMessage(response)) ?? errorMessage);
+}
+
+// Regra recusada pelo backend (400): a mensagem dele explica o que corrigir,
+// ex.: "A data do registro não pode ser anterior ao nascimento da paciente.".
+export async function readRuleMessage(response: Response) {
+  if (response.status !== 400) return null;
+  try {
+    const body = (await response.json()) as {
+      message?: string;
+      messages?: Record<string, string>;
+    };
+    return body.message ?? Object.values(body.messages ?? {})[0] ?? null;
+  } catch {
+    return null;
+  }
 }

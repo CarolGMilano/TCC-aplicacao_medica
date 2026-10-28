@@ -6,6 +6,7 @@ import { hpvTypeLabels, pcrResultLabels } from "../../record/constants";
 import type { Pcr } from "../../record/services/visits-api";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
+import { confirmBeforeSave } from "../confirm-save";
 import { SavedVisit } from "../saved-visit";
 import {
   fromIsoDate,
@@ -34,15 +35,22 @@ export function PcrScreen() {
 // PCR salvo, começando com os valores dele.
 function PcrRecord({ saved }: { saved: Pcr | null }) {
   const returnToVisits = useReturnToVisits("pcr");
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
   const [date, setDate] = useState<DateParts>(() =>
     saved ? fromIsoDate(saved.dataRegistro) : todayParts(),
   );
-  const [result, setResult] = useState(saved?.resultado ?? "NEGATIVO");
+  // Registro novo começa sem resultado: um "Negativo" pré-marcado poderia
+  // ser salvo sem o médico ter escolhido.
+  const [result, setResult] = useState(saved?.resultado ?? "");
   const [hpvTypes, setHpvTypes] = useState<string[]>(saved?.tiposHpv ?? []);
   const [observation, setObservation] = useState(saved?.observacao ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [initial] = useState(() =>
+    JSON.stringify({ date, result, hpvTypes, observation }),
+  );
+  const dirty =
+    JSON.stringify({ date, result, hpvTypes, observation }) !== initial;
 
   const positive = result === "POSITIVO";
 
@@ -63,16 +71,34 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
       setError("Informe uma data válida, entre 01/01/1900 e hoje.");
       return;
     }
+    if (!result) {
+      setError("Selecione o resultado do PCR.");
+      return;
+    }
     if (positive && hpvTypes.length === 0) {
       setError("Selecione ao menos um tipo de HPV.");
       return;
     }
+    // Observação obrigatória, como na especificação.
     if (!observation.trim()) {
-      setError("A observação é obrigatória.");
+      setError("Observações é obrigatório.");
       return;
     }
 
+    // Trava o botão já na conferência, para um toque duplo não abrir duas.
     setSaving(true);
+    const confirmed = await confirmBeforeSave({
+      patientId: Number(id),
+      patientName: name,
+      type: "pcr",
+      typeLabel: "PCR DNA HPV",
+      dataRegistro,
+      editingId: saved?.idExame,
+    });
+    if (!confirmed) {
+      setSaving(false);
+      return;
+    }
     try {
       await savePcr(
         {
@@ -106,6 +132,7 @@ function PcrRecord({ saved }: { saved: Pcr | null }) {
       error={error}
       saving={saving}
       onSave={save}
+      dirty={dirty}
     >
       <DateInput
         label="Data do registro"

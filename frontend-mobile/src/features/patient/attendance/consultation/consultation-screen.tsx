@@ -18,6 +18,7 @@ import {
   SaveButton,
   styles as formStyles,
 } from "../components";
+import { useDiscardGuard } from "../attendance-form";
 import { createConsultation } from "./consultation-api";
 import { SavedVisit } from "../saved-visit";
 import { ConsultationDetails } from "../visit-details";
@@ -69,6 +70,9 @@ function NewConsultation() {
   }));
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  // A observação é o conteúdo da consulta: escrita e não salva, pede
+  // confirmação antes de sair.
+  useDiscardGuard(form.observation.trim() !== "", saving);
   const [status, setStatus] = useState("Aguardando procedimento");
   // A carga inicial não sobrescreve um status que o médico já alterou aqui.
   const statusChanged = useRef(false);
@@ -155,7 +159,8 @@ function NewConsultation() {
           ? error.message
           : "Não foi possível salvar a consulta.",
       );
-    } finally {
+      // Só no erro: liberar a trava antes de a tela fechar fazia o aviso de
+      // descarte aparecer depois de salvar.
       setSaving(false);
     }
   }

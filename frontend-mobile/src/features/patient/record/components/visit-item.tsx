@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, View } from "react-native";
 
-import { Spacing, Theme } from "@/constants/theme";
+import { FontFamilies, Spacing, Theme } from "@/constants/theme";
 import { ThemedText } from "@/components/shared/themed-text";
 
 import type { Visit } from "../types";
@@ -34,7 +34,10 @@ export function VisitItem({ visit, onPress }: VisitItemProps) {
 
       <View style={styles.content}>
         {/* Na consulta, o título é a observação (sem detalhe): vai inteira. */}
-        <ThemedText numberOfLines={visit.detail ? 2 : undefined}>
+        <ThemedText
+          numberOfLines={visit.detail ? 2 : undefined}
+          style={styles.title}
+        >
           {visit.title}
         </ThemedText>
 
@@ -86,6 +89,8 @@ const styles = StyleSheet.create({
   barHighlight: {
     backgroundColor: Theme.secondary,
   },
+
+  title: { fontFamily: FontFamilies.primaryMedium },
 
   content: {
     flex: 1,

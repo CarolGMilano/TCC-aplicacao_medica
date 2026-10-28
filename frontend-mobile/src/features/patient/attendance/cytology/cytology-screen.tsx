@@ -6,6 +6,7 @@ import { cytologyLabels } from "../../record/constants";
 import type { Cytology } from "../../record/services/visits-api";
 import { AttendanceForm, useReturnToVisits } from "../attendance-form";
 import { DateInput, LabeledInput } from "../components";
+import { confirmBeforeSave } from "../confirm-save";
 import { SavedVisit } from "../saved-visit";
 import type { CytologyForm } from "../types";
 import { fromIsoDate, toIsoDate, todayParts } from "../utils";
@@ -13,6 +14,19 @@ import { CytologyDetails } from "../visit-details";
 import { saveCytology } from "./cytology-api";
 
 const results = Object.keys(cytologyLabels);
+
+// HSIL ou pior: pede confirmação antes de salvar.
+const criticalCytology = [
+  "HSIL",
+  "HSIL_COM_CARACTERISTICAS_SUGESTIVAS_DE_INVASAO",
+  "CARCINOMA_DE_CELULAS_ESCAMOSAS",
+  "AGC_FAVORECENDO_NEOPLASIA",
+  "AIS_ENDOCERVICAL",
+  "ADENOCARCINOMA_ENDOCERVICAL",
+  "ADENOCARCINOMA_ENDOMETRIAL",
+  "ADENOCARCINOMA_EXTRAUTERINO",
+  "ADENOCARCINOMA_SOE",
+];
 
 export function CytologyScreen() {
   return (
@@ -31,8 +45,8 @@ export function CytologyScreen() {
 // mesmos campos e regras.
 function CytologyRecord({ saved }: { saved: Cytology | null }) {
   const returnToVisits = useReturnToVisits("cytology");
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const [form, setForm] = useState<CytologyForm>(() => {
+  const { id, name } = useLocalSearchParams<{ id: string; name: string }>();
+  const [initial] = useState<CytologyForm>(() => {
     if (saved) {
       const [day, month, year] = fromIsoDate(saved.dataRegistro);
       return {
@@ -43,9 +57,13 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
         observation: saved.observacao ?? "",
       };
     }
+    // Sem resultado pré-selecionado: o médico precisa escolher, para um
+    // resultado esquecido não ser salvo como outro.
     const [day, month, year] = todayParts();
-    return { day, month, year, result: "ADENOCARCINOMA_SOE", observation: "" };
+    return { day, month, year, result: "", observation: "" };
   });
+  const [form, setForm] = useState(initial);
+  const dirty = JSON.stringify(form) !== JSON.stringify(initial);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -54,20 +72,41 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       setError("Preencha a data e o resultado.");
       return;
     }
+    // Observação obrigatória, como na especificação.
+    if (!form.observation.trim()) {
+      setError("Observações é obrigatório.");
+      return;
+    }
     // Completa o dia e o mês com zero ("5" vira "05"), senão o backend recusa.
     const dataRegistro = toIsoDate([form.day, form.month, form.year]);
     if (!dataRegistro) {
       setError("Informe uma data válida, entre 01/01/1900 e hoje.");
       return;
     }
+    // Trava o botão já na conferência, para um toque duplo não abrir duas.
     setSaving(true);
+    const confirmed = await confirmBeforeSave({
+      patientId: Number(id),
+      patientName: name,
+      type: "cytology",
+      typeLabel: "Citologia",
+      dataRegistro,
+      editingId: saved?.idExame,
+      critical: criticalCytology.includes(form.result)
+        ? cytologyLabels[form.result]
+        : null,
+    });
+    if (!confirmed) {
+      setSaving(false);
+      return;
+    }
     try {
       await saveCytology(
         {
           idPaciente: Number(id),
           dataRegistro,
           resultado: form.result,
-          observacao: form.observation.trim() || "",
+          observacao: form.observation.trim(),
         },
         saved?.idExame,
       );
@@ -94,6 +133,7 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       error={error}
       saving={saving}
       onSave={save}
+      dirty={dirty}
     >
       <DateInput
         label="Data do registro"
@@ -104,7 +144,7 @@ function CytologyRecord({ saved }: { saved: Cytology | null }) {
       />
       <OptionRow
         label="Resultado"
-        value={cytologyLabels[form.result] ?? form.result}
+        value={form.result ? (cytologyLabels[form.result] ?? form.result) : ""}
         options={results.map((result) => cytologyLabels[result])}
         onChange={(value) => {
           const result = results.find((item) => cytologyLabels[item] === value);

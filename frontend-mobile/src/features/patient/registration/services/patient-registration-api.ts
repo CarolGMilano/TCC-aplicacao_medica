@@ -1,8 +1,11 @@
 import { getToken } from "@/features/auth/auth-session";
 import { apiFetch } from "@/features/auth/services/auth-api";
 
+import { readRuleMessage } from "../../attendance/attendance-api";
+
 import { contraceptionMap, istMap, smokingMap, statusMap } from "../constants";
 import type { PatientForm } from "../types";
+import { normalizeName, normalizeRecord } from "../utils";
 
 export type PatientRegistration = {
   paciente: {
@@ -46,9 +49,9 @@ export function toPatientRegistration(form: PatientForm): PatientRegistration {
 
   return {
     paciente: {
-      nome: form.name.trim(),
+      nome: normalizeName(form.name),
       dataNascimento: `${form.birthYear}-${form.birthMonth.padStart(2, "0")}-${form.birthDay.padStart(2, "0")}`,
-      prontuario: form.record.trim(),
+      prontuario: normalizeRecord(form.record),
       status: statusMap[form.status],
     },
 
@@ -112,5 +115,7 @@ export async function registerPatient(form: PatientForm): Promise<number> {
     throw new Error("Já existe uma paciente com este prontuário.");
   }
 
-  throw new Error("Não foi possível cadastrar a paciente.");
+  throw new Error(
+    (await readRuleMessage(response)) ?? "Não foi possível cadastrar a paciente.",
+  );
 }

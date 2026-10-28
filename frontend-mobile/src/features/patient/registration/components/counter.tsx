@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 
 import { FontFamilies, Spacing, Theme, Typography } from "@/constants/theme";
@@ -24,6 +25,9 @@ export function Counter({
   editable = false,
   onChange,
 }: CounterProps) {
+  // Texto em edição enquanto o campo está com foco.
+  const [text, setText] = useState<string | null>(null);
+
   return (
     <View style={styles.row}>
       <ThemedText type="code" themeColor="textSecondary">
@@ -35,20 +39,31 @@ export function Counter({
           label="−"
           accessibilityLabel={`Diminuir ${label.toLowerCase()}`}
           disabled={value <= min}
-          onPress={() => onChange(Math.max(min, value - 1))}
+          onPress={() => {
+            setText(null);
+            onChange(Math.max(min, value - 1));
+          }}
         />
 
         {editable ? (
           <TextInput
             accessibilityLabel={label}
-            value={String(value)}
+            value={text ?? String(value)}
             keyboardType="number-pad"
+            // O campo comporta 2 dígitos; nenhum desses dados passa de 99.
+            maxLength={Math.min(String(max).length, 2)}
             selectTextOnFocus
-            onChangeText={(text) => {
-              const digits = text.replace(/\D/g, "");
-              const nextValue = digits ? Number(digits) : min;
-              onChange(Math.min(max, Math.max(min, nextValue)));
+            onFocus={() => setText(String(value))}
+            // Só dígitos. O formulário recebe cada número já dentro do limite
+            // (assim "Próximo" com o campo em foco usa o valor digitado), mas
+            // o campo mostra o texto digitado até sair dele, para o "1" de
+            // "15" não virar o mínimo no meio da digitação.
+            onChangeText={(next) => {
+              const digits = next.replace(/\D/g, "");
+              setText(digits);
+              if (digits) onChange(Math.min(max, Math.max(min, Number(digits))));
             }}
+            onBlur={() => setText(null)}
             style={styles.counterInput}
           />
         ) : (
@@ -60,7 +75,10 @@ export function Counter({
           accessibilityLabel={`Aumentar ${label.toLowerCase()}`}
           active
           disabled={value >= max}
-          onPress={() => onChange(Math.min(max, value + 1))}
+          onPress={() => {
+            setText(null);
+            onChange(Math.min(max, value + 1));
+          }}
         />
 
         {/* Espaço fixo para a unidade, para os contadores ficarem alinhados

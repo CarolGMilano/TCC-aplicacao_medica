@@ -40,6 +40,7 @@ export function ObstetricStep({ form, update }: StepProps) {
           <Counter
             label="Menarca"
             value={form.menarche}
+            editable
             min={minAges.menarche}
             max={age}
             suffix="anos"
@@ -59,6 +60,7 @@ export function ObstetricStep({ form, update }: StepProps) {
           <Counter
             label="Idade da menopausa"
             value={form.menopauseAge}
+            editable
             min={Math.max(minAges.menopause, form.menarche + 1)}
             max={age}
             suffix="anos"
