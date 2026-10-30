@@ -25,7 +25,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +103,15 @@ class IndicadoresDashboardIT extends AbstractIntegrationTest {
         assertThat(atendidas.hoje()).isEqualTo(3L);
         assertThat(atendidas.semana()).isEqualTo(3L);
         assertThat(atendidas.mes()).isEqualTo(3L);
+    }
+
+    @Test
+    @DisplayName("consulta à noite conta no dia dela, e a da madrugada seguinte não")
+    void pacientesAtendidasConsultaANoite() {
+        consulta(p6, hoje.atTime(23, 30));
+        consulta(p3, hoje.plusDays(1).atTime(0, 30));
+
+        assertThat(indicadoresService.obterPacientesAtendidas().hoje()).isEqualTo(4L);
     }
 
     @Test
@@ -238,8 +249,13 @@ class IndicadoresDashboardIT extends AbstractIntegrationTest {
     }
 
     private void consulta(int paciente, LocalDate data) {
+        consulta(paciente, data.atTime(10, 0));
+    }
+
+    // Grava como Timestamp, do mesmo jeito que o Hibernate grava o data_hora.
+    private void consulta(int paciente, LocalDateTime dataHora) {
         jdbc.update("INSERT INTO consulta (id_paciente, id_medico, data_hora, observacao) VALUES (?, ?, ?, ?)",
-                paciente, medico, data.atTime(10, 0), "Consulta");
+                paciente, medico, Timestamp.valueOf(dataHora), "Consulta");
     }
 
     private void citologia(int paciente, LocalDate data, String resultado) {
