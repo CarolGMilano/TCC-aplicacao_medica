@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -39,20 +40,28 @@ public class IndicadoresService {
                 .build();
     }
 
+    // O data_hora da consulta é gravado pelo Hibernate como Timestamp, que o
+    // driver converte para o fuso da conexão (UTC). Por isso o intervalo da
+    // consulta vai como Timestamp também: o driver aplica a mesma conversão e
+    // uma consulta das 21h não cai no dia seguinte.
     private Long contarAtendidasDesde(LocalDate inicio, LocalDate fim) {
         String sql = """
                 SELECT COUNT(DISTINCT r.id_paciente)
                 FROM (
-                    SELECT id_paciente, DATE(data_hora) AS data FROM consulta
-                    UNION ALL SELECT id_paciente, data_registro FROM citologia
-                    UNION ALL SELECT id_paciente, data_registro FROM pcr_dna_hpv
-                    UNION ALL SELECT id_paciente, data_registro FROM colposcopia
-                    UNION ALL SELECT id_paciente, data_registro FROM procedimento
+                    SELECT id_paciente FROM consulta WHERE data_hora >= ? AND data_hora < ?
+                    UNION ALL SELECT id_paciente FROM citologia WHERE data_registro BETWEEN ? AND ?
+                    UNION ALL SELECT id_paciente FROM pcr_dna_hpv WHERE data_registro BETWEEN ? AND ?
+                    UNION ALL SELECT id_paciente FROM colposcopia WHERE data_registro BETWEEN ? AND ?
+                    UNION ALL SELECT id_paciente FROM procedimento WHERE data_registro BETWEEN ? AND ?
                 ) r
                 JOIN paciente p ON p.id_paciente = r.id_paciente
-                WHERE p.ativo = true AND r.data BETWEEN ? AND ?
+                WHERE p.ativo = true
                 """;
-        Long total = jdbcTemplate.queryForObject(sql, Long.class, inicio, fim);
+        Timestamp inicioConsulta = Timestamp.valueOf(inicio.atStartOfDay());
+        Timestamp fimConsulta = Timestamp.valueOf(fim.plusDays(1).atStartOfDay());
+        Long total = jdbcTemplate.queryForObject(sql, Long.class,
+                inicioConsulta, fimConsulta,
+                inicio, fim, inicio, fim, inicio, fim, inicio, fim);
         return total != null ? total : 0L;
     }
 
