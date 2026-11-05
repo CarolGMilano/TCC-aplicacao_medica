@@ -8,4 +8,5 @@ import { Component, Input } from '@angular/core';
 })
 export class Loading {
   @Input() cor: string = '#768E78'; 
+  @Input() local: boolean = false;
 }

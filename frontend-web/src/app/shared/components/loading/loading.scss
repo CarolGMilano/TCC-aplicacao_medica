@@ -13,6 +13,21 @@
   animation: aparecer-loading 0.2s ease-in;
 }
 
+.fundo-loading.loading-local {
+  position: absolute;
+  border-radius: 5px;
+}
+
+.loading-local .frame {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+}
+
 @keyframes aparecer-loading {
   from {
     opacity: 0;
@@ -65,7 +80,6 @@
   .circle-med,
   .circle-min {
     position: absolute;
-
     border-radius: 100%;
     box-shadow: rgba(0, 0, 0, 0.8) 6px 15px 28px -6px;
   }
@@ -73,36 +87,27 @@
   .circle-max {
     top: 0;
     left: 0;
-
     width: 90px;
     height: 90px;
-
     z-index: 1;
-
     animation: circle-max 2s alternate infinite;
   }
 
   .circle-med {
     top: 15px;
     left: 15px;
-
     width: 60px;
     height: 60px;
-
     z-index: 2;
-
     animation: circle-med 2s alternate infinite;
   }
 
   .circle-min {
     top: 30px;
     left: 30px;
-
     width: 30px;
     height: 30px;
-
     z-index: 3;
-
     animation: circle-min 2s alternate infinite;
   }
 }
