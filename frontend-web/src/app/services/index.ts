@@ -7,3 +7,5 @@ export * from './citologias/citologias'
 export * from './pcrs/pcrs'
 export * from './colposcopias/colposcopias'
 export * from './procedimentos/procedimentos'
+
+export * from './dashboard/dashboard'

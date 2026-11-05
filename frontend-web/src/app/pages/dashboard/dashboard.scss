@@ -1,0 +1,79 @@
+.pagina {
+  display: flex;
+  box-sizing: border-box;
+  flex-direction: column;
+  padding: 20px 40px;
+  gap: 20px;
+
+  .cabecalho {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .corpo {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+
+    .corpo-cabecalho {
+      display: flex;
+      align-items: stretch;
+      gap: 1rem;
+
+      app-card-kpi {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+
+        &[routerLink]:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .corpo-pendencias {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .pendencias-titulo {
+        margin: 0;
+        font-family: var(--fonte-secundaria);
+        font-size: var(--tam-texto-padrao);
+        text-transform: uppercase;
+        font-weight: 200;
+      }
+
+      .pendencias-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+      }
+    }
+
+    .corpo-indicadores {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .indicadores-titulo {
+        margin: 0;
+        font-family: var(--fonte-secundaria);
+        font-size: var(--tam-texto-padrao);
+        text-transform: uppercase;
+        font-weight: 200;
+      }
+
+      .indicadores-graficos {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+
+        > app-grafico-etario:first-child {
+          grid-column: 1 / -1;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,64 @@
+<section class="drawer">
+  <div class="drawer-cabecalho">
+    <div class="cabecalho-principal">
+      <div class="principal-container">
+        <div class="container-elemento"></div>
+        <h2 class="container-titulo">{{ data.titulo }}</h2>
+      </div>
+
+      <p class="principal-subtitulo">{{ data.subtitulo }}</p>
+
+      <p class="principal-pacientes">{{ data.itens.length }} pacientes aguardando contato</p>
+    </div>
+
+    <button 
+      class="cabecalho-botao"
+      (click)="fechar()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="drawer-tabela">
+    <table class="tabela">
+      <thead class="tabela-cabecalho">
+        <tr>
+          <th>Paciente</th>
+          <th>Prontuário</th>
+          <th>Status</th>
+          <th>Sem retorno há</th>
+        </tr>
+      </thead>
+
+      <tbody class="tabela-corpo">
+        @for (item of data.itens; track item.idPaciente) {
+          <tr 
+            class="corpo-item" 
+            [routerLink]="['/pacientes', item.idPaciente]"
+            (click)="fechar()">
+            <td>{{ item.nome.length > 20 ? (item.nome | slice:0:20) + '...' : item.nome }}</td>
+            <td>{{ item.prontuario }}</td>
+            <td>
+              <div
+                class="item-tipo"
+                [class.em_investigacao]="item.status ===StatusPaciente.EM_INVESTIGACAO"
+                [class.em_tratamento]="item.status === StatusPaciente.EM_TRATAMENTO"
+                [class.aguardando_procedimento]="item.status === StatusPaciente.AGUARDANDO_PROCEDIMENTO"
+                [class.pos_procedimento]="item.status === StatusPaciente.POS_PROCEDIMENTO"
+                [class.alta]="item.status === StatusPaciente.ALTA"
+                [class.acompanhamento_preventivo]="item.status === StatusPaciente.ACOMPANHAMENTO_PREVENTIVO">
+                {{ StatusPacienteLabel[item.status] }}
+              </div>
+            </td>
+            <td class="item-atraso">{{ item.diasAtraso }} dias</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td class="sem-paciente" colspan="5">
+              Nenhum paciente encontrado.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -1,7 +1,6 @@
-export * from './profissionais/profissionais'
+export * from './dashboard/dashboard'
 export * from './perfil/perfil'
 export * from './pacientes/pacientes'
-export * from './novo-paciente/novo-paciente'
-//export * from './paciente/paciente'
-
+export * from './profissionais/profissionais'
 export * from './paciente/paciente'
+export * from './novo-paciente/novo-paciente'

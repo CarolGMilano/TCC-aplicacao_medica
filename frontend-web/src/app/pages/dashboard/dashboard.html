@@ -1,0 +1,88 @@
+@if (loading()) {
+  <app-loading></app-loading>
+}
+
+<section class="pagina">
+  <div class="cabecalho">
+    <app-cabecalho-pagina
+      titulo="Dashboard"
+      subtitulo="Visão geral dos dados e acompanhamentos dos pacientes">
+    </app-cabecalho-pagina>
+  </div>
+
+  <div class="corpo">
+    <div class="corpo-cabecalho">
+      <app-card-kpi
+        titulo="Pacientes cadastrados"
+        subtitulo="Em acompanhamento da unidade"
+        [kpi]="KPIs()?.totalPacientes ?? null"
+        routerLink="/pacientes">
+      </app-card-kpi>
+
+      @if (authService.possuiAlgumaRole([TipoUsuario.ADMINISTRADOR])) {
+        <app-card-kpi
+          titulo="Profissionais cadastrados"
+          subtitulo="Com acesso ao sistema"
+          [kpi]="KPIs()?.totalProfissionais ?? null"
+          routerLink="/profissionais">
+        </app-card-kpi>
+      } @else {
+        <app-card-kpi
+          titulo="Profissionais cadastrados"
+          subtitulo="Com acesso ao sistema"
+          [kpi]="KPIs()?.totalProfissionais ?? null">
+        </app-card-kpi>
+      }
+
+      <app-card-kpi
+        titulo="Registros cadastrados"
+        subtitulo="Consultas, exames, colposcopias e procedimentos registrados"
+        [kpi]="KPIs()?.totalRegistros ?? null">
+      </app-card-kpi>
+    </div>
+
+    <div class="corpo-pendencias">
+      <p class="pendencias-titulo">
+        Pendências de acompanhamento
+      </p>
+
+      <div class="pendencias-container">
+        <app-lista-resumida
+          titulo="Ver e tratar sem retorno"
+          subtitulo="Indicação de ver e tratar há mais de 2 meses sem nova consulta registrada"
+          [itens]="pendenciasVerETratar() ?? []"
+          [totalPacientes]="KPIs()?.totalPacientes ?? 0"
+          (verTodos)="abrirVerETratar()">
+        </app-lista-resumida>
+
+        <app-lista-resumida
+          titulo="Pós-procedimento sem retorno"
+          subtitulo="Biópsia ou EZT realizada há mais de 3 meses sem consulta de acompanhamento"
+          [itens]="pendenciasPosProcedimento() ?? []"
+          [totalPacientes]="KPIs()?.totalPacientes ?? 0"
+          (verTodos)="abrirPosProcedimento()">
+        </app-lista-resumida>
+      </div>
+    </div>
+
+    <div class="corpo-indicadores">
+      <p class="indicadores-titulo">
+        Indicadores por eixo - geral
+      </p>
+
+      <div class="indicadores-graficos">
+        <app-grafico-etario
+          (faixaEtariaSelecionada)="abrirPacientesPorFaixaEtaria($event)">
+        </app-grafico-etario>
+
+        <app-grafico-ist
+          (opcaoIST)="abrirPacientesPorIST($event)">
+        </app-grafico-ist>
+
+        <app-card-indicador
+          (opcaoIndicador)="abrirDrawerIndicador($event)"
+        ></app-card-indicador>
+      </div>
+    </div>
+  </div>
+</section>

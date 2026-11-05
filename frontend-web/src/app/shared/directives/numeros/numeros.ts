@@ -9,8 +9,13 @@ export class Numeros {
 
   @HostListener('input')
   aoDigitar() {
-    const valor = this.elemento.nativeElement.value;
+    const input = this.elemento.nativeElement;
+    const valor = input.value;
+    const valorNumerico = valor.replace(/\D/g, '');
 
-    this.elemento.nativeElement.value = valor.replace(/\D/g, '');
+    if (valor !== valorNumerico) {
+      input.value = valorNumerico;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
   }
 }

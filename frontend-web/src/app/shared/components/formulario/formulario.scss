@@ -13,24 +13,11 @@
 
     background-color: var(--cor-card-detalhe);
 
-    .cabecalho-subtitulo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-
-      font-family: var(--fonte-secundaria);
-      font-size: 10px;
-      font-weight: 100;
-      text-transform: uppercase;
-
-      color: var(--cor-texto-primario-escuro);
-    }
-
     .cabecalho-titulo {
       margin: 0;
 
       font-family: var(--fonte-detalhe);
-      font-size: 25px;
+      font-size: var(--tam-texto-titulo-secao);
       font-weight: 100;
 
       color: var(--cor-texto-primario-escuro);
@@ -53,7 +40,7 @@
         padding-top: 10px;
 
         font-family: var(--fonte-secundaria);
-        font-size: 10px;
+        font-size: var(--tam-texto-label);
         font-weight: 100;
         text-transform: uppercase;
 
@@ -69,7 +56,7 @@
         border-radius: 10px;
 
         font-family: var(--fonte-primaria);
-        font-size: 12px;
+        font-size: var(--tam-texto-auxiliar);
         font-weight: 300;
 
         background-color: var(--cor-fundo-secundario);
@@ -96,14 +83,14 @@
           color: var(--cor-erro);
 
           font-family: var(--fonte-primaria);
-          font-size: 10px;
+          font-size: var(--tam-texto-auxiliar);
         }
 
         .campo-aviso {
           color: var(--cor-atencao);
 
           font-family: var(--fonte-primaria);
-          font-size: 10px;
+          font-size: var(--tam-texto-auxiliar);
         }
 
         &:has(.ng-invalid.ng-touched) {
@@ -202,7 +189,7 @@
             border: 1px solid var(--cor-borda);
             border-radius: 10px;
             font-family: var(--fonte-primaria);
-            font-size: 12px;
+            font-size: var(--tam-texto-auxiliar);
             font-weight: 300;
             color: var(--cor-texto-primario-escuro);
             background-color: var(--cor-fundo-secundario);
@@ -246,7 +233,9 @@
       box-shadow: var(--sombra);
 
       font-family: var(--fonte-primaria);
-      font-size: 10px;
+      font-size: var(--tam-texto-botao);
+
+      font-weight: 300;
 
       cursor: pointer;
     }
@@ -257,6 +246,7 @@
 
       &:hover {
         border-color: var(--cor-primaria);
+        color: var(--cor-primaria);
       }
     }
 

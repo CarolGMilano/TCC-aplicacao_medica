@@ -6,7 +6,14 @@ import { TipoUsuario } from './shared';
 import { Login } from './features/auth/login/login';
 import { AppLayout } from './layout/app-layout/app-layout';
 
-import { Profissionais, Perfil, Pacientes, Paciente, NovoPaciente } from './pages';
+import { 
+  Dashboard, 
+  Perfil, 
+  Pacientes, 
+  Paciente, 
+  Profissionais, 
+  NovoPaciente 
+} from './pages';
 
 export const routes: Routes = [
   {
@@ -21,11 +28,13 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        redirectTo: 'pacientes',
-        pathMatch: 'full',
-        
+        component: Dashboard,
         data: {
-          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
+          roles: [
+            TipoUsuario.ADMINISTRADOR, 
+            TipoUsuario.MEDICO, 
+            TipoUsuario.RESIDENTE
+          ]
         }
       },
 
@@ -33,7 +42,9 @@ export const routes: Routes = [
         path: 'profissionais',
         component: Profissionais,
         data: { 
-          roles: [TipoUsuario.ADMINISTRADOR] 
+          roles: [
+            TipoUsuario.ADMINISTRADOR
+          ] 
         },
       },
       
@@ -41,20 +52,26 @@ export const routes: Routes = [
         path: 'pacientes',
         component: Pacientes,        
         data: {
-          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
+          roles: [
+            TipoUsuario.ADMINISTRADOR, 
+            TipoUsuario.MEDICO, 
+            TipoUsuario.RESIDENTE
+          ]
         }
       },
 
-      
       { 
         path: 'pacientes/:id', 
         component: Paciente,
         data: {
-          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
+          roles: [
+            TipoUsuario.ADMINISTRADOR, 
+            TipoUsuario.MEDICO, 
+            TipoUsuario.RESIDENTE
+          ]
         }
       },
       
-
       {
         path: 'novo-paciente',
         component: NovoPaciente,
@@ -63,15 +80,23 @@ export const routes: Routes = [
             !component.formulario.dirty || window.confirm('Descartar os dados ainda não cadastrados?')
         ],
         data: { 
-          roles: [TipoUsuario.ADMINISTRADOR, TipoUsuario.MEDICO, TipoUsuario.RESIDENTE] 
-        },
+          roles: [
+            TipoUsuario.ADMINISTRADOR, 
+            TipoUsuario.MEDICO, 
+            TipoUsuario.RESIDENTE
+          ]
+        }
       },
 
       {
         path: 'perfil',
         component: Perfil,
         data: {
-          /*role: ['ADMINISTRADOR, MEDICO, RESIDENTE']*/
+          roles: [
+            TipoUsuario.ADMINISTRADOR, 
+            TipoUsuario.MEDICO, 
+            TipoUsuario.RESIDENTE
+          ]
         }
       },
 

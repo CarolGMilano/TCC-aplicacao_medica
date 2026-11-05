@@ -13,7 +13,8 @@ import {
   ISaudeSexualRequest, 
   ISaudeSexual, 
   IHistoricoTabagismoRequest, 
-  IHistoricoTabagismo 
+  IHistoricoTabagismo, 
+  IHistoricoIstRequest
 } from '../../shared';
 import { catchError, map, Observable, throwError } from 'rxjs';
 
@@ -106,6 +107,15 @@ export class PacientesService {
   atualizarHistoricoTabagista(idDados: number, dados: IHistoricoTabagismoRequest): Observable<IHistoricoTabagismo> {
     return this._httpClient.put<IHistoricoTabagismo>(
       `${environment.apiUrl}/historico/tabagismo/${idDados}`,
+      dados
+    ).pipe(
+      catchError((erro) => throwError(() => erro))
+    );
+  }
+
+  atualizarHistoricoIST(idPaciente: number, dados: IHistoricoIstRequest[]): Observable<void> {
+    return this._httpClient.put<void>(
+      `${environment.apiUrl}/historico/ist/paciente/${idPaciente}/sincronizar`,
       dados
     ).pipe(
       catchError((erro) => throwError(() => erro))

@@ -29,7 +29,7 @@
     <div class="campo">
       @if(modoAtual !== 'visualizar') {
         <label class="campo-label" for="dataExame">
-          Data do exame
+          Data do procedimento
         </label>
         
         <div class="campo-conteudo">
@@ -54,7 +54,7 @@
             formularioForm.controls['dataExame']?.hasError('required')
           ) {
             <span class="campo-erro">
-              Data do exame é obrigatória.
+              Data do procedimento é obrigatória.
             </span>
           }
   
@@ -310,7 +310,7 @@
 
           @if (formularioForm.controls['observacoes']?.touched &&
               formularioForm.controls['observacoes']?.hasError('required')) {
-            <p class="campo-erro">A observação não pode ficar vazia.</p>
+            <p class="campo-erro">Observação é obrigatória.</p>
           }
         </div>
       } @else {

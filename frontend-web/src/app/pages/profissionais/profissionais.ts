@@ -197,7 +197,6 @@ export class Profissionais implements OnInit {
   }
 
   editar(profissional: IProfissional) {
-    
     const dialogRef = this.dialog.open(Formulario, {
       width: '500px',
       data: {

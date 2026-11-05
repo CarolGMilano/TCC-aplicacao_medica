@@ -104,7 +104,7 @@ export class Paciente {
   dadosGinecoObstetricos: IDadosGinecoObstetricosRequest = {
     idPaciente: 0,
     menarca: 0,
-    menopausa: 0,
+    menopausa: null,
     numGestacao: 0,
     numPartoNormal: 0,
     numCesariana: 0,
@@ -189,6 +189,109 @@ export class Paciente {
         console.error('Erro ao buscar paciente:', erro);
       }
     });
+  }
+
+  converterNumero(valor: string): number | null {
+    return valor === '' ? null : Number(valor);
+  }
+
+  erroMenarca(): string | null {
+    const menarca = this.dadosGinecoObstetricos.menarca;
+    const paciente = this.paciente();
+
+    if (!menarca) {
+      return 'Menarca é obrigatória.';
+    }
+
+    if (paciente && menarca > paciente.idade) {
+      return 'Menarca deve ser menor a idade atual.';
+    }
+
+    return null;
+  }
+
+  erroMenopausa(): string | null {
+    const menopausa = this.dadosGinecoObstetricos.menopausa;
+    const menarca = this.dadosGinecoObstetricos.menarca;
+    const idade = this.paciente()?.idade;
+
+    if (menopausa === null) {
+      return null;
+    }
+
+    if (menopausa <= 0) {
+      return 'Menopausa deve ser maior que zero.';
+    }
+
+    if (menarca > 0 && menopausa < menarca) {
+      return 'Menopausa deve ser maior que a menarca.';
+    }
+
+    if (idade && menopausa > idade) {
+      return 'Menopausa deve ser menor ou igual à idade atual.';
+    }
+
+    return null;
+  }
+
+  erroSexarca(): string | null {
+    const sexarca = this.saudeSexual.sexarca;
+    const idade = this.paciente()?.idade;
+
+    if (!sexarca) {
+      return 'Sexarca é obrigatória.';
+    }
+
+    if (idade && sexarca > idade) {
+      return 'Sexarca deve ser menor ou igual à idade atual.';
+    }
+
+    return null;
+  }
+
+  erroCigarrosDia(): string | null {
+    const cigarrosDia = this.historicoTabagismo.cigarrosDia;
+
+    if (!cigarrosDia || cigarrosDia <= 0) {
+      return 'Cigarros/dia deve ser maior que zero.';
+    }
+
+    return null;
+  }
+
+  erroIdadeInicio(): string | null {
+    const idadeInicio = this.historicoTabagismo.idadeInicio;
+    const idade = this.paciente()?.idade;
+
+    if (!idadeInicio || idadeInicio <= 0) {
+      return 'Idade que iniciou deve ser maior que zero.';
+    }
+
+    if (idade && idadeInicio > idade) {
+      return 'Idade que iniciou deve ser menor que a idade atual.';
+    }
+
+    return null;
+  }
+
+  erroIdadeFim(): string | null {
+    const idadeFim = this.historicoTabagismo.idadeFim;
+    const idadeInicio = this.historicoTabagismo.idadeInicio;
+    const idade = this.paciente()?.idade;
+
+    if (!idadeFim || idadeFim <= 0) {
+      return 'Idade que parou deve ser maior que zero.';
+    }
+
+    if (idade && idadeFim > idade) {
+      return 'Idade que parou deve ser menor que a idade atual.';
+    }
+
+    if (idadeInicio && idadeFim < idadeInicio) {
+      return 'Idade que parou deve ser maior ou igual à idade que iniciou.';
+    }
+
+    return null;
   }
 
   get textoBotaoAdicionar(): string {
@@ -308,10 +411,25 @@ export class Paciente {
     this.editandoHistoricoIST = false;
   }
 
-  // Aguardando alteração no backend
   salvarHistoricoIST() {
-    console.log('ANTIGO:', this.paciente()?.historicoIst);
-    console.log('NOVO:', this.historicoISTEdicao);
+    const dados = this.paciente()?.historicoIst?.[0];
+
+    if (!dados) {
+      return;
+    }
+
+    this.service.atualizarHistoricoIST(
+      dados.idPaciente,
+      this.historicoISTEdicao
+    ).subscribe({
+      next: () => {
+        this.editandoHistoricoIST = false;
+        this.ngOnInit();
+      },
+      error: (erro) => {
+        console.error('Erro ao atualizar histórico de IST:', erro);
+      }
+    });
   }
 
   cancelarEdicaoHistoricoTabagista() {
