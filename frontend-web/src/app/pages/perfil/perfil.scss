@@ -163,7 +163,7 @@
             .campo-aviso {
               margin: 0;
               font-family: var(--fonte-primaria);
-              font-size: 10px;
+              font-size: var(--tam-texto-auxiliar);
               font-weight: 300;
               color: var(--cor-botao-exclusao);
             }
@@ -185,6 +185,7 @@
                 font-size: var(--tam-texto-botao);
                 font-weight: 300;
                 cursor: pointer;
+                color: var(--cor-primaria);
 
                 mat-icon {
                   width: var(--tam-texto-padrao);
@@ -272,7 +273,7 @@
           margin: 0;
           font-family: var(--fonte-secundaria);
           font-weight: 200;
-          font-size:  var(--tam-texto-auxiliar);
+          font-size:  var(--tam-texto-tag);
           color: var(--cor-texto-primario-escuro);
         }
       }
