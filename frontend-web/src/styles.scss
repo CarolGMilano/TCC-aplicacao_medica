@@ -38,6 +38,7 @@ html {
   --cor-secundaria: #E79897;
   --cor-secundaria-clara: #e7989714;
   --cor-secundaria-hover-clara: #e798970c;
+
   --cor-terciaria: #FCC88A;
 
    /* Textos */
@@ -46,6 +47,7 @@ html {
   --cor-texto-primario-claro: #FFFFFF;
   --cor-texto-secundario-claro: #F3EAD6;
 
+  --tam-texto-kpi: 40px;
   --tam-texto-titulo-pagina: 30px;
   --tam-texto-titulo-secao: 20px;
   --tam-texto-subtitulo: 16px;
@@ -117,8 +119,16 @@ html {
 body {
   color-scheme: light;
   background-color: var(--cor-fundo);
-  color: var(--cor-texto-principal);
+  color: var(--cor-texto-primario-escuro);
   font-family: var(--fonte-principal);
   margin: 0;
   height: 100%;
+
+  .painel-pendencias-dialog,
+  .grafico-dialog {
+    .mat-mdc-dialog-surface {
+      border-top-right-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
+    }
+  }
 }
