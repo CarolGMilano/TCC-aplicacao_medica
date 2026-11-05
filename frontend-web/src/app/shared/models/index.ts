@@ -62,3 +62,10 @@ export * from './IColposcopiaResponse'
 
 export * from './IProcedimentoRequest'
 export * from './IProcedimentoResponse'
+
+export * from './IKPIResponse'
+export * from './IPendenciaResponse'
+export * from './IGraficoEtarioResponse'
+export * from './IListaPacienteResponse'
+export * from './IGraficoISTResponse'
+export * from './IHistoricoIndicadoresResponse'
