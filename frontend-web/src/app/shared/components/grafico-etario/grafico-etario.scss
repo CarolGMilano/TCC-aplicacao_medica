@@ -1,0 +1,47 @@
+.container {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+
+  .grafico {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--cor-fundo-secundario);
+    border: 1px solid var(--cor-borda);
+    border-radius: 20px;
+    overflow: hidden;
+
+    .grafico-cabecalho {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+
+      .grafico-titulo {
+        font-family: var(--fonte-primaria);
+        font-size: var(--tam-texto-subtitulo);
+        font-weight: 400;
+        margin: 0;
+      }
+
+      .grafico-legenda {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        .legenda-elemento {
+          width: 18px;
+          height: 18px;
+          background-color: var(--cor-secundaria);
+          border-radius: 5px;
+        }
+
+        .legenda-texto {
+          font-family: var(--fonte-primaria);
+          font-size: var(--tam-texto-auxiliar);
+          font-weight: 300;
+          margin: 0;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<div class="container">
+  @if (loading()) {
+    <app-loading [local]="true" cor="#E79897"></app-loading>
+  }
+
+  <div class="grafico">
+    <div class="grafico-cabecalho">
+      <p class="grafico-titulo">Distribuição etária</p>
+
+      <div class="grafico-legenda">
+        <div class="legenda-elemento"></div>
+        <p class="legenda-texto">Grupo prioritário (25 a 64 anos)</p>
+      </div>
+    </div>
+
+    <apx-chart
+      [series]="series"
+      [chart]="chart"
+      [xaxis]="xaxis"
+      [yaxis]="yaxis"
+      [grid]="grid"
+      [colors]="colors"
+      [legend]="legend"
+      [dataLabels]="dataLabels"
+      [plotOptions]="plotOptions"
+      [tooltip]="tooltip">
+    </apx-chart>
+  </div>
+</div>
