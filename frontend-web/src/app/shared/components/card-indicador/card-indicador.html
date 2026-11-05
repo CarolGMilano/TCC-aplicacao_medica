@@ -1,0 +1,51 @@
+<div class="container">
+  @if (loading()) {
+    <app-loading [local]="true" cor="#E79897"></app-loading>
+  }
+
+  <div class="card">
+    <div class="card-cabecalho">
+      <p class="card-titulo">Histórico de recidiva e ver e tratar</p>
+    </div>
+
+    <div class="card-grafico">
+      <div class="grafico-item">
+        <p class="grafico-titulo">
+          <span class="titulo-detalhe">{{ indicadores?.percentualRecidiva | number:'1.2-2' }}%</span> 
+          dos pacientes têm histórico de lesão recidiva
+        </p>
+
+        <apx-chart
+          [series]="recidivaSeries"
+          [chart]="recidivaOptions.chart"
+          [plotOptions]="recidivaOptions.plotOptions"
+          [colors]="recidivaOptions.colors"
+          [dataLabels]="recidivaOptions.dataLabels"
+          [xaxis]="recidivaOptions.xaxis"
+          [yaxis]="recidivaOptions.yaxis"
+          [legend]="recidivaOptions.legend"
+          [tooltip]="recidivaOptions.tooltip">
+        </apx-chart>
+      </div>
+
+      <div class="grafico-item">
+        <p class="grafico-titulo">
+          <span class="titulo-detalhe">{{ indicadores?.percentualVerETratar | number:'1.2-2' }}%</span> 
+          das colposcopias indicaram ver e tratar
+        </p>
+
+        <apx-chart
+          [series]="verETratarSeries"
+          [chart]="verETratarOptions.chart"
+          [plotOptions]="verETratarOptions.plotOptions"
+          [colors]="verETratarOptions.colors"
+          [dataLabels]="verETratarOptions.dataLabels"
+          [xaxis]="verETratarOptions.xaxis"
+          [yaxis]="verETratarOptions.yaxis"
+          [legend]="verETratarOptions.legend"
+          [tooltip]="verETratarOptions.tooltip">
+        </apx-chart>
+      </div>
+    </div>
+  </div>
+</div>
