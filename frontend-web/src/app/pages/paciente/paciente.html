@@ -55,7 +55,7 @@
   <div class="dados-clinicos">
     <div class="clinicos-cabecalho">
       <h2 class="cabecalho-titulo">Dados clínicos</h2>
-      <h2 class="cabecalho-subtitulo">Informações de referência da paciente.</h2>
+      <h2 class="cabecalho-subtitulo">Informações de referência do paciente.</h2>
     </div>
 
     <div class="clinicos-corpo">
@@ -85,7 +85,9 @@
               <button
                 class="edicao-botao edicao-salvar"
                 type="button"
-                [disabled]="!dadosGinecoObstetricos.menarca"
+                [disabled]="
+                  erroMenarca() !== null ||
+                  erroMenopausa() !== null"
                 (click)="salvarDadosGinecoObstetricos()"
               >
                 <mat-icon>check</mat-icon>
@@ -111,15 +113,18 @@
                         numeros
                         placeholder="0"
                         [(ngModel)]="dadosGinecoObstetricos.menarca"
-                        [class.campo-input]="!dadosGinecoObstetricos.menarca"
+                        [class.campo-input]="
+                          erroMenarca() !== null
+                        "
+                        (ngModelChange)="dadosGinecoObstetricos.menarca = converterNumero($event) ?? 0"
                       />
 
                       <p>anos</p>
                     </div>
 
-                    @if (!dadosGinecoObstetricos.menarca) {
+                    @if (erroMenarca(); as erro) {
                       <span class="campo-erro">
-                        A menarca é obrigatória.
+                        {{ erro }}
                       </span>
                     }
                   </div>
@@ -128,15 +133,27 @@
                 <div class="dados-container">
                   <p class="container-titulo">Menopausa</p>
 
-                  <div class="container-input">
-                    <input
-                      type="text"
-                      maxlength="2"
-                      numeros
-                      placeholder="0"
-                      [(ngModel)]="dadosGinecoObstetricos.menopausa"
-                    />
-                    <p>anos</p>
+                  <div class="campo-edicao">
+                    <div class="container-input">
+                      <input
+                        type="text"
+                        maxlength="2"
+                        numeros
+                        placeholder="0"
+                        [(ngModel)]="dadosGinecoObstetricos.menopausa"
+                        [class.campo-input]="
+                          erroMenopausa() !== null
+                        "
+                        (ngModelChange)="dadosGinecoObstetricos.menopausa = converterNumero($event)"
+                      />
+                      <p>anos</p>
+                    </div>
+  
+                    @if (erroMenopausa(); as erro) {
+                      <span class="campo-erro">
+                        {{ erro }}
+                      </span>
+                    }
                   </div>
                 </div>
               </div>
@@ -160,6 +177,7 @@
                     <span>{{ dadosGinecoObstetricos.numGestacao }}</span>
 
                     <button
+                      [disabled]="dadosGinecoObstetricos.numGestacao === 99"
                       (click)="dadosGinecoObstetricos.numGestacao = dadosGinecoObstetricos.numGestacao + 1"
                     >
                       +
@@ -181,6 +199,7 @@
                     <span>{{ dadosGinecoObstetricos.numPartoNormal }}</span>
 
                     <button
+                      [disabled]="dadosGinecoObstetricos.numPartoNormal === 99"
                       (click)="dadosGinecoObstetricos.numPartoNormal = dadosGinecoObstetricos.numPartoNormal + 1"
                     >
                       +
@@ -202,6 +221,7 @@
                     <span>{{ dadosGinecoObstetricos.numCesariana }}</span>
 
                     <button
+                      [disabled]="dadosGinecoObstetricos.numCesariana === 99"
                       (click)="dadosGinecoObstetricos.numCesariana = dadosGinecoObstetricos.numCesariana + 1"
                     >
                       +
@@ -223,6 +243,7 @@
                     <span>{{ dadosGinecoObstetricos.numAborto }}</span>
 
                     <button
+                      [disabled]="dadosGinecoObstetricos.numAborto === 99"
                       (click)="dadosGinecoObstetricos.numAborto = dadosGinecoObstetricos.numAborto + 1"
                     >
                       +
@@ -320,7 +341,7 @@
               <button
                 class="edicao-botao edicao-salvar"
                 type="button"
-                [disabled]="!saudeSexual.sexarca"
+                [disabled]="erroSexarca() !== null"
                 (click)="salvarSaudeSexual()"
               >
                 <mat-icon>check</mat-icon>
@@ -346,14 +367,15 @@
                         numeros
                         placeholder="0"
                         [(ngModel)]="saudeSexual.sexarca"
-                        [class.campo-input]="!saudeSexual.sexarca"
+                        (ngModelChange)="saudeSexual.sexarca = converterNumero($event) ?? 0"
+                        [class.campo-input]="erroSexarca() !== null"
                       />
                       <p>anos</p>
                     </div>
 
-                    @if (!saudeSexual.sexarca) {
+                    @if (erroSexarca(); as erro) {
                       <span class="campo-erro">
-                        A sexarca é obrigatória.
+                        {{ erro }}
                       </span>
                     }
                   </div>
@@ -416,21 +438,17 @@
                 <div class="dados-container">
                   <p class="container-titulo">Nº de parceiros</p>
 
-                  <div class="container-contador">
-                    <button
-                      [disabled]="saudeSexual.numParceiros === 0"
-                      (click)="saudeSexual.numParceiros = saudeSexual.numParceiros - 1"
-                    >
-                      -
-                    </button>
-
-                    <span>{{ saudeSexual.numParceiros }}</span>
-
-                    <button
-                      (click)="saudeSexual.numParceiros = saudeSexual.numParceiros + 1"
-                    >
-                      +
-                    </button>
+                  <div class="campo-edicao">
+                    <div class="container-input input-parceiros">
+                      <input
+                        type="text"
+                        maxlength="3"
+                        numeros
+                        placeholder="0"
+                        [(ngModel)]="saudeSexual.numParceiros"
+                        (ngModelChange)="saudeSexual.numParceiros = converterNumero($event) ?? 0"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -600,7 +618,11 @@
                     </span>
 
                     @if (historico.ist === this.ist.HPV) {
-                      <span class="ist-detalhe">
+                      <span
+                        class="ist-detalhe"
+                        [class.ist-detalhe-positivo]="historico.condilomaHpv"
+                        [class.ist-detalhe-negativo]="!historico.condilomaHpv"
+                      >
                         {{ historico.condilomaHpv ? 'Condiloma' : 'Sem condiloma' }}
                       </span>
                     }
@@ -638,7 +660,11 @@
               <button
                 class="edicao-botao edicao-salvar"
                 type="button"
-                [disabled]="!podeSalvarHistoricoTabagista()"
+                [disabled]="
+                  !podeSalvarHistoricoTabagista() ||
+                  erroCigarrosDia() !== null ||
+                  erroIdadeInicio() !== null ||
+                  erroIdadeFim() !== null"
                 (click)="salvarHistoricoTabagista()"
               >
                 <mat-icon>check</mat-icon>
@@ -680,14 +706,13 @@
                           numeros
                           placeholder="0"
                           [(ngModel)]="historicoTabagismo.cigarrosDia"
-                          [class.campo-input]="!historicoTabagismo.cigarrosDia"
+                          [class.campo-input]="erroCigarrosDia() !== null"
+                          (ngModelChange)="historicoTabagismo.cigarrosDia = converterNumero($event)"
                         />
                       </div>
   
-                      @if (!historicoTabagismo.cigarrosDia) {
-                        <span class="campo-erro">
-                          Cigarros/dia é obrigatório.
-                        </span>
+                      @if (erroCigarrosDia(); as erro) {
+                        <span class="campo-erro">{{ erro }}</span>
                       }
                     </div>
                   </div>
@@ -703,15 +728,14 @@
                           numeros
                           placeholder="0"
                           [(ngModel)]="historicoTabagismo.idadeInicio"
-                          [class.campo-input]="!historicoTabagismo.idadeInicio"
+                          [class.campo-input]="erroIdadeInicio() !== null"
+                          (ngModelChange)="historicoTabagismo.idadeInicio = converterNumero($event)"
                         />
                         <p>anos</p>
                       </div>
 
-                      @if (!historicoTabagismo.idadeInicio) {
-                        <span class="campo-erro">
-                          Idade de início é obrigatório.
-                        </span>
+                      @if (erroIdadeInicio(); as erro) {
+                        <span class="campo-erro">{{ erro }}</span>
                       }
                     </div>
                   </div>
@@ -730,15 +754,14 @@
                             numeros
                             placeholder="0"
                             [(ngModel)]="historicoTabagismo.idadeFim"
-                            [class.campo-input]="!historicoTabagismo.idadeFim"
+                            [class.campo-input]="erroIdadeFim() !== null"
+                            (ngModelChange)="historicoTabagismo.idadeFim = converterNumero($event)"
                           />
                           <p>anos</p>
                         </div>
   
-                        @if (!historicoTabagismo.idadeFim) {
-                          <span class="campo-erro">
-                            Idade que parou é obrigatório.
-                          </span>
+                        @if (erroIdadeFim(); as erro) {
+                          <span class="campo-erro">{{ erro }}</span>
                         }
                       </div>
                     </div>
