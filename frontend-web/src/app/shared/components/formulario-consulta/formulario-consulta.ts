@@ -66,22 +66,23 @@ export class FormularioConsulta {
   };
 
   private obterDataHoraLocal(): string {
-    const agora = new Date();
+  const agora = new Date();
+  agora.setMonth(agora.getMonth() - 3);
 
-    const data = [
-      agora.getFullYear(),
-      String(agora.getMonth() + 1).padStart(2, '0'),
-      String(agora.getDate()).padStart(2, '0')
-    ].join('-');
+  const data = [
+    agora.getFullYear(),
+    String(agora.getMonth() + 1).padStart(2, '0'),
+    String(agora.getDate()).padStart(2, '0')
+  ].join('-');
 
-    const hora = [
-      String(agora.getHours()).padStart(2, '0'),
-      String(agora.getMinutes()).padStart(2, '0'),
-      String(agora.getSeconds()).padStart(2, '0')
-    ].join(':');
+  const hora = [
+    String(agora.getHours()).padStart(2, '0'),
+    String(agora.getMinutes()).padStart(2, '0'),
+    String(agora.getSeconds()).padStart(2, '0')
+  ].join(':');
 
-    return `${data}T${hora}`;
-  }
+  return `${data}T${hora}`;
+}
 
   cancelar() {
     this.dialogRef.close();
