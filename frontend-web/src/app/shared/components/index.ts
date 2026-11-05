@@ -12,3 +12,13 @@ export * from './formulario-citologia/formulario-citologia'
 export * from './formulario-pcr/formulario-pcr'
 export * from './formulario-colposcopia/formulario-colposcopia'
 export * from './formulario-procedimento/formulario-procedimento'
+
+export * from './card-kpi/card-kpi'
+
+export * from './lista-resumida/lista-resumida'
+export * from './lista-drawer/lista-drawer'
+
+export * from './grafico-drawer/grafico-drawer'
+export * from './grafico-etario/grafico-etario'
+export * from './grafico-ist/grafico-ist'
+export * from './card-indicador/card-indicador'
