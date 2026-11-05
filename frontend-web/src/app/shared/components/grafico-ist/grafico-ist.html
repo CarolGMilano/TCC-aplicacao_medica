@@ -1,0 +1,24 @@
+<div class="container">
+  @if (loading()) {
+    <app-loading [local]="true" cor="#E79897"></app-loading>
+  }
+
+  <div class="grafico">
+    <div class="grafico-cabecalho">
+      <p class="grafico-titulo">Distribuição de ISTs</p>
+    </div>
+
+    <apx-chart
+      [series]="series"
+      [chart]="chart"
+      [xaxis]="xaxis"
+      [yaxis]="yaxis"
+      [grid]="grid"
+      [colors]="colors"
+      [legend]="legend"
+      [dataLabels]="dataLabels"
+      [plotOptions]="plotOptions"
+      [tooltip]="tooltip">
+    </apx-chart>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+.container {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+
+  .grafico {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--cor-fundo-secundario);
+    border: 1px solid var(--cor-borda);
+    border-radius: 20px;
+    overflow: hidden;
+
+    .grafico-cabecalho {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+
+      .grafico-titulo {
+        font-family: var(--fonte-primaria);
+        font-size: var(--tam-texto-subtitulo);
+        font-weight: 400;
+        margin: 0;
+      }
+    }
+  }
+}
