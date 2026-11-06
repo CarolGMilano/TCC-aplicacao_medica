@@ -5,6 +5,7 @@ import {
   AtkinsonHyperlegibleNext_600SemiBold,
 } from "@expo-google-fonts/atkinson-hyperlegible-next";
 import { useFonts } from "expo-font";
+import { NavigationBar } from "expo-navigation-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
@@ -43,6 +44,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={navigationTheme}>
       <StatusBar style="dark" />
+      {/* Esconde a barra de navegação do Android; ela volta deslizando da
+          borda de baixo. */}
+      <NavigationBar hidden />
       <AnimatedSplashOverlay />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
