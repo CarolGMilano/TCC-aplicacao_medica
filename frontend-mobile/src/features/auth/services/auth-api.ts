@@ -1,8 +1,13 @@
+import Constants from "expo-constants";
 import { Platform } from "react-native";
 
 import { saveToken } from "../auth-session";
 
-const localHost = Platform.OS === "android" ? "10.0.2.2" : "localhost";
+// No Expo Go o app já sabe o IP do PC pelo Metro (hostUri "192.168.x.x:8082"),
+// então um celular de verdade acha a API sem configuração.
+const metroHost = Constants.expoConfig?.hostUri?.split(":")[0];
+const localHost =
+  metroHost ?? (Platform.OS === "android" ? "10.0.2.2" : "localhost");
 
 /**
  * Configure EXPO_PUBLIC_API_URL when the backend is running on another host.
