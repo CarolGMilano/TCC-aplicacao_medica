@@ -43,7 +43,7 @@ export function SexualStep({ form, update }: StepProps) {
         <Counter
           label="Nº de parceiros"
           value={form.partners}
-          max={99}
+          max={200}
           editable
           onChange={(value) => update("partners", value)}
         />

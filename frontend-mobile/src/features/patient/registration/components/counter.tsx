@@ -64,7 +64,7 @@ export function Counter({
               if (digits) onChange(Math.min(max, Math.max(min, Number(digits))));
             }}
             onBlur={() => setText(null)}
-            style={styles.counterInput}
+            style={[styles.counterInput, max > 99 && styles.counterInputWide]}
           />
         ) : (
           <ThemedText style={styles.counterValue}>{value}</ThemedText>
@@ -133,6 +133,11 @@ const styles = StyleSheet.create({
     color: Theme.text,
     borderBottomWidth: 1,
     borderBottomColor: Theme.border,
+  },
+
+  // Cabe 3 dígitos (ex.: nº de parceiros, até 200).
+  counterInputWide: {
+    width: 60,
   },
 
   suffixEmpty: {

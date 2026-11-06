@@ -37,8 +37,8 @@ export function useRecordEdit(
   function start() {
     if (!record) return;
     setError("");
-    // Fichas antigas podem ter mais de 99 parceiros (o limite era 999): o
-    // valor salvo é mantido; só o "+" e a digitação respeitam o limite.
+    // Fichas antigas podem passar do limite atual de parceiros (200): o valor
+    // salvo é mantido; só o "+" e a digitação respeitam o limite.
     setDraft(record.form);
     setInitial(record.form);
   }
