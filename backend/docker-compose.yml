@@ -14,5 +14,22 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cervicare-backend:dev
+    container_name: cervicare_backend
+    ports:
+      - "8081:8081"
+    environment:
+      DB_URL: jdbc:mysql://db:3306/cervicare?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      MYSQL_USER: ${MYSQL_USER:?Preencha MYSQL_USER no .env}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Preencha MYSQL_PASSWORD no .env}
+      JWT_SECRET: ${JWT_SECRET:?Preencha JWT_SECRET no .env}
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   db_data:
