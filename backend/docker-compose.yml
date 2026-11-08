@@ -5,10 +5,10 @@ services:
     image: mysql:8.0
     container_name: cervicare_db
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Preencha MYSQL_ROOT_PASSWORD no .env}
       MYSQL_DATABASE: cervicare
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_USER: ${MYSQL_USER:?Preencha MYSQL_USER no .env}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Preencha MYSQL_PASSWORD no .env}
     ports:
       - "3307:3306"
     volumes:

@@ -2,10 +2,13 @@ server:
   port: 8081
 
 spring:
+  config:
+    import: "optional:file:./.env[.properties]"
+
   datasource:
-    url: jdbc:mysql://localhost:3307/cervicare?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: user
-    password: password
+    url: ${DB_URL}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
