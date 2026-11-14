@@ -17,7 +17,7 @@
 
 ## Objetivo do sistema
 
-O CerviCare é um sistema médico para acompanhamento de pacientes em investigação ou tratamento do câncer do colo do útero.
+O ColpoCare é um sistema médico para acompanhamento de pacientes em investigação ou tratamento do câncer do colo do útero.
 
 O sistema possui:
 
@@ -122,7 +122,7 @@ Ele contém:
 
 ### Cores
 
-As cores são baseadas na paleta do frontend web CerviCare.
+As cores são baseadas na paleta do frontend web ColpoCare.
 
 Exemplos:
 
@@ -319,7 +319,7 @@ sessionStorage
 Chave:
 
 ```text
-cervicare_token
+colpocare_token
 ```
 
 O interceptor adiciona:
@@ -383,7 +383,7 @@ Tecnologia principal:
 
 Classe principal:
 
-`CervicareApplication.java`
+`ColpocareApplication.java`
 
 ## Banco de dados
 
@@ -393,13 +393,13 @@ Configuração:
 
 ```text
 MySQL 8.0
-Database: cervicare
+Database: colpocare
 User: user
 Password: password
 Root password: root
 Porta externa: 3307
 Porta interna: 3306
-Container: cervicare_db
+Container: colpocare_db
 ```
 
 Para iniciar:
@@ -449,7 +449,7 @@ Payload:
 
 ```json
 {
-  "email": "medico@cervicare.com",
+  "email": "medico@colpocare.com",
   "senha": "Senha@123"
 }
 ```
@@ -471,7 +471,7 @@ Características:
 - Swagger liberado.
 - Demais endpoints exigem JWT.
 - Senhas usam BCrypt.
-- JWT utiliza issuer `cervicare-api`.
+- JWT utiliza issuer `colpocare-api`.
 - O token inclui:
   - E-mail como subject.
   - ID do usuário.
@@ -491,7 +491,7 @@ O `DataSeeder.java` cria dados iniciais quando o banco está vazio.
 Usuário padrão:
 
 ```text
-E-mail: admin@cervicare.com
+E-mail: admin@colpocare.com
 Senha: Senha@123
 Tipo: ADMINISTRADOR
 ```
@@ -504,7 +504,7 @@ Também cria:
 Os testes de integração usam:
 
 ```text
-medico@cervicare.com
+medico@colpocare.com
 Senha@123
 ```
 

@@ -28,7 +28,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
 
   private readonly apiUrl = `${environment.apiUrl}/auth`;
-  private readonly tokenKey = 'cervicare_token';
+  private readonly tokenKey = 'colpocare_token';
 
   login(dados: LoginRequest): Observable<TokenResponse> {
     return this.http.post<TokenResponse>(`${this.apiUrl}/login`, dados).pipe(
