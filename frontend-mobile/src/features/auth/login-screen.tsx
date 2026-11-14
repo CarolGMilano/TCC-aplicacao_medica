@@ -83,7 +83,7 @@ export default function LoginScreen() {
             />
           </View>
           <View style={styles.heading}>
-            <ThemedText style={styles.logo}>CerviCare</ThemedText>
+            <ThemedText style={styles.logo}>ColpoCare</ThemedText>
             <ThemedText type="code" themeColor="textSecondary">
               Saúde da mulher · rastreio e tratamento
             </ThemedText>

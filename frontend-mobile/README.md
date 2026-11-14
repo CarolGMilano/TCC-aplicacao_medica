@@ -17,7 +17,7 @@
 
 ## Objetivo do sistema
 
-O CerviCare é um sistema médico para acompanhamento de pacientes em investigação ou tratamento do câncer do colo do útero.
+O ColpoCare é um sistema médico para acompanhamento de pacientes em investigação ou tratamento do câncer do colo do útero.
 
 O sistema possui:
 
@@ -122,7 +122,7 @@ Ele contém:
 
 ### Cores
 
-As cores são baseadas na paleta do frontend web CerviCare.
+As cores são baseadas na paleta do frontend web ColpoCare.
 
 Exemplos:
 

@@ -44,7 +44,7 @@ public class DataSeeder {
             // 2. Criar Perfil Médico para o Admin
             Medico medicoAdmin = new Medico();
             medicoAdmin.setUsuario(admin);
-            medicoAdmin.setNome("Administrador CerviCare");
+            medicoAdmin.setNome("Administrador ColpoCare");
             medicoAdmin.setCrm("000000-PR");
             medicoAdmin.setEspecialidade("Ginecologia");
             medicoRepository.save(medicoAdmin);

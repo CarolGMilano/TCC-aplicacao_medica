@@ -16,10 +16,10 @@ public class OpenApiConfig {
     public OpenAPI cervicareOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("CerviCare API")
+                        .title("ColpoCare API")
                         .description("Documentação interativa dos contratos de API para os apps Web e Mobile.")
                         .version("v1.0.0")
-                        .contact(new Contact().name("Equipe Técnica CerviCare").email("suporte@cervicare.com.br")))
+                        .contact(new Contact().name("Equipe Técnica ColpoCare").email("suporte@colpocare.com.br")))
                 .components(new Components()
                         .addSecuritySchemes("bearer-key",
                                 new SecurityScheme()
