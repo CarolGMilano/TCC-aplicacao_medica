@@ -132,15 +132,6 @@ export default function LoginScreen() {
                 </ThemedText>
               )}
             </Pressable>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => router.push("/forgot-password")}
-              style={styles.forgot}
-            >
-              <ThemedText type="code" themeColor="textSecondary">
-                Esqueci a senha
-              </ThemedText>
-            </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -193,11 +184,6 @@ const styles = StyleSheet.create({
   form: {
     marginTop: 56,
     gap: 28,
-  },
-
-  forgot: {
-    alignSelf: "center",
-    marginTop: -4,
   },
 
   submit: {
