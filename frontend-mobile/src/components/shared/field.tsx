@@ -1,3 +1,4 @@
+import { SymbolView } from "expo-symbols";
 import { type Ref, useState } from "react";
 import {
   Pressable,
@@ -43,11 +44,24 @@ export function Field({ label, error, password, style, ...props }: FieldProps) {
         {password ? (
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel={visible ? "Ocultar senha" : "Mostrar senha"}
+            hitSlop={12}
             onPress={() => setVisible((current) => !current)}
+            style={styles.eye}
           >
-            <ThemedText type="code" themeColor="textSecondary">
-              {visible ? "Ocultar" : "Mostrar"}
-            </ThemedText>
+            <SymbolView
+              name={
+                visible
+                  ? {
+                      ios: "eye.slash",
+                      android: "visibility_off",
+                      web: "visibility_off",
+                    }
+                  : { ios: "eye", android: "visibility", web: "visibility" }
+              }
+              tintColor={theme.textSecondary}
+              size={22}
+            />
           </Pressable>
         ) : null}
       </View>
@@ -72,12 +86,13 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    // Deixa o campo encolher para o "MOSTRAR" caber ao lado (no web o input não encolhe sozinho).
+    // Deixa o campo encolher para o ícone de olho caber ao lado (no web o input não encolhe sozinho).
     minWidth: 0,
     fontFamily: FontFamilies.primary,
     fontSize: Typography.sizes.input,
     lineHeight: Typography.lineHeights.input,
     paddingVertical: 8,
   },
+  eye: { paddingLeft: 8 },
   error: { marginTop: 2 },
 });
