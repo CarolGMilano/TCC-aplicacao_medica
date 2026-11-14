@@ -13,14 +13,14 @@ describe('AuthService roles', () => {
   });
   afterEach(() => sessionStorage.clear());
   it('lê tipo do JWT e distingue permissões', () => {
-    sessionStorage.setItem('cervicare_token', token({ exp: Date.now() / 1000 + 3600, tipo: 'MEDICO' }));
+    sessionStorage.setItem('colpocare_token', token({ exp: Date.now() / 1000 + 3600, tipo: 'MEDICO' }));
     expect(service.getTipoUsuario()).toBe(TipoUsuario.MEDICO);
     expect(service.possuiAlgumaRole([TipoUsuario.ADMINISTRADOR])).toBe(false);
   });
   it('rejeita token expirado ou sem expiração', () => {
-    sessionStorage.setItem('cervicare_token', token({ tipo: 'ADMINISTRADOR' }));
+    sessionStorage.setItem('colpocare_token', token({ tipo: 'ADMINISTRADOR' }));
     expect(service.getTipoUsuario()).toBeNull();
-    sessionStorage.setItem('cervicare_token', token({ exp: 1, tipo: 'ADMINISTRADOR' }));
+    sessionStorage.setItem('colpocare_token', token({ exp: 1, tipo: 'ADMINISTRADOR' }));
     expect(service.estaAutenticado()).toBe(false);
   });
 });

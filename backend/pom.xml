@@ -22,11 +22,11 @@
     <!-- ======================================== -->
 
     <groupId>br.com</groupId>
-    <artifactId>cervicare</artifactId>
+    <artifactId>colpocare</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <name>cervicare</name>
-    <description>CerviCare Backend</description>
+    <name>colpocare</name>
+    <description>ColpoCare Backend</description>
 
 
     <!-- ======================================== -->
