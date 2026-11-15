@@ -4,6 +4,8 @@ import br.com.colpocare.dashboard.dto.*;
 import br.com.colpocare.dashboard.service.AlertaService;
 import br.com.colpocare.dashboard.service.DashboardMetricsService;
 import br.com.colpocare.dashboard.service.IndicadoresService;
+import br.com.colpocare.paciente.dto.PacienteResumoDTO;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;

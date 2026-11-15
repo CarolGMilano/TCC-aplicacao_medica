@@ -61,6 +61,7 @@ public class PcrService {
 
     @Transactional
     public PcrResponseDTO atualizar(Integer idExame, PcrRequestDTO dto) {
+        Medico medico = medicoService.getMedicoLogado();
         PcrDnaHpv pcr = pcrRepository.findById(idExame)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Exame PCR não encontrado."));
@@ -70,7 +71,7 @@ public class PcrService {
         pcr.setTiposHpv(dto.tiposHpv());
         pcr.setObservacao(dto.observacao());
         pcr.setDataEdicao(LocalDateTime.now());
-
+        pcr.setMedico(medico);
         PcrDnaHpv atualizado = pcrRepository.save(pcr);
 
         return converterParaDTO(atualizado);

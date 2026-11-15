@@ -4,7 +4,7 @@ import br.com.colpocare.dashboard.dto.DistribuicaoEtariaDTO;
 import br.com.colpocare.dashboard.dto.DistribuicaoIstDTO;
 import br.com.colpocare.dashboard.dto.HistoricoIndicadoresDTO;
 import br.com.colpocare.dashboard.dto.KpiResponseDTO;
-import br.com.colpocare.dashboard.dto.PacienteResumoDTO;
+import br.com.colpocare.paciente.dto.PacienteResumoDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;

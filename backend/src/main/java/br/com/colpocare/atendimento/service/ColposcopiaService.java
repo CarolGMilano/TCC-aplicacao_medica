@@ -66,6 +66,7 @@ public class ColposcopiaService {
 
     @Transactional
     public ColposcopiaResponseDTO atualizar(Integer idColposcopia, ColposcopiaRequestDTO dto) {
+        Medico medico = medicoService.getMedicoLogado();
         Colposcopia colposcopia = colposcopiaRepository.findById(idColposcopia)
                 .orElseThrow(() -> new ResourceNotFoundException("Exame de colposcopia não encontrado."));
 
@@ -81,7 +82,7 @@ public class ColposcopiaService {
         colposcopia.setVerETratar(dto.verETratar());
         colposcopia.setVerETratarMotivo(dto.verETratarMotivo());
         colposcopia.setDataEdicao(LocalDateTime.now());
-
+        colposcopia.setMedico(medico);
         Colposcopia atualizada = colposcopiaRepository.save(colposcopia);
         return converterParaDTO(atualizada);
     }

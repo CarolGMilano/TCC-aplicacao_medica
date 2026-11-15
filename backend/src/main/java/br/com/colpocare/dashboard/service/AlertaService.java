@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -29,6 +30,7 @@ public class AlertaService {
                         .diasAtraso(ChronoUnit.DAYS.between(c.getDataRegistro(), LocalDate.now()))
                         .tipoAlerta("Ver e Tratar")
                         .build())
+                .sorted(Comparator.comparing(AlertaAtrasoDTO::diasAtraso).reversed())
                 .toList();
     }
 
@@ -44,6 +46,7 @@ public class AlertaService {
                         .diasAtraso(ChronoUnit.DAYS.between(p.getDataRegistro(), LocalDate.now()))
                         .tipoAlerta(p.getTipo().name())
                         .build())
+                .sorted(Comparator.comparing(AlertaAtrasoDTO::diasAtraso).reversed())
                 .toList();
     }
 }
