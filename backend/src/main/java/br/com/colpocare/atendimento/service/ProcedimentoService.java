@@ -62,6 +62,7 @@ public class ProcedimentoService {
 
     @Transactional
     public ProcedimentoResponseDTO atualizar(Integer idProcedimento, ProcedimentoRequestDTO dto) {
+        Medico medico = medicoService.getMedicoLogado();
         Procedimento procedimento = procedimentoRepository.findById(idProcedimento)
                 .orElseThrow(() -> new ResourceNotFoundException("Procedimento não encontrado."));
 
@@ -73,6 +74,7 @@ public class ProcedimentoService {
         procedimento.setResultado(dto.resultado());
         procedimento.setObservacao(dto.observacao());
         procedimento.setDataEdicao(LocalDateTime.now());
+        procedimento.setMedico(medico);
 
         Procedimento atualizado = procedimentoRepository.save(procedimento);
         return converterParaDTO(atualizado);

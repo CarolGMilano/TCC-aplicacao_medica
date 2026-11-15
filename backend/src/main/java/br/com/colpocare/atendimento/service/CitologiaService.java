@@ -58,6 +58,7 @@ public class CitologiaService {
 
     @Transactional
     public CitologiaResponseDTO atualizar(Integer idExame, CitologiaRequestDTO dto) {
+        Medico medico = medicoService.getMedicoLogado();
         Citologia citologia = citologiaRepository.findById(idExame)
                 .orElseThrow(() -> new ResourceNotFoundException("Exame de citologia não encontrado."));
 
@@ -65,7 +66,7 @@ public class CitologiaService {
         citologia.setResultado(dto.resultado());
         citologia.setObservacao(dto.observacao());
         citologia.setDataEdicao(LocalDateTime.now());
-
+        citologia.setMedico(medico);
         Citologia atualizada = citologiaRepository.save(citologia);
         return converterParaDTO(atualizada);
     }

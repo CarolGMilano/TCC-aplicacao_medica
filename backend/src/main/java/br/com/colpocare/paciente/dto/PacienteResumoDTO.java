@@ -1,4 +1,4 @@
-package br.com.colpocare.dashboard.dto;
+package br.com.colpocare.paciente.dto;
 
 public record PacienteResumoDTO(
         Integer idPaciente, 
